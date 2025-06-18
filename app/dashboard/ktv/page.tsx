@@ -324,7 +324,7 @@ export default function KTVDashboard() {
                                        "bg-gray-600 hover:bg-gray-700"}`}
                           >
                             {task.status === "pending" ? "Nhận công việc" :
-                             task.status === "diagnosis" ? "Tiếp tục kiểm tra" :
+                             task.status === "diagnosis" ? "Tiếp tục kiểm tra & Chuyển CV" :
                              task.status === "in_progress" ? "Cập nhật tiến độ" :
                              "Xem chi tiết"}
                           </Button>

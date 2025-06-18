@@ -142,9 +142,17 @@ export default function KTVDiagnosisPage({ params }: { params: { id: string } })
         // Save diagnosis data to localStorage for later use in quotation
         const diagnosisKey = `diagnosis-${params.id}`
         localStorage.setItem(diagnosisKey, JSON.stringify(diagnosisData))
+        
+        // Hiển thị thông báo thành công
+        setSuccess("Đã lưu chẩn đoán thành công! Đang chuyển đến trang cố vấn...")
+        
+        // Chuyển hướng đến trang chuẩn đoán của cố vấn sau 1.5 giây
+        setTimeout(() => {
+          router.push(`/diagnosis/${params.id}`)
+        }, 1500)
+      } else {
+        router.push("/dashboard/ktv")
       }
-
-      router.push("/dashboard/ktv")
     } catch (error: any) {
       setError(error.message || "Có lỗi xảy ra khi lưu chẩn đoán")
     } finally {
@@ -359,10 +367,17 @@ export default function KTVDiagnosisPage({ params }: { params: { id: string } })
             </Card>
 
             {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          
+          {success && (
+            <Alert className="bg-green-50 border-green-200">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              <AlertDescription className="text-green-700">{success}</AlertDescription>
+            </Alert>
+          )}
 
             <div className="flex space-x-4">
               <Button type="submit" disabled={saving} className="flex-1">
@@ -371,7 +386,7 @@ export default function KTVDiagnosisPage({ params }: { params: { id: string } })
                 ) : (
                   <>
                     <Save className="h-4 w-4 mr-2" />
-                    Hoàn tất chẩn đoán & Tạo lệnh sửa chữa
+                    Hoàn tất chẩn đoán & Chuyển cho cố vấn
                   </>
                 )}
               </Button>

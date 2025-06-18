@@ -59,7 +59,6 @@ export default function DashboardLayout({ children, role, title }: DashboardLayo
     if (role === "ktv") {
       return [
         ...baseItems,
-        { href: "/tasks", icon: ClipboardList, label: "Công việc" },
       ]
     }
 
