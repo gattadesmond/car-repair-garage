@@ -58,11 +58,25 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 w-full h-full z-0">
+        <img 
+          src="/images/car-background.jpg" 
+          alt="Car Background" 
+          className="w-full h-full object-cover opacity-80"
+        />
+      </div>
+      
+      {/* Content */}
+      <Card className="w-full max-w-md relative z-10 bg-white/90 backdrop-blur-sm shadow-xl border-0">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
-            <Wrench className="w-8 h-8 text-white" />
+          <div className="mx-auto mb-4 w-24 h-24">
+            <img 
+              src="/images/garage-logo.svg" 
+              alt="Garage Logo" 
+              className="w-full h-full"
+            />
           </div>
           <CardTitle className="text-2xl font-bold text-gray-900">Gara Manager</CardTitle>
           <CardDescription>Hệ thống quản lý sửa chữa ô tô</CardDescription>
@@ -70,32 +84,32 @@ export default function LoginPage() {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Label htmlFor="email" className="text-blue-800 font-medium">Email</Label>
+              <div className="relative group">
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-blue-400 group-hover:text-blue-600 transition-colors duration-200" />
                 <Input
                   id="email"
                   type="email"
                   placeholder="Nhập email của bạn"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 border-blue-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-300 transition-all duration-200"
                   required
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Mật khẩu</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Label htmlFor="password" className="text-blue-800 font-medium">Mật khẩu</Label>
+              <div className="relative group">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-blue-400 group-hover:text-blue-600 transition-colors duration-200" />
                 <Input
                   id="password"
                   type="password"
                   placeholder="Nhập mật khẩu"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 border-blue-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-300 transition-all duration-200"
                   required
                 />
               </div>
@@ -107,7 +121,11 @@ export default function LoginPage() {
               </Alert>
             )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button 
+              type="submit" 
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 transition-all duration-200 shadow-lg hover:shadow-blue-300/50" 
+              disabled={loading}
+            >
               {loading ? (
                 "Đang đăng nhập..."
               ) : (
@@ -119,11 +137,19 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-gray-600">
-            <p>Tài khoản demo:</p>
-            <p>CV: cv@gara.com / 123456</p>
-            <p>KTV: ktv@gara.com / 123456 (Nguyễn Văn Tài)</p>
-            <p>Admin: admin@gara.com / 123456</p>
+          <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-100 shadow-inner">
+            <h3 className="text-center font-medium text-blue-800 mb-2">Tài khoản demo</h3>
+            <div className="grid grid-cols-1 gap-2">
+              <div className="p-2 bg-white rounded border border-blue-100 text-sm">
+                <span className="font-semibold text-blue-700">CV:</span> cv@gara.com / 123456
+              </div>
+              <div className="p-2 bg-white rounded border border-blue-100 text-sm">
+                <span className="font-semibold text-blue-700">KTV:</span> ktv@gara.com / 123456 (Nguyễn Văn Tài)
+              </div>
+              <div className="p-2 bg-white rounded border border-blue-100 text-sm">
+                <span className="font-semibold text-blue-700">Admin:</span> admin@gara.com / 123456
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

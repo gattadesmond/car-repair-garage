@@ -1,0 +1,33 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="90" fill="#2563eb" />
+  <circle cx="100" cy="100" r="85" fill="#1d4ed8" />
+  
+  <!-- Inner Circle with Gradient -->
+  <defs>
+    <linearGradient id="circleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#1e40af" />
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="80" fill="url(#circleGradient)" />
+  
+  <!-- Wrench Icon -->
+  <g transform="translate(50, 50) scale(1.2)" fill="#ffffff">
+    <!-- Wrench Handle -->
+    <path d="M75,20 C85,10 95,10 100,15 C105,20 105,30 95,40 L60,75 L45,60 L80,25 C82,23 74,31 72,33 C70,35 65,35 60,30 C55,25 55,20 57,18 C59,16 65,24 67,22 C69,20 65,15 75,20 Z" />
+    
+    <!-- Wrench Head -->
+    <path d="M40,80 L25,95 C20,100 20,105 25,110 C30,115 35,115 40,110 L55,95 L40,80 Z" />
+  </g>
+  
+  <!-- Text "GARA" -->
+  <text x="100" y="150" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">GARA</text>
+  
+  <!-- Decorative Elements -->
+  <circle cx="100" cy="100" r="75" fill="none" stroke="#60a5fa" stroke-width="1" stroke-dasharray="5,3" />
+  <circle cx="100" cy="100" r="70" fill="none" stroke="#93c5fd" stroke-width="1" opacity="0.5" />
+  
+  <!-- Shine Effect -->
+  <ellipse cx="70" cy="70" rx="20" ry="15" fill="#ffffff" opacity="0.2" transform="rotate(-30, 70, 70)" />
+</svg>

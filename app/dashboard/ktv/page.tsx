@@ -105,52 +105,70 @@ export default function KTVDashboard() {
 
   return (
     <DashboardLayout role="ktv" title="Dashboard Kỹ thuật viên">
-      <div className="space-y-6">
+      <div 
+        className="space-y-6 relative pb-6"
+        style={{
+          backgroundImage: "url('/images/car-background.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+          backgroundBlendMode: "overlay",
+          backgroundColor: "rgba(255, 255, 255, 0.85)",
+        }}
+      >
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
+          <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 shadow-lg hover:shadow-orange-200/50 transition-all duration-300 hover:-translate-y-1">
             <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <Clock className="h-4 w-4 text-orange-600" />
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium">Chờ kiểm tra</p>
-                  <p className="text-2xl font-bold">{stats.pending}</p>
+                  <p className="text-sm font-medium text-orange-800">Chờ kiểm tra</p>
+                  <p className="text-3xl font-bold text-orange-600">{stats.pending}</p>
+                </div>
+                <div className="p-3 bg-orange-200 rounded-full">
+                  <Clock className="h-6 w-6 text-orange-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 shadow-lg hover:shadow-blue-200/50 transition-all duration-300 hover:-translate-y-1">
             <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <Car className="h-4 w-4 text-blue-600" />
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium">Đang sửa</p>
-                  <p className="text-2xl font-bold">{stats.inProgress}</p>
+                  <p className="text-sm font-medium text-blue-800">Đang sửa</p>
+                  <p className="text-3xl font-bold text-blue-600">{stats.inProgress}</p>
+                </div>
+                <div className="p-3 bg-blue-200 rounded-full">
+                  <Car className="h-6 w-6 text-blue-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 shadow-lg hover:shadow-green-200/50 transition-all duration-300 hover:-translate-y-1">
             <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium">Hoàn thành</p>
-                  <p className="text-2xl font-bold">{stats.completed}</p>
+                  <p className="text-sm font-medium text-green-800">Hoàn thành</p>
+                  <p className="text-3xl font-bold text-green-600">{stats.completed}</p>
+                </div>
+                <div className="p-3 bg-green-200 rounded-full">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200 shadow-lg hover:shadow-red-200/50 transition-all duration-300 hover:-translate-y-1">
             <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <AlertCircle className="h-4 w-4 text-red-600" />
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium">Quá hạn</p>
-                  <p className="text-2xl font-bold">{stats.overdue}</p>
+                  <p className="text-sm font-medium text-red-800">Quá hạn</p>
+                  <p className="text-3xl font-bold text-red-600">{stats.overdue}</p>
+                </div>
+                <div className="p-3 bg-red-200 rounded-full">
+                  <AlertCircle className="h-6 w-6 text-red-600" />
                 </div>
               </div>
             </CardContent>
@@ -158,42 +176,57 @@ export default function KTVDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Thao tác nhanh</CardTitle>
+        <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0 mx-4">
+          <CardHeader className="pb-2">
+            <div className="flex items-center space-x-2">
+              <div className="p-2 bg-purple-100 rounded-full">
+                <Wrench className="h-5 w-5 text-purple-600" />
+              </div>
+              <CardTitle>Thao tác nhanh</CardTitle>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Link href="/tasks">
-                <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-orange-50 to-orange-100 p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 border border-orange-200">
+              <Link href="/tasks" className="block">
+                <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-orange-50 to-orange-100 p-6 transition-all duration-300 hover:shadow-xl hover:scale-105 border border-orange-200 h-full">
                   <div className="flex flex-col items-center text-center space-y-3">
-                    <div className="p-3 bg-orange-600 rounded-full text-white group-hover:bg-orange-700 transition-colors">
+                    <div className="p-4 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full text-white group-hover:from-orange-600 group-hover:to-orange-700 transition-colors shadow-lg shadow-orange-200/50">
                       <ClipboardList className="h-8 w-8" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-orange-900">Xem công việc</h3>
+                      <h3 className="font-semibold text-orange-900 text-lg">Xem công việc</h3>
                       <p className="text-sm text-orange-700 mt-1">Danh sách công việc được giao</p>
                     </div>
                   </div>
-                  <div className="absolute top-2 right-2 opacity-20 group-hover:opacity-30 transition-opacity">
-                    <ClipboardList className="h-12 w-12 text-orange-600" />
+                  <div className="absolute -bottom-6 -right-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <ClipboardList className="h-32 w-32 text-orange-900" />
+                  </div>
+                  <div className="absolute bottom-4 right-4">
+                    <Badge variant="outline" className="bg-white/80 border-orange-200 text-orange-700 group-hover:bg-orange-50 transition-colors">
+                      Xem ngay
+                    </Badge>
                   </div>
                 </div>
               </Link>
 
-              <Link href="/repair-orders">
-                <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 border border-blue-200">
+              <Link href="/repair-orders" className="block">
+                <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 p-6 transition-all duration-300 hover:shadow-xl hover:scale-105 border border-blue-200 h-full">
                   <div className="flex flex-col items-center text-center space-y-3">
-                    <div className="p-3 bg-blue-600 rounded-full text-white group-hover:bg-blue-700 transition-colors">
+                    <div className="p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full text-white group-hover:from-blue-600 group-hover:to-blue-700 transition-colors shadow-lg shadow-blue-200/50">
                       <Wrench className="h-8 w-8" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-blue-900">Lệnh sửa chữa</h3>
+                      <h3 className="font-semibold text-blue-900 text-lg">Lệnh sửa chữa</h3>
                       <p className="text-sm text-blue-700 mt-1">Cập nhật tiến độ sửa chữa</p>
                     </div>
                   </div>
-                  <div className="absolute top-2 right-2 opacity-20 group-hover:opacity-30 transition-opacity">
-                    <Wrench className="h-12 w-12 text-blue-600" />
+                  <div className="absolute -bottom-6 -right-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Wrench className="h-32 w-32 text-blue-900" />
+                  </div>
+                  <div className="absolute bottom-4 right-4">
+                    <Badge variant="outline" className="bg-white/80 border-blue-200 text-blue-700 group-hover:bg-blue-50 transition-colors">
+                      Cập nhật
+                    </Badge>
                   </div>
                 </div>
               </Link>
@@ -202,49 +235,94 @@ export default function KTVDashboard() {
         </Card>
 
         {/* Tasks List */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Công việc được giao</CardTitle>
-            <CardDescription>Danh sách xe cần kiểm tra và sửa chữa</CardDescription>
+        <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0 mx-4">
+          <CardHeader className="pb-2">
+            <div className="flex items-center space-x-2">
+              <div className="p-2 bg-blue-100 rounded-full">
+                <ClipboardList className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <CardTitle>Công việc được giao</CardTitle>
+                <CardDescription>Danh sách xe cần kiểm tra và sửa chữa</CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="text-center py-8">Đang tải...</div>
+              <div className="text-center py-8 flex justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              </div>
             ) : tasks.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">Chưa có công việc nào được giao</div>
+              <div className="text-center py-12 px-4">
+                <div className="mx-auto w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                  <ClipboardList className="h-8 w-8 text-blue-300" />
+                </div>
+                <p className="text-gray-500 font-medium">Chưa có công việc nào được giao</p>
+                <p className="text-sm text-gray-400 mt-1">Các công việc mới sẽ xuất hiện ở đây</p>
+              </div>
             ) : (
               <div className="space-y-4">
                 {tasks.map((task) => (
-                  <div key={task.id} className="border rounded-lg p-4">
+                  <div 
+                    key={task.id} 
+                    className="border border-blue-100 rounded-lg p-4 bg-white hover:shadow-md transition-all duration-200 hover:border-blue-200"
+                  >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <h4 className="font-medium">{task.customer_name}</h4>
-                          <Badge {...getStatusBadge(task.status)}>{getStatusBadge(task.status).label}</Badge>
-                          <Badge {...getPriorityBadge(task.priority)}>{getPriorityBadge(task.priority).label}</Badge>
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <h4 className="font-medium text-blue-900">{task.customer_name}</h4>
+                          <Badge 
+                            {...getStatusBadge(task.status)} 
+                            className="shadow-sm"
+                          >
+                            {getStatusBadge(task.status).label}
+                          </Badge>
+                          <Badge 
+                            {...getPriorityBadge(task.priority)} 
+                            className="shadow-sm"
+                          >
+                            {getPriorityBadge(task.priority).label}
+                          </Badge>
                         </div>
 
-                        <p className="text-sm text-gray-600 mb-2">
-                          {task.license_plate} - {task.car_info}
-                        </p>
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Car className="h-4 w-4 text-blue-500" />
+                          <p className="text-sm text-gray-600">
+                            {task.license_plate} - {task.car_info}
+                          </p>
+                        </div>
 
                         {task.preliminary_diagnosis && (
-                          <p className="text-sm mb-2">
-                            <span className="font-medium">Chẩn đoán:</span> {task.preliminary_diagnosis}
-                          </p>
+                          <div className="bg-blue-50 p-2 rounded-md mb-2">
+                            <p className="text-sm text-blue-800">
+                              <span className="font-medium">Chẩn đoán:</span> {task.preliminary_diagnosis}
+                            </p>
+                          </div>
                         )}
 
                         <div className="flex items-center space-x-4 text-xs text-gray-500">
-                          <span>Giao: {new Date(task.created_at).toLocaleDateString("vi-VN")}</span>
+                          <div className="flex items-center space-x-1">
+                            <Clock className="h-3 w-3" />
+                            <span>Giao: {new Date(task.created_at).toLocaleDateString("vi-VN")}</span>
+                          </div>
                           {task.estimated_completion && (
-                            <span>Hạn: {new Date(task.estimated_completion).toLocaleDateString("vi-VN")}</span>
+                            <div className="flex items-center space-x-1">
+                              <AlertCircle className="h-3 w-3" />
+                              <span>Hạn: {new Date(task.estimated_completion).toLocaleDateString("vi-VN")}</span>
+                            </div>
                           )}
                         </div>
                       </div>
 
                       <div className="ml-4">
                         <Link href={task.status === "pending" || task.status === "diagnosis" ? `/diagnosis/ktv/${task.id}` : `/repair-order/${task.id}`}>
-                          <Button size="sm">
+                          <Button 
+                            size="sm"
+                            className={`shadow-md ${task.status === "pending" ? "bg-orange-600 hover:bg-orange-700" : 
+                                       task.status === "diagnosis" ? "bg-blue-600 hover:bg-blue-700" :
+                                       task.status === "in_progress" ? "bg-green-600 hover:bg-green-700" :
+                                       "bg-gray-600 hover:bg-gray-700"}`}
+                          >
                             {task.status === "pending" ? "Nhận công việc" :
                              task.status === "diagnosis" ? "Tiếp tục kiểm tra" :
                              task.status === "in_progress" ? "Cập nhật tiến độ" :
