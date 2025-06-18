@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Car, User, FileText, Save, Camera, AlertTriangle } from "lucide-react"
+import { Car, User, FileText, Save, Camera, AlertTriangle, Brush, Wrench, Zap, Snowflake, Sparkles } from "lucide-react"
 import RoleLayout from "@/components/role-layout"
 import ImageUpload from "@/components/image-upload"
 import {
@@ -59,6 +59,7 @@ export default function IntakeFormPage() {
     customerRequest: "",
     initialCondition: [] as string[],
     diagnosisSymptoms: [] as SelectedSymptom[],
+    selectedServices: [] as string[],
     notes: "",
 
     receivedDate: new Date().toISOString().split("T")[0],
@@ -88,6 +89,14 @@ export default function IntakeFormPage() {
     "Chụp mang cả đủ",
     "Kích chân gió bị trơn",
     "Bảo sơn kém trơn xe",
+  ]
+
+  const serviceOptions = [
+    { id: "cleaning", name: "Dọn Dẹp", icon: <Sparkles className="h-4 w-4 text-purple-500" /> },
+    { id: "painting", name: "Đồng Sơn", icon: <Brush className="h-4 w-4 text-orange-500" /> },
+    { id: "mechanical", name: "Cơ", icon: <Wrench className="h-4 w-4 text-blue-500" /> },
+    { id: "electrical", name: "Điện", icon: <Zap className="h-4 w-4 text-yellow-500" /> },
+    { id: "cooling", name: "Lạnh", icon: <Snowflake className="h-4 w-4 text-cyan-500" /> },
   ]
 
   useEffect(() => {
@@ -154,6 +163,17 @@ export default function IntakeFormPage() {
         ? [...prev.initialCondition, condition]
         : prev.initialCondition.filter((c) => c !== condition),
     }))
+  }
+
+  // Hàm xử lý sự kiện khi người dùng chọn dịch vụ
+  const handleServiceToggle = (serviceId: string) => {
+    const isSelected = formData.selectedServices.includes(serviceId);
+    setFormData((prev) => ({
+      ...prev,
+      selectedServices: isSelected
+        ? prev.selectedServices.filter((id) => id !== serviceId)
+        : [...prev.selectedServices, serviceId],
+    }));
   }
 
   const handleExistingCarSelect = (carId: string) => {
@@ -265,6 +285,7 @@ export default function IntakeFormPage() {
         customer_request: formData.customerRequest,
         initial_condition: formData.initialCondition,
         diagnosis_symptoms: formData.diagnosisSymptoms.map(symptom => symptom.name),
+        selected_services: formData.selectedServices,
         notes: formData.notes,
         received_by: "",
         received_date: formData.receivedDate,
@@ -623,6 +644,46 @@ export default function IntakeFormPage() {
                   setFormData((prev) => ({ ...prev, diagnosisSymptoms: symptoms }))
                 }
               />
+            </div>
+
+            <div>
+              <Label>Loại dịch vụ</Label>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mt-2">
+                {serviceOptions.map((service) => (
+                  <div 
+                    key={service.id} 
+                    className={`flex items-center space-x-2 p-3 rounded-lg border-2 transition-all duration-200 ${formData.selectedServices.includes(service.id) 
+                      ? "border-blue-500 bg-blue-50" 
+                      : "border-gray-200"}`}
+                  >
+                    <button 
+                      type="button"
+                      className="flex items-center space-x-2 flex-grow text-left"
+                      onClick={() => handleServiceToggle(service.id)}
+                    >
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white shadow-sm">
+                        {service.icon}
+                      </div>
+                      <div className="font-medium text-sm">
+                        {service.name}
+                      </div>
+                    </button>
+                    <button 
+                      type="button"
+                      className="ml-auto p-1 rounded-md hover:bg-gray-100 transition-colors duration-200"
+                      onClick={() => handleServiceToggle(service.id)}
+                    >
+                      <div className="w-5 h-5 border-2 rounded flex items-center justify-center transition-all duration-200 bg-white">
+                        {formData.selectedServices.includes(service.id) && (
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-blue-500">
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                        )}
+                      </div>
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div>

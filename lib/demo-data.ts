@@ -30,6 +30,7 @@ export interface WorkOrder {
   customer_request: string
   initial_condition: string[]
   diagnosis_symptoms: string[]
+  selected_services?: string[]
   notes?: string
   admin_notes?: string
   received_by: string
