@@ -18,7 +18,7 @@ export default function KTVDashboard() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [stats, setStats] = useState({
     pending: 0,
-    inProgress: 0,
+    inInspection: 0,
     completed: 0,
     overdue: 0,
   })
@@ -49,11 +49,11 @@ export default function KTVDashboard() {
 
     // Sắp xếp theo trạng thái và thời gian
     formattedTasks.sort((a, b) => {
-      // Ưu tiên theo trạng thái: pending > diagnosis > in_progress > completed
+      // Ưu tiên theo trạng thái: pending > diagnosis > in_inspection > completed
       const statusOrder: { [key: string]: number } = {
         pending: 0,
         diagnosis: 1,
-        in_progress: 2,
+        in_inspection: 2,
         completed: 3,
       }
 
@@ -74,7 +74,7 @@ export default function KTVDashboard() {
     const now = new Date()
     setStats({
       pending: formattedTasks.filter((t) => t.status === "diagnosis" || t.status === "pending").length,
-      inProgress: formattedTasks.filter((t) => t.status === "in_progress").length,
+      inInspection: formattedTasks.filter((t) => t.status === "in_inspection").length,
       completed: formattedTasks.filter((t) => t.status === "completed").length,
       overdue: formattedTasks.filter(
         (t) => t.estimated_completion && new Date(t.estimated_completion) < now && t.status !== "completed",
@@ -97,7 +97,7 @@ export default function KTVDashboard() {
   const getStatusBadge = (status: string) => {
     const statusMap = {
       diagnosis: { label: "Chờ kiểm tra", variant: "secondary" as const },
-      in_progress: { label: "Đang sửa", variant: "default" as const },
+      in_inspection: { label: "Đang kiểm tra", variant: "default" as const },
       completed: { label: "Hoàn thành", variant: "default" as const },
     }
     return statusMap[status as keyof typeof statusMap] || { label: status, variant: "secondary" as const }
@@ -136,8 +136,8 @@ export default function KTVDashboard() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-blue-800">Đang sửa</p>
-                  <p className="text-3xl font-bold text-blue-600">{stats.inProgress}</p>
+                  <p className="text-sm font-medium text-blue-800">Đang kiểm tra</p>
+                  <p className="text-3xl font-bold text-blue-600">{stats.inInspection}</p>
                 </div>
                 <div className="p-3 bg-blue-200 rounded-full">
                   <Car className="h-6 w-6 text-blue-600" />
@@ -299,12 +299,12 @@ export default function KTVDashboard() {
                             size="sm"
                             className={`shadow-md ${task.status === "pending" ? "bg-orange-600 hover:bg-orange-700" : 
                                        task.status === "diagnosis" ? "bg-blue-600 hover:bg-blue-700" :
-                                       task.status === "in_progress" ? "bg-green-600 hover:bg-green-700" :
+                                       task.status === "in_inspection" ? "bg-green-600 hover:bg-green-700" :
                                        "bg-gray-600 hover:bg-gray-700"}`}
                           >
                             {task.status === "pending" ? "Nhận công việc" :
                              task.status === "diagnosis" ? "Tiếp tục kiểm tra & Chuyển CV" :
-                             task.status === "in_progress" ? "Cập nhật tiến độ" :
+                             task.status === "in_inspection" ? "Cập nhật tiến độ" :
                              "Xem chi tiết"}
                           </Button>
                         </Link>

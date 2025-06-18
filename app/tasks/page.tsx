@@ -45,8 +45,8 @@ export default function TasksPage() {
     // Tiếp tục lọc theo trạng thái nếu cần
     if (filter === "pending") {
       filteredOrders = filteredOrders.filter((o) => o.status === "pending" || o.status === "diagnosis")
-    } else if (filter === "in_progress") {
-      filteredOrders = filteredOrders.filter((o) => o.status === "in_progress")
+    } else if (filter === "in_inspection") {
+      filteredOrders = filteredOrders.filter((o) => o.status === "in_inspection")
     } else if (filter === "completed") {
       filteredOrders = filteredOrders.filter((o) => o.status === "completed")
     }
@@ -93,7 +93,7 @@ export default function TasksPage() {
       diagnosis: { label: "Chẩn đoán", variant: "outline" as const },
       quotation: { label: "Báo giá", variant: "outline" as const },
       approved: { label: "Đã duyệt", variant: "default" as const },
-      in_progress: { label: "Đang sửa", variant: "default" as const },
+      in_inspection: { label: "Đang kiểm tra", variant: "default" as const },
       completed: { label: "Hoàn thành", variant: "default" as const },
       delivered: { label: "Đã giao", variant: "default" as const },
     }
@@ -154,7 +154,7 @@ export default function TasksPage() {
                   <SelectContent>
                     <SelectItem value="all">Tất cả</SelectItem>
                     <SelectItem value="pending">Chờ xử lý & Chẩn đoán</SelectItem>
-                    <SelectItem value="in_progress">Đang sửa</SelectItem>
+                    <SelectItem value="in_inspection">Đang kiểm tra</SelectItem>
                     <SelectItem value="completed">Hoàn thành</SelectItem>
                   </SelectContent>
                 </Select>

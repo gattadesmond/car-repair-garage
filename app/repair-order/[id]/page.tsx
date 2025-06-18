@@ -45,7 +45,7 @@ export default function RepairOrderPage({ params }: { params: { id: string } }) 
   const [error, setError] = useState("")
 
   const [repairData, setRepairData] = useState({
-    workStatus: "in_progress",
+    workStatus: "in_inspection",
     progressNotes: "",
     completedTasks: [] as string[],
     issuesEncountered: "",
@@ -181,7 +181,7 @@ export default function RepairOrderPage({ params }: { params: { id: string } }) 
   const getStatusBadge = (status: string) => {
     const statusMap = {
       diagnosis: { label: "Chờ kiểm tra", variant: "secondary" as const },
-      in_progress: { label: "Đang sửa", variant: "default" as const },
+      in_inspection: { label: "Đang kiểm tra", variant: "default" as const },
       completed: { label: "Hoàn thành", variant: "default" as const },
     }
     return statusMap[status as keyof typeof statusMap] || { label: status, variant: "secondary" as const }
@@ -383,7 +383,7 @@ export default function RepairOrderPage({ params }: { params: { id: string } }) 
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="in_progress">Đang sửa chữa</SelectItem>
+                      <SelectItem value="in_inspection">Đang kiểm tra</SelectItem>
                       <SelectItem value="completed">Hoàn thành</SelectItem>
                     </SelectContent>
                   </Select>

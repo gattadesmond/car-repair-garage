@@ -17,7 +17,7 @@ export default function AdminDashboard() {
     totalRevenue: 0,
     completedThisMonth: 0,
     pendingOrders: 0,
-    inProgressOrders: 0,
+    inInspectionOrders: 0,
     completedOrders: 0,
     totalTechnicians: 0,
   })
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
       totalRevenue: estimatedRevenue,
       completedThisMonth,
       pendingOrders: orders.filter((o) => o.status === "pending").length,
-      inProgressOrders: orders.filter((o) => o.status === "in_progress").length,
+      inInspectionOrders: orders.filter((o) => o.status === "in_inspection").length,
       completedOrders: orders.filter((o) => o.status === "completed").length,
       totalTechnicians: technicians.length,
     })
@@ -68,7 +68,7 @@ export default function AdminDashboard() {
       diagnosis: { label: "Chẩn đoán", variant: "outline" as const },
       quotation: { label: "Báo giá", variant: "outline" as const },
       approved: { label: "Đã duyệt", variant: "default" as const },
-      in_progress: { label: "Đang sửa", variant: "default" as const },
+      in_inspection: { label: "Đang kiểm tra", variant: "default" as const },
       completed: { label: "Hoàn thành", variant: "default" as const },
       delivered: { label: "Đã giao", variant: "default" as const },
     }
@@ -142,8 +142,8 @@ export default function AdminDashboard() {
                   <Badge variant="secondary">{stats.pendingOrders}</Badge>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span>Đang sửa</span>
-                  <Badge variant="default">{stats.inProgressOrders}</Badge>
+                  <span>Đang kiểm tra</span>
+                  <Badge variant="default">{stats.inInspectionOrders}</Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span>Hoàn thành</span>

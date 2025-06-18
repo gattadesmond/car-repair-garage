@@ -70,7 +70,7 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
       diagnosis: { label: "Chẩn đoán", variant: "outline" as const },
       quotation: { label: "Báo giá", variant: "outline" as const },
       approved: { label: "Đã duyệt", variant: "default" as const },
-      in_progress: { label: "Đang sửa", variant: "default" as const },
+      in_inspection: { label: "Đang kiểm tra", variant: "default" as const },
       completed: { label: "Hoàn thành", variant: "default" as const },
       delivered: { label: "Đã giao", variant: "default" as const },
     }

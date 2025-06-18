@@ -51,14 +51,14 @@ export default function RepairOrdersPage() {
     }
     
     // Lọc các lệnh sửa chữa (đã qua chẩn đoán và báo giá)
-    if (filter === "in_progress") {
-      filteredOrders = filteredOrders.filter((o) => o.status === "in_progress")
+    if (filter === "in_inspection") {
+      filteredOrders = filteredOrders.filter((o) => o.status === "in_inspection")
     } else if (filter === "completed") {
       filteredOrders = filteredOrders.filter((o) => o.status === "completed")
     } else {
-      // Mặc định hiển thị cả in_progress và completed
+      // Mặc định hiển thị cả in_inspection và completed
       filteredOrders = filteredOrders.filter((o) => 
-        o.status === "in_progress" || o.status === "completed")
+        o.status === "in_inspection" || o.status === "completed")
     }
 
     // Sắp xếp theo thời gian cập nhật, mới nhất lên đầu
@@ -101,7 +101,7 @@ export default function RepairOrdersPage() {
         notes: "Khách hàng yêu cầu sử dụng nhớt chính hãng",
         received_by: "HAISAN",
         received_date: new Date().toISOString().split("T")[0],
-        status: "in_progress",
+        status: "in_inspection",
         assigned_technician: user.id,
         estimated_completion: new Date(Date.now() + 86400000).toISOString().split("T")[0], // Hoàn thành trong 1 ngày
         created_at: new Date().toISOString(),
@@ -127,7 +127,7 @@ export default function RepairOrdersPage() {
       diagnosis: { label: "Chẩn đoán", variant: "outline" as const },
       quotation: { label: "Báo giá", variant: "outline" as const },
       approved: { label: "Đã duyệt", variant: "default" as const },
-      in_progress: { label: "Đang sửa", variant: "blue" as const },
+      in_inspection: { label: "Đang kiểm tra", variant: "blue" as const },
       completed: { label: "Hoàn thành", variant: "success" as const },
       delivered: { label: "Đã giao", variant: "default" as const },
     }
@@ -150,7 +150,7 @@ export default function RepairOrdersPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tất cả lệnh sửa chữa</SelectItem>
-                <SelectItem value="in_progress">Đang sửa chữa</SelectItem>
+                <SelectItem value="in_inspection">Đang kiểm tra</SelectItem>
                 <SelectItem value="completed">Đã hoàn thành</SelectItem>
               </SelectContent>
             </Select>

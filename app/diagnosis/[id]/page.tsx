@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { Car, User, FileText, Calendar, Save, AlertTriangle, Settings } from "lucide-react"
+import { Car, User, FileText, Calendar, Save, AlertTriangle, Settings, Wrench, CheckCircle } from "lucide-react"
 import DashboardLayout from "@/components/dashboard-layout"
 import { getWorkOrders, saveWorkOrders, getTechnicians, type WorkOrder, type Technician } from "@/lib/demo-data"
 
@@ -207,18 +207,43 @@ export default function DiagnosisPage({ params }: { params: { id: string } }) {
                 <span>Ghi chú kỹ thuật viên</span>
               </CardTitle>
               <CardDescription>
-                Nhập ghi chú và nhận xét về tình trạng xe
+                Ghi chú và nhận xét về tình trạng xe từ KTV
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Textarea
-                id="technicianNotes"
-                placeholder="Ghi chú và nhận xét của kỹ thuật viên về tình trạng xe..."
-                value={diagnosisData.technicianNotes}
-                onChange={(e) => setDiagnosisData((prev) => ({ ...prev, technicianNotes: e.target.value }))}
-                className="mt-2"
-                rows={8}
-              />
+              {diagnosisData.technicianNotes ? (
+                <div className="p-4 border rounded-md bg-gray-50">
+                  <p className="whitespace-pre-line">{diagnosisData.technicianNotes}</p>
+                </div>
+              ) : (
+                <div className="p-4 border rounded-md bg-gray-50 text-gray-500 italic">
+                  KTV chưa nhập ghi chú chẩn đoán
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          
+          {/* Repair Notes */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Wrench className="h-5 w-5 text-blue-600" />
+                <span>Ghi chú sửa chữa</span>
+              </CardTitle>
+              <CardDescription>
+                Các hạng mục sửa chữa và ghi chú chi tiết từ KTV
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {diagnosisData.repairNotes ? (
+                <div className="p-4 border rounded-md bg-gray-50">
+                  <p className="whitespace-pre-line">{diagnosisData.repairNotes}</p>
+                </div>
+              ) : (
+                <div className="p-4 border rounded-md bg-gray-50 text-gray-500 italic">
+                  KTV chưa nhập ghi chú sửa chữa
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -229,48 +254,48 @@ export default function DiagnosisPage({ params }: { params: { id: string } }) {
                 <Settings className="h-5 w-5" />
                 <span>Thông tin bổ sung</span>
               </CardTitle>
-              <CardDescription>Thông tin về độ ưu tiên và thời gian dự kiến</CardDescription>
+              <CardDescription>Thông tin về độ ưu tiên và thời gian dự kiến từ KTV</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="priority">Độ ưu tiên</Label>
-                  <Select
-                    value={diagnosisData.priority}
-                    onValueChange={(value) => setDiagnosisData((prev) => ({ ...prev, priority: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">Thấp</SelectItem>
-                      <SelectItem value="normal">Bình thường</SelectItem>
-                      <SelectItem value="high">Cao</SelectItem>
-                      <SelectItem value="urgent">Khẩn cấp</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="priority" className="mb-2 block">Độ ưu tiên</Label>
+                  <div className="p-3 border rounded-md bg-gray-50">
+                    {(() => {
+                      const priorityMap = {
+                        low: "Thấp",
+                        normal: "Bình thường",
+                        high: "Cao",
+                        urgent: "Khẩn cấp"
+                      };
+                      return priorityMap[diagnosisData.priority as keyof typeof priorityMap] || diagnosisData.priority;
+                    })()}
+                  </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="estimatedCompletion">Thời gian hoàn thành dự kiến</Label>
-                  <Input
-                    id="estimatedCompletion"
-                    type="date"
-                    value={diagnosisData.estimatedCompletion}
-                    onChange={(e) => setDiagnosisData((prev) => ({ ...prev, estimatedCompletion: e.target.value }))}
-                    min={new Date().toISOString().split("T")[0]}
-                  />
+                  <Label htmlFor="estimatedCompletion" className="mb-2 block">Thời gian hoàn thành dự kiến</Label>
+                  <div className="p-3 border rounded-md bg-gray-50">
+                    {diagnosisData.estimatedCompletion ? (
+                      new Date(diagnosisData.estimatedCompletion).toLocaleDateString("vi-VN")
+                    ) : (
+                      <span className="text-gray-500 italic">Chưa xác định</span>
+                    )}
+                  </div>
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="specialInstructions">Hướng dẫn đặc biệt</Label>
-                <Textarea
-                  id="specialInstructions"
-                  placeholder="Các lưu ý đặc biệt, yêu cầu kỹ thuật, thứ tự thực hiện..."
-                  value={diagnosisData.specialInstructions}
-                  onChange={(e) => setDiagnosisData((prev) => ({ ...prev, specialInstructions: e.target.value }))}
-                />
+                <Label htmlFor="specialInstructions" className="mb-2 block">Hướng dẫn đặc biệt</Label>
+                {diagnosisData.specialInstructions ? (
+                  <div className="p-4 border rounded-md bg-gray-50">
+                    <p className="whitespace-pre-line">{diagnosisData.specialInstructions}</p>
+                  </div>
+                ) : (
+                  <div className="p-4 border rounded-md bg-gray-50 text-gray-500 italic">
+                    KTV không có hướng dẫn đặc biệt
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -281,6 +306,15 @@ export default function DiagnosisPage({ params }: { params: { id: string } }) {
             </Alert>
           )}
 
+          <Alert className="bg-blue-50 border-blue-200 mb-4">
+            <div className="flex items-center">
+              <FileText className="h-4 w-4 text-blue-600 mr-2" />
+              <AlertDescription className="text-blue-700">
+                Bạn đang xem thông tin chẩn đoán từ KTV. Vui lòng xem xét và duyệt để tạo báo giá.
+              </AlertDescription>
+            </div>
+          </Alert>
+          
           <div className="flex space-x-4">
             <Button type="submit" disabled={saving} className="flex-1">
               {saving ? (
@@ -288,7 +322,7 @@ export default function DiagnosisPage({ params }: { params: { id: string } }) {
               ) : (
                 <>
                   <Save className="h-4 w-4 mr-2" />
-                  Hoàn tất chẩn đoán & Tạo báo giá
+                  Duyệt chẩn đoán & Tạo báo giá
                 </>
               )}
             </Button>

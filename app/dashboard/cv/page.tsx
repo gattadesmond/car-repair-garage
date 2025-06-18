@@ -15,7 +15,7 @@ export default function CVDashboard() {
   const [stats, setStats] = useState({
     total: 0,
     pending: 0,
-    inProgress: 0,
+    inInspection: 0,
     completed: 0,
   })
   const [technicians, setTechnicians] = useState<Technician[]>([])
@@ -37,7 +37,7 @@ export default function CVDashboard() {
     setStats({
       total: orders.length,
       pending: orders.filter((w) => w.status === "pending").length,
-      inProgress: orders.filter((w) => w.status === "in_progress").length,
+      inInspection: orders.filter((w) => w.status === "in_inspection").length,
       completed: orders.filter((w) => w.status === "completed").length,
     })
   }
@@ -45,7 +45,7 @@ export default function CVDashboard() {
   const getStatusBadge = (status: string) => {
     const statusMap = {
       pending: { label: "Chờ xử lý", variant: "secondary" as const },
-      in_progress: { label: "Đang sửa", variant: "default" as const },
+      in_inspection: { label: "Đang kiểm tra", variant: "default" as const },
       completed: { label: "Hoàn thành", variant: "default" as const },
       quotation: { label: "Báo giá", variant: "outline" as const },
       diagnosis: { label: "Chẩn đoán", variant: "outline" as const },
@@ -75,7 +75,7 @@ export default function CVDashboard() {
       case "pending":
         return "Chẩn đoán"
       case "diagnosis":
-        return "Tiếp tục chẩn đoán"
+        return "Xem chẩn đoán"
       case "quotation":
         return "Lập báo giá"
       case "approved":
@@ -119,8 +119,8 @@ export default function CVDashboard() {
               <div className="flex items-center space-x-2">
                 <Car className="h-4 w-4 text-blue-600" />
                 <div>
-                  <p className="text-sm font-medium">Đang sửa</p>
-                  <p className="text-2xl font-bold">{stats.inProgress}</p>
+                  <p className="text-sm font-medium">Đang kiểm tra</p>
+                  <p className="text-2xl font-bold">{stats.inInspection}</p>
                 </div>
               </div>
             </CardContent>

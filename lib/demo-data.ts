@@ -33,7 +33,7 @@ export interface WorkOrder {
   notes?: string
   received_by: string
   received_date: string
-  status: "pending" | "diagnosis" | "quotation" | "approved" | "in_progress" | "completed" | "delivered"
+  status: "pending" | "diagnosis" | "quotation" | "approved" | "in_inspection" | "completed" | "delivered"
   assigned_technician?: string
   estimated_completion?: string
   created_at: string
@@ -189,7 +189,7 @@ export const demoWorkOrders: WorkOrder[] = [
     notes: "Khách hàng yêu cầu sử dụng nhớt chính hãng",
     received_by: "HAISAN",
     received_date: new Date(Date.now() - 259200000).toISOString().split("T")[0],
-    status: "in_progress",
+    status: "in_inspection",
     assigned_technician: "tech-1",
     estimated_completion: new Date(Date.now() + 86400000).toISOString().split("T")[0],
     created_at: new Date(Date.now() - 259200000).toISOString(),
@@ -208,7 +208,7 @@ export const demoWorkOrders: WorkOrder[] = [
     notes: "Khách hàng yêu cầu sử dụng phụ tùng chính hãng",
     received_by: "HAISAN",
     received_date: new Date(Date.now() - 345600000).toISOString().split("T")[0],
-    status: "in_progress",
+    status: "in_inspection",
     assigned_technician: "tech-2",
     estimated_completion: new Date(Date.now() + 172800000).toISOString().split("T")[0],
     created_at: new Date(Date.now() - 345600000).toISOString(),
@@ -265,7 +265,7 @@ export const demoWorkOrders: WorkOrder[] = [
     notes: "Khách hàng yêu cầu kiểm tra toàn bộ hệ thống làm mát",
     received_by: "HAISAN",
     received_date: new Date(Date.now() - 259200000).toISOString().split("T")[0],
-    status: "in_progress",
+    status: "in_inspection",
     assigned_technician: "tech-5",
     estimated_completion: new Date(Date.now() + 86400000).toISOString().split("T")[0],
     created_at: new Date(Date.now() - 259200000).toISOString(),

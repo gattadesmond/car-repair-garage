@@ -38,7 +38,7 @@ export default function ReportsPage() {
     const techStats = technicians.map((tech) => ({
       name: tech.full_name,
       completed: workOrders.filter((o) => o.assigned_technician === tech.id && o.status === "completed").length,
-      inProgress: workOrders.filter((o) => o.assigned_technician === tech.id && o.status === "in_progress").length,
+      inInspection: workOrders.filter((o) => o.assigned_technician === tech.id && o.status === "in_inspection").length,
     }))
 
     setReportData({
@@ -161,8 +161,8 @@ export default function ReportsPage() {
                       <Badge variant="default">{tech.completed}</Badge>
                     </div>
                     <div className="text-center">
-                      <p className="text-sm text-gray-500">Đang làm</p>
-                      <Badge variant="outline">{tech.inProgress}</Badge>
+                      <p className="text-sm text-gray-500">Đang kiểm tra</p>
+                      <Badge variant="outline">{tech.inInspection}</Badge>
                     </div>
                   </div>
                 </div>

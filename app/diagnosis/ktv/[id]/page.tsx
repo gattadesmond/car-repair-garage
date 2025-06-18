@@ -83,7 +83,7 @@ export default function KTVDiagnosisPage({ params }: { params: { id: string } })
     setSuccess("")
 
     try {
-      // Update work order status to in_progress
+      // Update work order status to in_inspection
       const workOrders = getWorkOrders()
       const orderIndex = workOrders.findIndex((w) => w.id === params.id)
 
