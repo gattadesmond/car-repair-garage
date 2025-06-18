@@ -309,53 +309,71 @@ export default function IntakeFormPage() {
 
   return (
     <DashboardLayout role="cv" title="Tạo phiếu tiếp nhận">
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <div 
+        className="relative pb-6"
+        style={{
+          backgroundImage: "url('/images/car-background.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+          backgroundBlendMode: "overlay",
+          backgroundColor: "rgba(255, 255, 255, 0.85)",
+        }}
+      >
+      <form onSubmit={handleSubmit} className="space-y-6 p-4">
         {/* Customer Information */}
-        <Card>
+        <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <User className="h-5 w-5" />
+              <div className="p-2 bg-blue-100 rounded-full">
+                <User className="h-5 w-5 text-blue-600" />
+              </div>
               <span>Thông tin khách hàng</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="customerName">Tên khách hàng *</Label>
+                <Label htmlFor="customerName" className="text-blue-800 font-medium">Tên khách hàng *</Label>
                 <Input
                   id="customerName"
                   value={formData.customerName}
                   onChange={(e) => setFormData((prev) => ({ ...prev, customerName: e.target.value }))}
                   required
+                  className="border-blue-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-300 transition-all duration-200"
                 />
               </div>
               <div>
-                <Label htmlFor="customerPhone">Số điện thoại *</Label>
+                <Label htmlFor="customerPhone" className="text-blue-800 font-medium">Số điện thoại *</Label>
                 <Input
                   id="customerPhone"
                   value={formData.customerPhone}
                   onChange={(e) => setFormData((prev) => ({ ...prev, customerPhone: e.target.value }))}
                   required
+                  className="border-blue-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-300 transition-all duration-200"
                 />
               </div>
             </div>
             <div>
-              <Label htmlFor="customerEmail">Email</Label>
+              <Label htmlFor="customerEmail" className="text-blue-800 font-medium">Email</Label>
               <Input
                 id="customerEmail"
                 type="email"
                 value={formData.customerEmail}
                 onChange={(e) => setFormData((prev) => ({ ...prev, customerEmail: e.target.value }))}
+                className="border-blue-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-300 transition-all duration-200"
               />
             </div>
           </CardContent>
         </Card>
 
         {/* Car Information */}
-        <Card>
+        <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Car className="h-5 w-5" />
+              <div className="p-2 bg-orange-100 rounded-full">
+                <Car className="h-5 w-5 text-orange-600" />
+              </div>
               <span>Thông tin xe</span>
             </CardTitle>
           </CardHeader>
@@ -559,10 +577,12 @@ export default function IntakeFormPage() {
         </Card>
 
         {/* Service Information */}
-        <Card>
+        <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <FileText className="h-5 w-5" />
+              <div className="p-2 bg-green-100 rounded-full">
+                <FileText className="h-5 w-5 text-green-600" />
+              </div>
               <span>Thông tin dịch vụ</span>
             </CardTitle>
           </CardHeader>
@@ -628,10 +648,12 @@ export default function IntakeFormPage() {
         </Card>
 
         {/* Image Upload Section */}
-        <Card>
+        <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Camera className="h-5 w-5" />
+              <div className="p-2 bg-purple-100 rounded-full">
+                <Camera className="h-5 w-5 text-purple-600" />
+              </div>
               <span>Hình ảnh xe</span>
             </CardTitle>
           </CardHeader>
@@ -652,21 +674,34 @@ export default function IntakeFormPage() {
         )}
 
         <div className="flex space-x-4">
-          <Button type="submit" disabled={loading} className="flex-1">
+          <Button 
+            type="submit" 
+            disabled={loading} 
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 transition-all duration-200 shadow-lg hover:shadow-blue-300/50"
+          >
             {loading ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
                 Đang xử lý...
               </>
             ) : (
-              "Tạo phiếu tiếp nhận"
+              <>
+                <Save className="w-4 h-4 mr-2" />
+                Tạo phiếu tiếp nhận
+              </>
             )}
           </Button>
-          <Button type="button" variant="outline" onClick={() => router.back()}>
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={() => router.back()}
+            className="border-blue-300 text-blue-700 hover:bg-blue-50 transition-all duration-200"
+          >
             Hủy
           </Button>
         </div>
       </form>
+      </div>
     </DashboardLayout>
   )
 }
