@@ -33,16 +33,11 @@ export default function KTVDashboard() {
     if (!user) return
 
     const workOrders = getWorkOrders()
-    // Lọc các công việc đã được gán cho KTV hiện tại hoặc chưa được gán cho KTV nào
+    // Chỉ lọc các công việc đã được gán cho KTV hiện tại
     const assignedOrders = workOrders.filter(
       (order) => {
-        // Hiển thị các công việc đã được gán cho KTV hiện tại
-        const assignedToCurrentKTV = order.assigned_technician === user.id && order.status !== "delivered";
-        
-        // Hiển thị các công việc chưa được gán cho KTV nào và đang ở trạng thái pending
-        const unassignedPending = !order.assigned_technician && order.status === "pending";
-        
-        return assignedToCurrentKTV || unassignedPending;
+        // Chỉ hiển thị các công việc đã được gán cho KTV hiện tại
+        return order.assigned_technician === user.id && order.status !== "delivered";
       }
     )
 

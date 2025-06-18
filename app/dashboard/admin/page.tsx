@@ -163,12 +163,6 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 gap-3">
-                <Link href="/intake-form/admin">
-                  <Button variant="outline" className="w-full justify-start">
-                    <FileText className="h-4 w-4 mr-2" />
-                    Tạo phiếu tiếp nhận
-                  </Button>
-                </Link>
                 <Link href="/tasks">
                   <Button variant="outline" className="w-full justify-start">
                     <ClipboardList className="h-4 w-4 mr-2" />

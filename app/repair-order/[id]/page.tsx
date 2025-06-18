@@ -290,6 +290,13 @@ export default function RepairOrderPage({ params }: { params: { id: string } }) 
                     <p className="text-sm text-gray-600">{diagnosisData.preliminaryDiagnosis}</p>
                   </div>
                 )}
+                
+                {diagnosisData.repairNotes && (
+                  <div>
+                    <h4 className="font-medium text-sm text-gray-700 mb-2">Ghi chú sửa chữa</h4>
+                    <p className="text-sm text-gray-600">{diagnosisData.repairNotes}</p>
+                  </div>
+                )}
 
                 {diagnosisData.recommendedRepairs && diagnosisData.recommendedRepairs.length > 0 && (
                   <div>

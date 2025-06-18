@@ -25,7 +25,7 @@ export default function LoginPage() {
     // Demo authentication logic
     const demoAccounts = {
       "cv@gara.com": { password: "123456", role: "cv" },
-      "ktv@gara.com": { password: "123456", role: "ktv" },
+      "ktv@gara.com": { password: "123456", role: "ktv", id: "tech-1" },
       "admin@gara.com": { password: "123456", role: "admin" },
     }
 
@@ -38,7 +38,7 @@ export default function LoginPage() {
         JSON.stringify({
           email,
           role: account.role,
-          id: `demo-${account.role}-${Date.now()}`,
+          id: account.id || `demo-${account.role}-${Date.now()}`,
         }),
       )
 
@@ -122,7 +122,7 @@ export default function LoginPage() {
           <div className="mt-6 text-center text-sm text-gray-600">
             <p>Tài khoản demo:</p>
             <p>CV: cv@gara.com / 123456</p>
-            <p>KTV: ktv@gara.com / 123456</p>
+            <p>KTV: ktv@gara.com / 123456 (Nguyễn Văn Tài)</p>
             <p>Admin: admin@gara.com / 123456</p>
           </div>
         </CardContent>

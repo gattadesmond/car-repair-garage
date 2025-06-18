@@ -60,14 +60,12 @@ export default function DashboardLayout({ children, role, title }: DashboardLayo
       return [
         ...baseItems,
         { href: "/tasks", icon: ClipboardList, label: "Công việc" },
-        { href: "/repair-orders", icon: Wrench, label: "Lệnh sửa chữa" },
       ]
     }
 
     if (role === "admin") {
       return [
         ...baseItems,
-        { href: "/intake-form", icon: FileText, label: "Phiếu tiếp nhận" },
         { href: "/tasks", icon: ClipboardList, label: "Phân công KTV" },
         { href: "/reports", icon: BarChart3, label: "Báo cáo" },
         { href: "/users", icon: Users, label: "Người dùng" },

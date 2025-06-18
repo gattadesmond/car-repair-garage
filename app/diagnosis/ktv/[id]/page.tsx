@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { Car, User, FileText, Calendar, Save, AlertTriangle, Settings, CheckCircle } from "lucide-react"
+import { Car, User, FileText, Calendar, Save, AlertTriangle, Settings, CheckCircle, Wrench } from "lucide-react"
 import DashboardLayout from "@/components/dashboard-layout"
 import { getWorkOrders, saveWorkOrders, getTechnicians, getCurrentUser, type WorkOrder, type Technician } from "@/lib/demo-data"
 
@@ -30,6 +30,7 @@ export default function KTVDiagnosisPage({ params }: { params: { id: string } })
     priority: "normal",
     specialInstructions: "",
     estimatedCompletion: "",
+    repairNotes: "", // Thêm trường ghi chú sửa chữa
   })
 
   useEffect(() => {
@@ -279,6 +280,27 @@ export default function KTVDiagnosisPage({ params }: { params: { id: string } })
                   onChange={(e) => setDiagnosisData((prev) => ({ ...prev, technicianNotes: e.target.value }))}
                   className="mt-2"
                   rows={8}
+                />
+              </CardContent>
+            </Card>
+            
+            {/* Repair Notes - Ghi chú sửa chữa */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Wrench className="h-5 w-5 text-blue-600" />
+                  <span>Ghi chú sửa chữa</span>
+                </CardTitle>
+                <CardDescription>Nhập các hạng mục sửa chữa và ghi chú chi tiết</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Textarea
+                  id="repairNotes"
+                  placeholder="Nhập các hạng mục cần sửa chữa, thay thế phụ tùng, vật tư..."
+                  value={diagnosisData.repairNotes}
+                  onChange={(e) => setDiagnosisData((prev) => ({ ...prev, repairNotes: e.target.value }))}
+                  className="mt-2"
+                  rows={6}
                 />
               </CardContent>
             </Card>

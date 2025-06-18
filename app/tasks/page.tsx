@@ -34,14 +34,21 @@ export default function TasksPage() {
     const orders = getWorkOrders()
     const techs = getTechnicians()
 
-    // Lọc theo trạng thái nếu cần
+    // Lọc theo vai trò người dùng và trạng thái
     let filteredOrders = orders
+    
+    // Nếu người dùng là KTV, chỉ hiển thị các công việc được gán cho KTV đó
+    if (user?.role === "ktv") {
+      filteredOrders = orders.filter((o) => o.assigned_technician === user.id)
+    }
+    
+    // Tiếp tục lọc theo trạng thái nếu cần
     if (filter === "pending") {
-      filteredOrders = orders.filter((o) => o.status === "pending" || o.status === "diagnosis")
+      filteredOrders = filteredOrders.filter((o) => o.status === "pending" || o.status === "diagnosis")
     } else if (filter === "in_progress") {
-      filteredOrders = orders.filter((o) => o.status === "in_progress")
+      filteredOrders = filteredOrders.filter((o) => o.status === "in_progress")
     } else if (filter === "completed") {
-      filteredOrders = orders.filter((o) => o.status === "completed")
+      filteredOrders = filteredOrders.filter((o) => o.status === "completed")
     }
 
     // Sắp xếp theo thời gian tạo, mới nhất lên đầu
@@ -203,25 +210,27 @@ export default function TasksPage() {
                       </div>
 
                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                        <div className="w-full sm:w-48">
-                          <Select
-                            value={order.assigned_technician || "unassigned"}
-                            onValueChange={(value) => assignTechnician(order.id, value)}
-                            disabled={saving}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Chọn KTV" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="unassigned">Chưa phân công</SelectItem>
-                              {technicians.map((tech) => (
-                                <SelectItem key={tech.id} value={tech.id}>
-                                  {tech.full_name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
+                        {currentUser?.role !== "ktv" && (
+                          <div className="w-full sm:w-48">
+                            <Select
+                              value={order.assigned_technician || "unassigned"}
+                              onValueChange={(value) => assignTechnician(order.id, value)}
+                              disabled={saving}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Chọn KTV" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="unassigned">Chưa phân công</SelectItem>
+                                {technicians.map((tech) => (
+                                  <SelectItem key={tech.id} value={tech.id}>
+                                    {tech.full_name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
 
                         <Link href={getDetailLink(order)}>
                           <Button variant="outline" size="sm">
