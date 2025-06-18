@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { BarChart3, Users, DollarSign, TrendingUp, FileText, Settings } from "lucide-react"
+import { BarChart3, Users, DollarSign, TrendingUp, FileText, Settings, ClipboardList } from "lucide-react"
 import Link from "next/link"
 import DashboardLayout from "@/components/dashboard-layout"
 import { getWorkOrders, getCustomers, getTechnicians, type WorkOrder } from "@/lib/demo-data"
@@ -163,6 +163,18 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 gap-3">
+                <Link href="/intake-form/admin">
+                  <Button variant="outline" className="w-full justify-start">
+                    <FileText className="h-4 w-4 mr-2" />
+                    Tạo phiếu tiếp nhận
+                  </Button>
+                </Link>
+                <Link href="/tasks">
+                  <Button variant="outline" className="w-full justify-start">
+                    <ClipboardList className="h-4 w-4 mr-2" />
+                    Phân công KTV
+                  </Button>
+                </Link>
                 <Link href="/reports">
                   <Button variant="outline" className="w-full justify-start">
                     <BarChart3 className="h-4 w-4 mr-2" />

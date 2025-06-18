@@ -33,9 +33,17 @@ export default function KTVDashboard() {
     if (!user) return
 
     const workOrders = getWorkOrders()
-    // Filter work orders assigned to current technician
+    // Lọc các công việc đã được gán cho KTV hiện tại hoặc chưa được gán cho KTV nào
     const assignedOrders = workOrders.filter(
-      (order) => order.assigned_technician === user.id || order.status === "diagnosis", // Show diagnosis tasks for demo
+      (order) => {
+        // Hiển thị các công việc đã được gán cho KTV hiện tại
+        const assignedToCurrentKTV = order.assigned_technician === user.id && order.status !== "delivered";
+        
+        // Hiển thị các công việc chưa được gán cho KTV nào và đang ở trạng thái pending
+        const unassignedPending = !order.assigned_technician && order.status === "pending";
+        
+        return assignedToCurrentKTV || unassignedPending;
+      }
     )
 
     const formattedTasks = assignedOrders.map((item) => ({
@@ -44,12 +52,33 @@ export default function KTVDashboard() {
       priority: "normal",
     }))
 
+    // Sắp xếp theo trạng thái và thời gian
+    formattedTasks.sort((a, b) => {
+      // Ưu tiên theo trạng thái: pending > diagnosis > in_progress > completed
+      const statusOrder: { [key: string]: number } = {
+        pending: 0,
+        diagnosis: 1,
+        in_progress: 2,
+        completed: 3,
+      }
+
+      const statusA = statusOrder[a.status] ?? 999
+      const statusB = statusOrder[b.status] ?? 999
+
+      if (statusA !== statusB) {
+        return statusA - statusB
+      }
+
+      // Nếu cùng trạng thái, sắp xếp theo thời gian tạo (mới nhất lên đầu)
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    })
+
     setTasks(formattedTasks)
 
     // Calculate stats
     const now = new Date()
     setStats({
-      pending: formattedTasks.filter((t) => t.status === "diagnosis").length,
+      pending: formattedTasks.filter((t) => t.status === "diagnosis" || t.status === "pending").length,
       inProgress: formattedTasks.filter((t) => t.status === "in_progress").length,
       completed: formattedTasks.filter((t) => t.status === "completed").length,
       overdue: formattedTasks.filter(
@@ -219,8 +248,13 @@ export default function KTVDashboard() {
                       </div>
 
                       <div className="ml-4">
-                        <Link href={`/repair-order/${task.id}`}>
-                          <Button size="sm">{task.status === "diagnosis" ? "Bắt đầu kiểm tra" : "Xem chi tiết"}</Button>
+                        <Link href={task.status === "pending" || task.status === "diagnosis" ? `/diagnosis/ktv/${task.id}` : `/repair-order/${task.id}`}>
+                          <Button size="sm">
+                            {task.status === "pending" ? "Nhận công việc" :
+                             task.status === "diagnosis" ? "Tiếp tục kiểm tra" :
+                             task.status === "in_progress" ? "Cập nhật tiến độ" :
+                             "Xem chi tiết"}
+                          </Button>
                         </Link>
                       </div>
                     </div>

@@ -67,6 +67,8 @@ export default function DashboardLayout({ children, role, title }: DashboardLayo
     if (role === "admin") {
       return [
         ...baseItems,
+        { href: "/intake-form", icon: FileText, label: "Phiếu tiếp nhận" },
+        { href: "/tasks", icon: ClipboardList, label: "Phân công KTV" },
         { href: "/reports", icon: BarChart3, label: "Báo cáo" },
         { href: "/users", icon: Users, label: "Người dùng" },
         { href: "/settings", icon: Settings, label: "Cài đặt" },
