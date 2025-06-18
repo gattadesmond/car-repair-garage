@@ -186,47 +186,26 @@ export default function KTVDashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Link href="/tasks" className="block">
-                <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-orange-50 to-orange-100 p-6 transition-all duration-300 hover:shadow-xl hover:scale-105 border border-orange-200 h-full">
-                  <div className="flex flex-col items-center text-center space-y-3">
-                    <div className="p-4 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full text-white group-hover:from-orange-600 group-hover:to-orange-700 transition-colors shadow-lg shadow-orange-200/50">
-                      <ClipboardList className="h-8 w-8" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-orange-900 text-lg">Xem công việc</h3>
-                      <p className="text-sm text-orange-700 mt-1">Danh sách công việc được giao</p>
-                    </div>
-                  </div>
-                  <div className="absolute -bottom-6 -right-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <ClipboardList className="h-32 w-32 text-orange-900" />
-                  </div>
-                  <div className="absolute bottom-4 right-4">
-                    <Badge variant="outline" className="bg-white/80 border-orange-200 text-orange-700 group-hover:bg-orange-50 transition-colors">
-                      Xem ngay
-                    </Badge>
-                  </div>
-                </div>
-              </Link>
+            <div className="grid grid-cols-1 gap-6">
 
               <Link href="/repair-orders" className="block">
                 <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 p-6 transition-all duration-300 hover:shadow-xl hover:scale-105 border border-blue-200 h-full">
-                  <div className="flex flex-col items-center text-center space-y-3">
-                    <div className="p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full text-white group-hover:from-blue-600 group-hover:to-blue-700 transition-colors shadow-lg shadow-blue-200/50">
-                      <Wrench className="h-8 w-8" />
+                  <div className="flex md:flex-row items-center md:justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full text-white group-hover:from-blue-600 group-hover:to-blue-700 transition-colors shadow-lg shadow-blue-200/50">
+                        <Wrench className="h-8 w-8" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-blue-900 text-lg">Lệnh sửa chữa</h3>
+                        <p className="text-sm text-blue-700 mt-1">Cập nhật tiến độ sửa chữa</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-blue-900 text-lg">Lệnh sửa chữa</h3>
-                      <p className="text-sm text-blue-700 mt-1">Cập nhật tiến độ sửa chữa</p>
-                    </div>
+                    <Badge variant="outline" className="bg-white/80 border-blue-200 text-blue-700 group-hover:bg-blue-50 transition-colors mt-4 md:mt-0">
+                      Cập nhật ngay
+                    </Badge>
                   </div>
                   <div className="absolute -bottom-6 -right-6 opacity-10 group-hover:opacity-20 transition-opacity">
                     <Wrench className="h-32 w-32 text-blue-900" />
-                  </div>
-                  <div className="absolute bottom-4 right-4">
-                    <Badge variant="outline" className="bg-white/80 border-blue-200 text-blue-700 group-hover:bg-blue-50 transition-colors">
-                      Cập nhật
-                    </Badge>
                   </div>
                 </div>
               </Link>
