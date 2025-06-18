@@ -80,7 +80,7 @@ export default function CVDashboardPage() {
   }
 
   return (
-    <RoleLayout role="cv" title="Dashboard Cố vấn dịch vụ">
+    <RoleLayout role="cv" title="Cố vấn dịch vụ">
       <div className="p-6 space-y-6">
         {/* Thống kê */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
