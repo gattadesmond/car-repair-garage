@@ -176,43 +176,7 @@ export default function KTVDashboard() {
           </Card>
         </div>
 
-        {/* Quick Actions */}
-        <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0 mx-4">
-          <CardHeader className="pb-2">
-            <div className="flex items-center space-x-2">
-              <div className="p-2 bg-purple-100 rounded-full">
-                <Wrench className="h-5 w-5 text-purple-600" />
-              </div>
-              <CardTitle>Thao tác nhanh</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 gap-6">
-
-              <Link href="/repair-orders" className="block">
-                <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 p-6 transition-all duration-300 hover:shadow-xl hover:scale-105 border border-blue-200 h-full">
-                  <div className="flex md:flex-row items-center md:justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full text-white group-hover:from-blue-600 group-hover:to-blue-700 transition-colors shadow-lg shadow-blue-200/50">
-                        <Wrench className="h-8 w-8" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-blue-900 text-lg">Lệnh sửa chữa</h3>
-                        <p className="text-sm text-blue-700 mt-1">Cập nhật tiến độ sửa chữa</p>
-                      </div>
-                    </div>
-                    <Badge variant="outline" className="bg-white/80 border-blue-200 text-blue-700 group-hover:bg-blue-50 transition-colors mt-4 md:mt-0">
-                      Cập nhật ngay
-                    </Badge>
-                  </div>
-                  <div className="absolute -bottom-6 -right-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Wrench className="h-32 w-32 text-blue-900" />
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+      
 
         {/* Tasks List */}
         <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0 mx-4">
@@ -305,7 +269,6 @@ export default function KTVDashboard() {
                           >
                             {task.status === "pending" ? "Nhận công việc" :
                              task.status === "diagnosis" ? "Tiếp tục kiểm tra & Chuyển CV" :
-                             task.status === "in_inspection" ? "Cập nhật tiến độ" :
                              "Xem chi tiết"}
                           </Button>
                         </Link>

@@ -151,7 +151,7 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
 
   if (loading) {
     return (
-      <DashboardLayout role="cv" title="Chi tiết phiếu tiếp nhận">
+      <DashboardLayout role={currentUser?.role || "cv"} title="Chi tiết phiếu tiếp nhận">
         <div className="text-center py-8">Đang tải...</div>
       </DashboardLayout>
     )
@@ -159,7 +159,7 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
 
   if (!workOrder) {
     return (
-      <DashboardLayout role="cv" title="Chi tiết phiếu tiếp nhận">
+      <DashboardLayout role={currentUser?.role || "cv"} title="Chi tiết phiếu tiếp nhận">
         <Alert variant="destructive">
           <AlertDescription>Không tìm thấy phiếu tiếp nhận</AlertDescription>
         </Alert>
@@ -170,7 +170,7 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
   const nextAction = getNextAction(workOrder)
 
   return (
-    <DashboardLayout role="cv" title="Chi tiết phiếu tiếp nhận">
+    <DashboardLayout role={currentUser?.role || "cv"} title="Chi tiết phiếu tiếp nhận">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">

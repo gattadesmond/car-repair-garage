@@ -27,17 +27,9 @@ export default function DiagnosisPage({ params }: { params: { id: string } }) {
 
   const [diagnosisData, setDiagnosisData] = useState({
     technicianNotes: "",
-    repairNotes: "",
     priority: "normal",
     specialInstructions: "",
-    estimatedCompletion: "",
-    repairItems: [
-      { item: "", requirement: "" },
-      { item: "", requirement: "" },
-      { item: "", requirement: "" },
-      { item: "", requirement: "" },
-      { item: "", requirement: "" },
-    ]
+    estimatedCompletion: ""
   })
 
   useEffect(() => {
@@ -46,6 +38,9 @@ export default function DiagnosisPage({ params }: { params: { id: string } }) {
     fetchWorkOrder()
     fetchTechnicians()
   }, [params.id])
+
+  // Kiểm tra xem người dùng hiện tại có phải là CV không
+  const isCV = currentUser?.role === "cv"
 
   const fetchWorkOrder = () => {
     const workOrders = getWorkOrders()
@@ -103,20 +98,36 @@ export default function DiagnosisPage({ params }: { params: { id: string } }) {
       const orderIndex = workOrders.findIndex((w) => w.id === params.id)
 
       if (orderIndex !== -1) {
+        // Xác định trạng thái mới dựa trên vai trò người dùng
+        let newStatus = "in_inspection"
+        let successMessage = "Đã lưu thông tin chẩn đoán"
+        
+        // Nếu là Admin đang duyệt chẩn đoán, xem như hoàn thành phần chẩn đoán
+        if (currentUser?.role === "admin") {
+          newStatus = "diagnosed"
+          successMessage = "Đã duyệt chẩn đoán và hoàn thành phần chẩn đoán"
+        }
+        // Nếu là CV đang duyệt chẩn đoán
+        else if (currentUser?.role === "cv") {
+          newStatus = "diagnosed"
+          successMessage = "Đã duyệt chẩn đoán và sẵn sàng tạo báo giá"
+        }
+        
         workOrders[orderIndex] = {
           ...workOrders[orderIndex],
-          status: "in_inspection",
+          status: newStatus,
           estimated_completion: diagnosisData.estimatedCompletion,
           updated_at: new Date().toISOString(),
         }
         saveWorkOrders(workOrders)
 
-        // Save diagnosis data to localStorage for later use in repair order
+        // Save diagnosis data to localStorage
         const diagnosisKey = `diagnosis-${params.id}`
         localStorage.setItem(diagnosisKey, JSON.stringify(diagnosisData))
+        
+        setSuccess(successMessage)
       }
       
-      setSuccess("Đã lưu thông tin chẩn đoán")
       router.push("/dashboard/cv")
     } catch (error: any) {
       setError(error.message || "Có lỗi xảy ra khi lưu chẩn đoán")
@@ -127,7 +138,7 @@ export default function DiagnosisPage({ params }: { params: { id: string } }) {
 
   if (loading) {
     return (
-      <DashboardLayout role="cv" title="Chẩn đoán & Phân công">
+      <DashboardLayout role={currentUser?.role || "cv"} title="Chẩn đoán & Phân công">
         <div className="text-center py-8">Đang tải...</div>
       </DashboardLayout>
     )
@@ -135,7 +146,7 @@ export default function DiagnosisPage({ params }: { params: { id: string } }) {
 
   if (!workOrder) {
     return (
-      <DashboardLayout role="cv" title="Chẩn đoán & Phân công">
+      <DashboardLayout role={currentUser?.role || "cv"} title="Chẩn đoán & Phân công">
         <Alert variant="destructive">
           <AlertDescription>Không tìm thấy phiếu tiếp nhận</AlertDescription>
         </Alert>
@@ -144,7 +155,7 @@ export default function DiagnosisPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <DashboardLayout role="cv" title="Chẩn đoán & Phân công">
+    <DashboardLayout role={currentUser?.role || "cv"} title="Chẩn đoán & Phân công">
       <div className="space-y-6">
         {/* Work Order Info */}
         <Card>
@@ -224,164 +235,26 @@ export default function DiagnosisPage({ params }: { params: { id: string } }) {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Textarea
-                id="technicianNotes"
-                placeholder="Nhập ghi chú và nhận xét về tình trạng xe"
-                value={diagnosisData.technicianNotes}
-                onChange={(e) => setDiagnosisData((prev) => ({ ...prev, technicianNotes: e.target.value }))}
-                className="mt-2"
-                rows={6}
-              />
+              {isCV ? (
+                <div className="p-3 bg-gray-50 rounded min-h-[120px]">
+                  {diagnosisData.technicianNotes || <span className="text-gray-500 italic">Chưa có ghi chú kỹ thuật</span>}
+                </div>
+              ) : (
+                <Textarea
+                  id="technicianNotes"
+                  placeholder="Nhập ghi chú và nhận xét về tình trạng xe"
+                  value={diagnosisData.technicianNotes}
+                  onChange={(e) => setDiagnosisData((prev) => ({ ...prev, technicianNotes: e.target.value }))}
+                  className="mt-2"
+                  rows={6}
+                />
+              )}
             </CardContent>
           </Card>
           
-          {/* Bảng hạng mục sửa chữa */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Wrench className="h-5 w-5 text-blue-600" />
-                <span>Hạng mục sửa chữa</span>
-              </CardTitle>
-              <CardDescription>Nhập các hạng mục cần sửa chữa và yêu cầu công việc</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="border rounded-md overflow-hidden">
-                <div className="md:block hidden"> {/* Phiên bản desktop/tablet */}
-                  <table className="w-full">
-                    <thead>
-                      <tr className="bg-gray-50 border-b">
-                        <th className="text-left p-3 font-medium text-gray-700 w-1/2">HẠNG MỤC SỬA CHỮA</th>
-                        <th className="text-left p-3 font-medium text-gray-700 w-1/2">YÊU CẦU CÔNG VIỆC</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {diagnosisData.repairItems.map((item, index) => (
-                        <tr key={index} className="border-b">
-                          <td className="p-3">
-                            <Input 
-                              placeholder={index === 0 ? "Thay nhớt lọc" : 
-                                index === 1 ? "Thay dầu gội máy lạnh" :
-                                index === 2 ? "Cảo sơ cua T bên phải" :
-                                index === 3 ? "Cảo sơ cua T máy kéo" :
-                                "Cảo sơ cua T chân máy"}
-                              value={item.item}
-                              onChange={(e) => {
-                                const newItems = [...diagnosisData.repairItems];
-                                newItems[index].item = e.target.value;
-                                setDiagnosisData(prev => ({ ...prev, repairItems: newItems }));
-                              }}
-                            />
-                          </td>
-                          <td className="p-3">
-                            <Input 
-                              placeholder="Thay"
-                              value={item.requirement}
-                              onChange={(e) => {
-                                const newItems = [...diagnosisData.repairItems];
-                                newItems[index].requirement = e.target.value;
-                                setDiagnosisData(prev => ({ ...prev, repairItems: newItems }));
-                              }}
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                      <tr>
-                        <td className="p-3" colSpan={2}>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="w-full"
-                            onClick={() => {
-                              setDiagnosisData(prev => ({
-                                ...prev,
-                                repairItems: [...prev.repairItems, { item: "", requirement: "" }]
-                              }));
-                            }}
-                            type="button"
-                          >
-                            + Thêm hạng mục
-                          </Button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                
-                {/* Phiên bản mobile */}
-                <div className="md:hidden block">
-                  {diagnosisData.repairItems.map((item, index) => (
-                    <div key={index} className="border-b p-3">
-                      <div className="mb-2">
-                        <Label className="text-xs font-medium text-gray-700 mb-1 block">HẠNG MỤC SỬA CHỮA</Label>
-                        <Input 
-                          placeholder={index === 0 ? "Thay nhớt lọc" : 
-                            index === 1 ? "Thay dầu gội máy lạnh" :
-                            index === 2 ? "Cảo sơ cua T bên phải" :
-                            index === 3 ? "Cảo sơ cua T máy kéo" :
-                            "Cảo sơ cua T chân máy"}
-                          value={item.item}
-                          onChange={(e) => {
-                            const newItems = [...diagnosisData.repairItems];
-                            newItems[index].item = e.target.value;
-                            setDiagnosisData(prev => ({ ...prev, repairItems: newItems }));
-                          }}
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-xs font-medium text-gray-700 mb-1 block">YÊU CẦU CÔNG VIỆC</Label>
-                        <Input 
-                          placeholder="Thay"
-                          value={item.requirement}
-                          onChange={(e) => {
-                            const newItems = [...diagnosisData.repairItems];
-                            newItems[index].requirement = e.target.value;
-                            setDiagnosisData(prev => ({ ...prev, repairItems: newItems }));
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                  <div className="p-3">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full"
-                      onClick={() => {
-                        setDiagnosisData(prev => ({
-                          ...prev,
-                          repairItems: [...prev.repairItems, { item: "", requirement: "" }]
-                        }));
-                      }}
-                      type="button"
-                    >
-                      + Thêm hạng mục
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Phần hạng mục sửa chữa đã được loại bỏ theo yêu cầu */}
           
-          {/* Repair Notes - Ghi chú sửa chữa */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Wrench className="h-5 w-5 text-blue-600" />
-                <span>Ghi chú sửa chữa</span>
-              </CardTitle>
-              <CardDescription>Nhập các hạng mục sửa chữa và ghi chú chi tiết</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Textarea
-                id="repairNotes"
-                placeholder="Nhập các hạng mục cần sửa chữa, thay thế phụ tùng, vật tư..."
-                value={diagnosisData.repairNotes}
-                onChange={(e) => setDiagnosisData((prev) => ({ ...prev, repairNotes: e.target.value }))}
-                className="mt-2"
-                rows={6}
-              />
-            </CardContent>
-          </Card>
+          {/* Phần ghi chú sửa chữa đã được loại bỏ theo yêu cầu */}
 
           {/* Assignment and Estimates */}
           <Card>
@@ -396,42 +269,64 @@ export default function DiagnosisPage({ params }: { params: { id: string } }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="priority">Độ ưu tiên</Label>
-                  <Select
-                    value={diagnosisData.priority}
-                    onValueChange={(value) => setDiagnosisData((prev) => ({ ...prev, priority: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">Thấp</SelectItem>
-                      <SelectItem value="normal">Bình thường</SelectItem>
-                      <SelectItem value="high">Cao</SelectItem>
-                      <SelectItem value="urgent">Khẩn cấp</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  {isCV ? (
+                    <div className="p-3 bg-gray-50 rounded mt-2">
+                      {diagnosisData.priority === "low" && "Thấp"}
+                      {diagnosisData.priority === "normal" && "Bình thường"}
+                      {diagnosisData.priority === "high" && "Cao"}
+                      {diagnosisData.priority === "urgent" && "Khẩn cấp"}
+                      {!diagnosisData.priority && <span className="text-gray-500 italic">Chưa xác định</span>}
+                    </div>
+                  ) : (
+                    <Select
+                      value={diagnosisData.priority}
+                      onValueChange={(value) => setDiagnosisData((prev) => ({ ...prev, priority: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="low">Thấp</SelectItem>
+                        <SelectItem value="normal">Bình thường</SelectItem>
+                        <SelectItem value="high">Cao</SelectItem>
+                        <SelectItem value="urgent">Khẩn cấp</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
 
                 <div>
                   <Label htmlFor="estimatedCompletion">Thời gian hoàn thành dự kiến</Label>
-                  <Input
-                    id="estimatedCompletion"
-                    type="date"
-                    value={diagnosisData.estimatedCompletion}
-                    onChange={(e) => setDiagnosisData((prev) => ({ ...prev, estimatedCompletion: e.target.value }))}
-                    min={new Date().toISOString().split("T")[0]}
-                  />
+                  {isCV ? (
+                    <div className="p-3 bg-gray-50 rounded mt-2">
+                      {diagnosisData.estimatedCompletion || <span className="text-gray-500 italic">Chưa xác định</span>}
+                    </div>
+                  ) : (
+                    <Input
+                      id="estimatedCompletion"
+                      type="date"
+                      value={diagnosisData.estimatedCompletion}
+                      onChange={(e) => setDiagnosisData((prev) => ({ ...prev, estimatedCompletion: e.target.value }))}
+                      min={new Date().toISOString().split("T")[0]}
+                    />
+                  )}
                 </div>
               </div>
 
               <div>
                 <Label htmlFor="specialInstructions">Hướng dẫn đặc biệt</Label>
-                <Textarea
-                  id="specialInstructions"
-                  placeholder="Các lưu ý đặc biệt, yêu cầu kỹ thuật, thứ tự thực hiện..."
-                  value={diagnosisData.specialInstructions}
-                  onChange={(e) => setDiagnosisData((prev) => ({ ...prev, specialInstructions: e.target.value }))}
-                />
+                {isCV ? (
+                  <div className="p-3 bg-gray-50 rounded mt-2 min-h-[80px]">
+                    {diagnosisData.specialInstructions || <span className="text-gray-500 italic">Không có hướng dẫn đặc biệt</span>}
+                  </div>
+                ) : (
+                  <Textarea
+                    id="specialInstructions"
+                    placeholder="Các lưu ý đặc biệt, yêu cầu kỹ thuật, thứ tự thực hiện..."
+                    value={diagnosisData.specialInstructions}
+                    onChange={(e) => setDiagnosisData((prev) => ({ ...prev, specialInstructions: e.target.value }))}
+                  />
+                )}
               </div>
             </CardContent>
           </Card>
@@ -442,14 +337,16 @@ export default function DiagnosisPage({ params }: { params: { id: string } }) {
             </Alert>
           )}
 
-          <Alert className="bg-blue-50 border-blue-200 mb-4">
+          {/* <Alert className="bg-blue-50 border-blue-200 mb-4">
             <div className="flex items-center">
               <CheckCircle className="h-4 w-4 text-blue-600 mr-2" />
               <AlertDescription className="text-blue-700">
-                Với quyền Admin, bạn có thể chỉnh sửa thông tin chẩn đoán và duyệt để tạo báo giá.
+                {isCV ? "Với quyền CV, bạn có thể duyệt chẩn đoán để tạo báo giá." : 
+                 currentUser?.role === "admin" ? "Với quyền Admin, bạn có thể chỉnh sửa thông tin chẩn đoán và duyệt để tạo báo giá." : 
+                 "Với quyền KTV, bạn có thể nhập thông tin chẩn đoán."}
               </AlertDescription>
             </div>
-          </Alert>
+          </Alert> */}
           
           <div className="flex space-x-4">
             <Button type="submit" disabled={saving} className="flex-1">
@@ -458,7 +355,9 @@ export default function DiagnosisPage({ params }: { params: { id: string } }) {
               ) : (
                 <>
                   <Save className="h-4 w-4 mr-2" />
-                  Lưu chỉnh sửa & Duyệt chẩn đoán
+                  {isCV ? "Duyệt chẩn đoán" : 
+                   currentUser?.role === "admin" ? "Xác nhận & Hoàn thành chẩn đoán" : 
+                   "Lưu chẩn đoán"}
                 </>
               )}
             </Button>

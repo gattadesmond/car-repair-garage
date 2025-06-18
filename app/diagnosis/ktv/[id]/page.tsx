@@ -184,7 +184,7 @@ export default function KTVDiagnosisPage({ params }: { params: { id: string } })
 
   if (loading) {
     return (
-      <DashboardLayout role={currentUser?.role || "ktv"} title="Chẩn đoán & Kiểm tra xe">
+      <DashboardLayout role="ktv" title="Chẩn đoán & Kiểm tra xe">
         <div className="text-center py-8">Đang tải...</div>
       </DashboardLayout>
     )
@@ -192,7 +192,7 @@ export default function KTVDiagnosisPage({ params }: { params: { id: string } })
 
   if (!workOrder) {
     return (
-      <DashboardLayout role={currentUser?.role || "ktv"} title="Chẩn đoán & Kiểm tra xe">
+      <DashboardLayout role="ktv" title="Chẩn đoán & Kiểm tra xe">
         <Alert variant="destructive">
           <AlertDescription>Không tìm thấy phiếu tiếp nhận</AlertDescription>
         </Alert>
@@ -201,7 +201,7 @@ export default function KTVDiagnosisPage({ params }: { params: { id: string } })
   }
 
   return (
-    <DashboardLayout role={currentUser?.role || "ktv"} title="Chẩn đoán & Kiểm tra xe">
+    <DashboardLayout role="ktv" title="Chẩn đoán & Kiểm tra xe">
       <div className="space-y-6">
         {/* Work Order Info */}
         <Card>

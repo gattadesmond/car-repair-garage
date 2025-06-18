@@ -44,16 +44,8 @@ export default function RepairOrderPage({ params }: { params: { id: string } }) 
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
 
-  const [repairData, setRepairData] = useState({
-    workStatus: "in_inspection",
-    progressNotes: "",
-    completedTasks: [] as string[],
-    issuesEncountered: "",
-    additionalRepairs: "",
-    estimatedCompletion: "",
-    actualHours: "",
-    finalNotes: "",
-  })
+  // State for repair status only
+  const [repairStatus, setRepairStatus] = useState("in_inspection")
 
   useEffect(() => {
     fetchData()
@@ -66,6 +58,11 @@ export default function RepairOrderPage({ params }: { params: { id: string } }) 
 
     if (order) {
       setWorkOrder(order)
+      
+      // Set repair status based on work order status
+      if (order.status === "completed") {
+        setRepairStatus("completed")
+      }
 
       // Get diagnosis data
       const diagnosisKey = `diagnosis-${params.id}`
@@ -79,13 +76,6 @@ export default function RepairOrderPage({ params }: { params: { id: string } }) 
       const storedQuotation = localStorage.getItem(quotationKey)
       if (storedQuotation) {
         setQuotationData(JSON.parse(storedQuotation))
-      }
-
-      // Get existing repair progress
-      const repairKey = `repair-${params.id}`
-      const storedRepair = localStorage.getItem(repairKey)
-      if (storedRepair) {
-        setRepairData(JSON.parse(storedRepair))
       }
 
       // Get saved images from intake
@@ -126,15 +116,13 @@ export default function RepairOrderPage({ params }: { params: { id: string } }) 
       if (orderIndex !== -1) {
         workOrders[orderIndex] = {
           ...workOrders[orderIndex],
-          status: repairData.workStatus as any,
+          status: repairStatus as any,
           updated_at: new Date().toISOString(),
         }
         saveWorkOrders(workOrders)
       }
 
-      // Save repair progress data
-      const repairKey = `repair-${params.id}`
-      localStorage.setItem(repairKey, JSON.stringify(repairData))
+      // No repair progress data to save anymore
 
       // Save new repair images
       if (images.length > 0) {
@@ -158,7 +146,7 @@ export default function RepairOrderPage({ params }: { params: { id: string } }) 
       // Cleanup URLs
       images.forEach((img) => URL.revokeObjectURL(img.url))
 
-      if (repairData.workStatus === "completed") {
+      if (repairStatus === "completed") {
         router.push("/dashboard/ktv")
       } else {
         // Refresh the page to show updated data
@@ -362,140 +350,31 @@ export default function RepairOrderPage({ params }: { params: { id: string } }) 
           </Card>
         )}
 
-        {/* Repair Progress Form */}
+        {/* Repair Status Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Wrench className="h-5 w-5" />
-                <span>Tiến độ sửa chữa</span>
+                <span>Trạng thái sửa chữa</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="workStatus">Trạng thái công việc</Label>
-                  <Select
-                    value={repairData.workStatus}
-                    onValueChange={(value) => setRepairData((prev) => ({ ...prev, workStatus: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="in_inspection">Đang kiểm tra</SelectItem>
-                      <SelectItem value="completed">Hoàn thành</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="actualHours">Số giờ thực tế</Label>
-                  <Input
-                    id="actualHours"
-                    type="number"
-                    step="0.5"
-                    min="0"
-                    placeholder="Số giờ đã làm"
-                    value={repairData.actualHours}
-                    onChange={(e) => setRepairData((prev) => ({ ...prev, actualHours: e.target.value }))}
-                  />
-                </div>
-              </div>
-
               <div>
-                <Label htmlFor="progressNotes">Ghi chú tiến độ</Label>
-                <Textarea
-                  id="progressNotes"
-                  placeholder="Mô tả công việc đã thực hiện, tiến độ hiện tại..."
-                  value={repairData.progressNotes}
-                  onChange={(e) => setRepairData((prev) => ({ ...prev, progressNotes: e.target.value }))}
-                />
+                <Label htmlFor="repairStatus">Trạng thái công việc</Label>
+                <Select
+                  value={repairStatus}
+                  onValueChange={(value) => setRepairStatus(value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="in_inspection">Đang kiểm tra</SelectItem>
+                    <SelectItem value="completed">Hoàn thành</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-
-              {diagnosisData?.recommendedRepairs && (
-                <div>
-                  <Label>Hạng mục đã hoàn thành</Label>
-                  <div className="mt-2 space-y-2">
-                    {diagnosisData.recommendedRepairs.map((repair: string, index: number) => (
-                      <div key={index} className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id={`completed-${index}`}
-                          checked={repairData.completedTasks.includes(repair)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setRepairData((prev) => ({
-                                ...prev,
-                                completedTasks: [...prev.completedTasks, repair],
-                              }))
-                            } else {
-                              setRepairData((prev) => ({
-                                ...prev,
-                                completedTasks: prev.completedTasks.filter((task) => task !== repair),
-                              }))
-                            }
-                          }}
-                          className="rounded"
-                        />
-                        <Label htmlFor={`completed-${index}`} className="text-sm">
-                          {repair}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <Label htmlFor="issuesEncountered">Vấn đề gặp phải (nếu có)</Label>
-                <Textarea
-                  id="issuesEncountered"
-                  placeholder="Mô tả các vấn đề, khó khăn gặp phải trong quá trình sửa chữa..."
-                  value={repairData.issuesEncountered}
-                  onChange={(e) => setRepairData((prev) => ({ ...prev, issuesEncountered: e.target.value }))}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="additionalRepairs">Đề xuất sửa chữa bổ sung</Label>
-                <Textarea
-                  id="additionalRepairs"
-                  placeholder="Các hạng mục sửa chữa bổ sung phát hiện trong quá trình làm việc..."
-                  value={repairData.additionalRepairs}
-                  onChange={(e) => setRepairData((prev) => ({ ...prev, additionalRepairs: e.target.value }))}
-                />
-              </div>
-
-              {repairData.workStatus === "completed" && (
-                <div>
-                  <Label htmlFor="finalNotes">Ghi chú hoàn thành</Label>
-                  <Textarea
-                    id="finalNotes"
-                    placeholder="Ghi chú cuối cùng, hướng dẫn bảo dưỡng cho khách hàng..."
-                    value={repairData.finalNotes}
-                    onChange={(e) => setRepairData((prev) => ({ ...prev, finalNotes: e.target.value }))}
-                  />
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Progress Images */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Camera className="h-5 w-5" />
-                <span>Ảnh tiến độ sửa chữa</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ImageUpload
-                images={images}
-                onImagesChange={setImages}
-                maxImages={10}
-                label="Chụp ảnh tiến độ sửa chữa, kết quả hoàn thành"
-              />
             </CardContent>
           </Card>
 
@@ -509,7 +388,7 @@ export default function RepairOrderPage({ params }: { params: { id: string } }) 
             <Button type="submit" disabled={saving} className="flex-1">
               {saving ? (
                 "Đang lưu..."
-              ) : repairData.workStatus === "completed" ? (
+              ) : repairStatus === "completed" ? (
                 <>
                   <CheckCircle className="h-4 w-4 mr-2" />
                   Hoàn thành sửa chữa
@@ -517,7 +396,7 @@ export default function RepairOrderPage({ params }: { params: { id: string } }) 
               ) : (
                 <>
                   <Save className="h-4 w-4 mr-2" />
-                  Lưu tiến độ
+                  Cập nhật trạng thái
                 </>
               )}
             </Button>
