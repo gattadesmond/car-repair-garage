@@ -71,13 +71,23 @@ export default function IntakeFormPage() {
   const [availableYears, setAvailableYears] = useState<number[]>([])
 
   const conditionOptions = [
-    "Vết xước nhỏ",
-    "Vết xước sâu",
-    "Móp méo",
-    "Hư hỏng đèn",
-    "Lốp hư",
-    "Kính vỡ",
-    "Khác",
+    "Đèn cảnh báo sáng",
+    "Đèn check",
+    "Đèn máy",
+    "Rửa kính không tốt",
+    "DVD/CD không tốt",
+    "Bảo hiểm không tốt",
+    "Tay ga cứng tay",
+    "Chìa bị hỏng tay",
+    "Cốp xe hỏng/móp tốt",
+    "Gập gương không tốt",
+    "Nắp bình dầu rách",
+    "Logo (trước & sau) đủ",
+    "Cơi bánh không tốt",
+    "Cơi buột không tốt",
+    "Chụp mang cả đủ",
+    "Kích chân gió bị trơn",
+    "Bảo sơn kém trơn xe",
   ]
 
   useEffect(() => {
