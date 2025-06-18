@@ -140,7 +140,7 @@ export default function CVDashboardPage() {
             </Card>
           </Link>
 
-          <Link href="/intake-form">
+          <Link href="/cv/intake-form">
             <Card className="hover:bg-gray-50 transition-colors cursor-pointer">
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center">
