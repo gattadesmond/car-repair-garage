@@ -46,9 +46,9 @@ export default function LoginPage() {
       if (account.role === "admin") {
         router.push("/dashboard/admin")
       } else if (account.role === "ktv") {
-        router.push("/dashboard/ktv")
-      } else {
-        router.push("/dashboard/cv")
+        router.push("/ktv/dashboard")
+      } else if (account.role === "cv") {
+        router.push("/cv/dashboard")
       }
     } else {
       setError("Email hoặc mật khẩu không đúng")
