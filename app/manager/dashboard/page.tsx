@@ -87,7 +87,7 @@ export default function ManagerDashboardPage() {
       case "diagnosis":
         return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Đang chẩn đoán</Badge>
       case "in_inspection":
-        return <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200">Đang sửa chữa</Badge>
+        return <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200">Đang chẩn đoán</Badge>
       case "completed":
         return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Hoàn thành</Badge>
       default:
@@ -197,7 +197,7 @@ export default function ManagerDashboardPage() {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="font-medium">Đang sửa chữa</p>
+                  <p className="font-medium">Đang chẩn đoán</p>
                   <div className="bg-blue-50 p-2 rounded-full">
                     <AlertCircle className="h-5 w-5 text-blue-500" />
                   </div>
