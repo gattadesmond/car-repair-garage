@@ -47,9 +47,7 @@ export default function CVDashboard() {
       pending: { label: "Chờ xử lý", variant: "secondary" as const },
       in_inspection: { label: "Đang kiểm tra", variant: "default" as const },
       completed: { label: "Hoàn thành", variant: "default" as const },
-      quotation: { label: "Báo giá", variant: "outline" as const },
       diagnosis: { label: "Chẩn đoán", variant: "outline" as const },
-      approved: { label: "Đã duyệt", variant: "default" as const },
     }
     return statusMap[status as keyof typeof statusMap] || { label: status, variant: "secondary" as const }
   }
@@ -61,10 +59,6 @@ export default function CVDashboard() {
         return `/diagnosis/${order.id}`
       case "diagnosis":
         return `/diagnosis/${order.id}`
-      case "quotation":
-        return `/quotations/${order.id}/edit`
-      case "approved":
-        return `/quotations/${order.id}`
       default:
         return `/work-orders/${order.id}`
     }
@@ -76,10 +70,6 @@ export default function CVDashboard() {
         return "Chẩn đoán"
       case "diagnosis":
         return "Xem chẩn đoán"
-      case "quotation":
-        return "Lập báo giá"
-      case "approved":
-        return "Xem báo giá"
       default:
         return "Xem chi tiết"
     }
@@ -180,22 +170,7 @@ export default function CVDashboard() {
                 </div>
               </Link>
 
-              <Link href="/quotations">
-                <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 border border-purple-200">
-                  <div className="flex flex-col items-center text-center space-y-3">
-                    <div className="p-3 bg-purple-600 rounded-full text-white group-hover:bg-purple-700 transition-colors">
-                      <FileText className="h-8 w-8" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-purple-900">Lập báo giá</h3>
-                      <p className="text-sm text-purple-700 mt-1">Tạo và quản lý báo giá sửa chữa</p>
-                    </div>
-                  </div>
-                  <div className="absolute top-2 right-2 opacity-20 group-hover:opacity-30 transition-opacity">
-                    <FileText className="h-12 w-12 text-purple-600" />
-                  </div>
-                </div>
-              </Link>
+
             </div>
           </CardContent>
         </Card>

@@ -55,6 +55,7 @@ export default function KTVDashboard() {
         diagnosis: 1,
         in_inspection: 2,
         completed: 3,
+        delivered: 4,
       }
 
       const statusA = statusOrder[a.status] ?? 999

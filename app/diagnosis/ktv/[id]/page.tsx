@@ -14,6 +14,19 @@ import { Badge } from "@/components/ui/badge"
 import { Car, User, FileText, Calendar, Save, AlertTriangle, Settings, CheckCircle, Wrench } from "lucide-react"
 import DashboardLayout from "@/components/dashboard-layout"
 import { getWorkOrders, saveWorkOrders, getTechnicians, getCurrentUser, type WorkOrder, type Technician } from "@/lib/demo-data"
+import { addDays } from "date-fns"
+
+interface DiagnosisData {
+  technicianNotes: string;
+  repairNotes: string;
+  priority: string;
+  specialInstructions: string;
+  estimatedCompletion: Date;
+  repairItems: Array<{
+    item: string;
+    requirement: string;
+  }>;
+}
 
 export default function KTVDiagnosisPage({ params }: { params: { id: string } }) {
   const router = useRouter()
@@ -25,12 +38,21 @@ export default function KTVDiagnosisPage({ params }: { params: { id: string } })
   const [success, setSuccess] = useState("")
   const [currentUser, setCurrentUser] = useState<any>(null)
 
-  const [diagnosisData, setDiagnosisData] = useState({
+  const [diagnosisData, setDiagnosisData] = useState<DiagnosisData>({
     technicianNotes: "",
-    priority: "normal",
+    repairNotes: "",
+    priority: "medium",
     specialInstructions: "",
-    estimatedCompletion: "",
-    repairNotes: "", // Thêm trường ghi chú sửa chữa
+    estimatedCompletion: addDays(new Date(), 3),
+    repairItems: [
+      { item: "", requirement: "" },
+      { item: "", requirement: "" },
+      { item: "", requirement: "" },
+      { item: "", requirement: "" },
+      { item: "", requirement: "" },
+      { item: "", requirement: "" },
+      { item: "", requirement: "" },
+    ]
   })
 
   useEffect(() => {
@@ -133,22 +155,22 @@ export default function KTVDiagnosisPage({ params }: { params: { id: string } })
       if (orderIndex !== -1) {
         workOrders[orderIndex] = {
           ...workOrders[orderIndex],
-          status: "quotation",
+          status: "in_inspection",
           estimated_completion: diagnosisData.estimatedCompletion,
           updated_at: new Date().toISOString(),
         }
         saveWorkOrders(workOrders)
 
-        // Save diagnosis data to localStorage for later use in quotation
+        // Save diagnosis data to localStorage for later use in repair process
         const diagnosisKey = `diagnosis-${params.id}`
         localStorage.setItem(diagnosisKey, JSON.stringify(diagnosisData))
         
         // Hiển thị thông báo thành công
-        setSuccess("Đã lưu chẩn đoán thành công! Đang chuyển đến trang cố vấn...")
+        setSuccess("Đã lưu chẩn đoán thành công! Đang chuyển đến trang sửa chữa...")
         
-        // Chuyển hướng đến trang chuẩn đoán của cố vấn sau 1.5 giây
+        // Chuyển hướng đến trang sửa chữa sau 1.5 giây
         setTimeout(() => {
-          router.push(`/diagnosis/${params.id}`)
+          router.push(`/repair-order/${params.id}`)
         }, 1500)
       } else {
         router.push("/dashboard/ktv")
@@ -269,26 +291,136 @@ export default function KTVDiagnosisPage({ params }: { params: { id: string } })
         </Card>
 
         {/* Diagnosis Form - Chỉ hiển thị nếu đã nhận task */}
-        {(workOrder.status === "diagnosis" || workOrder.status === "quotation") && (
+        {workOrder.status === "diagnosis" && (
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Technician Notes */}
+            {/* Bảng hạng mục sửa chữa */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <AlertTriangle className="h-5 w-5 text-orange-600" />
-                  <span>Ghi chú kỹ thuật viên</span>
+                  <Wrench className="h-5 w-5 text-blue-600" />
+                  <span>Hạng mục sửa chữa</span>
                 </CardTitle>
-                <CardDescription>Nhập ghi chú và nhận xét về tình trạng xe</CardDescription>
+                <CardDescription>Nhập các hạng mục cần sửa chữa và yêu cầu công việc</CardDescription>
               </CardHeader>
               <CardContent>
-                <Textarea
-                  id="technicianNotes"
-                  placeholder="Ghi chú và nhận xét của kỹ thuật viên về tình trạng xe..."
-                  value={diagnosisData.technicianNotes}
-                  onChange={(e) => setDiagnosisData((prev) => ({ ...prev, technicianNotes: e.target.value }))}
-                  className="mt-2"
-                  rows={8}
-                />
+                <div className="border rounded-md overflow-hidden">
+                  <div className="md:block hidden"> {/* Phiên bản desktop/tablet */}
+                    <table className="w-full">
+                      <thead>
+                        <tr className="bg-gray-50 border-b">
+                          <th className="text-left p-3 font-medium text-gray-700 w-1/2">HẠNG MỤC SỬA CHỮA</th>
+                          <th className="text-left p-3 font-medium text-gray-700 w-1/2">YÊU CẦU CÔNG VIỆC</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {diagnosisData.repairItems.map((item, index) => (
+                          <tr key={index} className="border-b">
+                            <td className="p-3">
+                              <Input 
+                                placeholder={index === 0 ? "Thay nhớt lọc" : 
+                                  index === 1 ? "Thay dầu gội máy lạnh" :
+                                  index === 2 ? "Cảo sơ cua T bên phải" :
+                                  index === 3 ? "Cảo sơ cua T máy kéo" :
+                                  index === 4 ? "Cảo sơ cua T chân máy" :
+                                  index === 5 ? "Cảo sơ đơn xe (xịt)" :
+                                  "Rô tuyn trái đứng lồng"}
+                                value={item.item}
+                                onChange={(e) => {
+                                  const newItems = [...diagnosisData.repairItems];
+                                  newItems[index].item = e.target.value;
+                                  setDiagnosisData(prev => ({ ...prev, repairItems: newItems }));
+                                }}
+                              />
+                            </td>
+                            <td className="p-3">
+                              <Input 
+                                placeholder="Thay"
+                                value={item.requirement}
+                                onChange={(e) => {
+                                  const newItems = [...diagnosisData.repairItems];
+                                  newItems[index].requirement = e.target.value;
+                                  setDiagnosisData(prev => ({ ...prev, repairItems: newItems }));
+                                }}
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                        <tr>
+                          <td className="p-3" colSpan={2}>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="w-full"
+                              onClick={() => {
+                                setDiagnosisData(prev => ({
+                                  ...prev,
+                                  repairItems: [...prev.repairItems, { item: "", requirement: "" }]
+                                }));
+                              }}
+                              type="button"
+                            >
+                              + Thêm hạng mục
+                            </Button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  {/* Phiên bản mobile */}
+                  <div className="md:hidden block">
+                    {diagnosisData.repairItems.map((item, index) => (
+                      <div key={index} className="border-b p-3">
+                        <div className="mb-2">
+                          <Label className="text-xs font-medium text-gray-700 mb-1 block">HẠNG MỤC SỬA CHỮA</Label>
+                          <Input 
+                            placeholder={index === 0 ? "Thay nhớt lọc" : 
+                              index === 1 ? "Thay dầu gội máy lạnh" :
+                              index === 2 ? "Cảo sơ cua T bên phải" :
+                              index === 3 ? "Cảo sơ cua T máy kéo" :
+                              index === 4 ? "Cảo sơ cua T chân máy" :
+                              index === 5 ? "Cảo sơ đơn xe (xịt)" :
+                              "Rô tuyn trái đứng lồng"}
+                            value={item.item}
+                            onChange={(e) => {
+                              const newItems = [...diagnosisData.repairItems];
+                              newItems[index].item = e.target.value;
+                              setDiagnosisData(prev => ({ ...prev, repairItems: newItems }));
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs font-medium text-gray-700 mb-1 block">YÊU CẦU CÔNG VIỆC</Label>
+                          <Input 
+                            placeholder="Thay"
+                            value={item.requirement}
+                            onChange={(e) => {
+                              const newItems = [...diagnosisData.repairItems];
+                              newItems[index].requirement = e.target.value;
+                              setDiagnosisData(prev => ({ ...prev, repairItems: newItems }));
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                    <div className="p-3">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => {
+                          setDiagnosisData(prev => ({
+                            ...prev,
+                            repairItems: [...prev.repairItems, { item: "", requirement: "" }]
+                          }));
+                        }}
+                        type="button"
+                      >
+                        + Thêm hạng mục
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
             

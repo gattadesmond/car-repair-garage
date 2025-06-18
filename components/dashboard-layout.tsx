@@ -52,7 +52,6 @@ export default function DashboardLayout({ children, role, title }: DashboardLayo
         ...baseItems,
         { href: "/customers", icon: Users, label: "Khách hàng" },
         { href: "/intake-form", icon: FileText, label: "Phiếu tiếp nhận" },
-        { href: "/quotations", icon: DollarSign, label: "Báo giá" },
       ]
     }
 

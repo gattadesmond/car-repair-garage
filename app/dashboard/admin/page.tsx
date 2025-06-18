@@ -66,8 +66,6 @@ export default function AdminDashboard() {
     const statusMap = {
       pending: { label: "Chờ xử lý", variant: "secondary" as const },
       diagnosis: { label: "Chẩn đoán", variant: "outline" as const },
-      quotation: { label: "Báo giá", variant: "outline" as const },
-      approved: { label: "Đã duyệt", variant: "default" as const },
       in_inspection: { label: "Đang kiểm tra", variant: "default" as const },
       completed: { label: "Hoàn thành", variant: "default" as const },
       delivered: { label: "Đã giao", variant: "default" as const },

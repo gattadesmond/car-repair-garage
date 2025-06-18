@@ -6,10 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Car, User, FileText, Calendar, ArrowLeft, Edit, Camera, Eye } from "lucide-react"
+import { Textarea } from "@/components/ui/textarea"
+import { Car, User, FileText, Calendar, ArrowLeft, Edit, Camera, Eye, Save } from "lucide-react"
 import Link from "next/link"
 import DashboardLayout from "@/components/dashboard-layout"
-import { getWorkOrders, getTechnicians, type WorkOrder, type Technician } from "@/lib/demo-data"
+import { getWorkOrders, getTechnicians, saveWorkOrders, getCurrentUser, type WorkOrder, type Technician } from "@/lib/demo-data"
 
 interface SavedImage {
   id: string
@@ -25,12 +26,29 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
   const [technicians, setTechnicians] = useState<Technician[]>([])
   const [images, setImages] = useState<SavedImage[]>([])
   const [loading, setLoading] = useState(true)
+  const [currentUser, setCurrentUser] = useState<any>(null)
+  const [isEditingAdminNotes, setIsEditingAdminNotes] = useState(false)
+  const [adminNotes, setAdminNotes] = useState("")
+  const [savingNotes, setSavingNotes] = useState(false)
+  const [noteError, setNoteError] = useState("")
 
   useEffect(() => {
     fetchWorkOrder()
     fetchTechnicians()
     fetchImages()
+    fetchCurrentUser()
   }, [params.id])
+
+  useEffect(() => {
+    if (workOrder?.admin_notes) {
+      setAdminNotes(workOrder.admin_notes)
+    }
+  }, [workOrder])
+  
+  const fetchCurrentUser = () => {
+    const user = getCurrentUser()
+    setCurrentUser(user)
+  }
 
   const fetchWorkOrder = () => {
     const workOrders = getWorkOrders()
@@ -64,12 +82,46 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
     }
   }
 
+  const handleSaveAdminNotes = () => {
+    if (!adminNotes.trim()) {
+      setNoteError("Vui lòng nhập ghi chú trước khi lưu")
+      return
+    }
+
+    setSavingNotes(true)
+    setNoteError("")
+
+    try {
+      // Lấy danh sách work orders hiện tại
+      const workOrders = getWorkOrders()
+      const orderIndex = workOrders.findIndex((w) => w.id === params.id)
+
+      if (orderIndex !== -1) {
+        // Cập nhật admin_notes cho work order
+        workOrders[orderIndex] = {
+          ...workOrders[orderIndex],
+          admin_notes: adminNotes.trim(),
+          updated_at: new Date().toISOString(),
+        }
+
+        // Lưu lại danh sách work orders
+        saveWorkOrders(workOrders)
+
+        // Cập nhật state
+        setWorkOrder(workOrders[orderIndex])
+        setIsEditingAdminNotes(false)
+      }
+    } catch (error: any) {
+      setNoteError(error.message || "Có lỗi xảy ra khi lưu ghi chú")
+    } finally {
+      setSavingNotes(false)
+    }
+  }
+
   const getStatusBadge = (status: string) => {
     const statusMap = {
       pending: { label: "Chờ xử lý", variant: "secondary" as const },
       diagnosis: { label: "Chẩn đoán", variant: "outline" as const },
-      quotation: { label: "Báo giá", variant: "outline" as const },
-      approved: { label: "Đã duyệt", variant: "default" as const },
       in_inspection: { label: "Đang kiểm tra", variant: "default" as const },
       completed: { label: "Hoàn thành", variant: "default" as const },
       delivered: { label: "Đã giao", variant: "default" as const },
@@ -91,18 +143,7 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
           label: "Tiếp tục chẩn đoán",
           variant: "default" as const,
         }
-      case "quotation":
-        return {
-          href: `/quotations/${order.id}/edit`,
-          label: "Lập báo giá",
-          variant: "default" as const,
-        }
-      case "approved":
-        return {
-          href: `/quotations/${order.id}`,
-          label: "Xem báo giá",
-          variant: "outline" as const,
-        }
+
       default:
         return null
     }
@@ -313,6 +354,75 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
             </CardContent>
           </Card>
         )}
+
+        {/* Admin Notes */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <FileText className="h-5 w-5" />
+              <span>Ghi chú của Admin</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {workOrder.admin_notes ? (
+              <div className="space-y-4">
+                <p className="text-gray-700">{workOrder.admin_notes}</p>
+                {currentUser?.role === "admin" && (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsEditingAdminNotes(true)}
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Chỉnh sửa ghi chú
+                  </Button>
+                )}
+              </div>
+            ) : currentUser?.role === "admin" ? (
+              <div className="space-y-4">
+                <p className="text-gray-500 italic">Chưa có ghi chú nào từ admin.</p>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsEditingAdminNotes(true)}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Thêm ghi chú
+                </Button>
+              </div>
+            ) : (
+              <p className="text-gray-500 italic">Chưa có ghi chú nào từ admin.</p>
+            )}
+
+            {isEditingAdminNotes && currentUser?.role === "admin" && (
+              <div className="mt-4 space-y-4">
+                <Textarea
+                  placeholder="Nhập ghi chú của admin"
+                  value={adminNotes}
+                  onChange={(e) => setAdminNotes(e.target.value)}
+                  rows={4}
+                />
+                <div className="flex space-x-2">
+                  <Button onClick={handleSaveAdminNotes} disabled={savingNotes}>
+                    {savingNotes ? "Đang lưu..." : "Lưu ghi chú"}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      setIsEditingAdminNotes(false);
+                      setAdminNotes(workOrder.admin_notes || "");
+                    }}
+                  >
+                    Hủy
+                  </Button>
+                </div>
+                {noteError && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{noteError}</AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Timeline */}
         <Card>

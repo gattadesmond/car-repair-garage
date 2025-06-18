@@ -91,8 +91,6 @@ export default function TasksPage() {
     const statusMap = {
       pending: { label: "Chờ xử lý", variant: "secondary" as const },
       diagnosis: { label: "Chẩn đoán", variant: "outline" as const },
-      quotation: { label: "Báo giá", variant: "outline" as const },
-      approved: { label: "Đã duyệt", variant: "default" as const },
       in_inspection: { label: "Đang kiểm tra", variant: "default" as const },
       completed: { label: "Hoàn thành", variant: "default" as const },
       delivered: { label: "Đã giao", variant: "default" as const },
@@ -107,10 +105,6 @@ export default function TasksPage() {
         return `/diagnosis/${order.id}`
       case "diagnosis":
         return `/diagnosis/${order.id}`
-      case "quotation":
-        return `/quotations/${order.id}/edit`
-      case "approved":
-        return `/quotations/${order.id}`
       default:
         return `/work-orders/${order.id}`
     }
@@ -122,10 +116,6 @@ export default function TasksPage() {
         return "Chẩn đoán"
       case "diagnosis":
         return "Tiếp tục chẩn đoán"
-      case "quotation":
-        return "Lập báo giá"
-      case "approved":
-        return "Xem báo giá"
       default:
         return "Xem chi tiết"
     }

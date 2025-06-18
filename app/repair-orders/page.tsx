@@ -125,8 +125,6 @@ export default function RepairOrdersPage() {
     const statusMap = {
       pending: { label: "Chờ xử lý", variant: "secondary" as const },
       diagnosis: { label: "Chẩn đoán", variant: "outline" as const },
-      quotation: { label: "Báo giá", variant: "outline" as const },
-      approved: { label: "Đã duyệt", variant: "default" as const },
       in_inspection: { label: "Đang kiểm tra", variant: "blue" as const },
       completed: { label: "Hoàn thành", variant: "success" as const },
       delivered: { label: "Đã giao", variant: "default" as const },

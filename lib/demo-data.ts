@@ -31,9 +31,10 @@ export interface WorkOrder {
   initial_condition: string[]
   diagnosis_symptoms: string[]
   notes?: string
+  admin_notes?: string
   received_by: string
   received_date: string
-  status: "pending" | "diagnosis" | "quotation" | "approved" | "in_inspection" | "completed" | "delivered"
+  status: "pending" | "diagnosis" | "in_inspection" | "completed" | "delivered"
   assigned_technician?: string
   estimated_completion?: string
   created_at: string
@@ -171,7 +172,7 @@ export const demoWorkOrders: WorkOrder[] = [
     notes: "Khách yêu cầu sử dụng dầu cao cấp",
     received_by: "HAISAN",
     received_date: new Date(Date.now() - 172800000).toISOString().split("T")[0],
-    status: "quotation",
+    status: "in_inspection",
     assigned_technician: "tech-2",
     created_at: new Date(Date.now() - 172800000).toISOString(),
     updated_at: new Date(Date.now() - 172800000).toISOString(),
