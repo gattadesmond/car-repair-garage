@@ -236,7 +236,7 @@ export default function RepairOrdersPage() {
                       </div>
 
                       <div className="mt-6 flex justify-end">
-                        <Link href={`/repair-order/${order.id}`}>
+                        <Link href={`/work-orders/${order.id}`}>
                           <Button>
                             <Wrench className="mr-2 h-4 w-4" />
                             {order.status === "completed" ? "Xem chi tiết" : "Cập nhật tiến độ"}

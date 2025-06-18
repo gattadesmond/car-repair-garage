@@ -259,7 +259,7 @@ export default function KTVDashboard() {
                       </div>
 
                       <div className="ml-4">
-                        <Link href={task.status === "pending" || task.status === "diagnosis" ? `/diagnosis/ktv/${task.id}` : `/repair-order/${task.id}`}>
+                        <Link href={task.status === "pending" || task.status === "diagnosis" ? `/diagnosis/ktv/${task.id}` : `/work-orders/${task.id}`}>
                           <Button 
                             size="sm"
                             className={`shadow-md ${task.status === "pending" ? "bg-orange-600 hover:bg-orange-700" : 

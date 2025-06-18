@@ -170,7 +170,7 @@ export default function KTVDiagnosisPage({ params }: { params: { id: string } })
         
         // Chuyển hướng đến trang sửa chữa sau 1.5 giây
         setTimeout(() => {
-          router.push(`/repair-order/${params.id}`)
+          router.push(`/work-orders/${params.id}`)
         }, 1500)
       } else {
         router.push("/dashboard/ktv")
