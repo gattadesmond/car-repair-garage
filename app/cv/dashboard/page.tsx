@@ -127,29 +127,29 @@ export default function CVDashboardPage() {
         {/* Hành động nhanh */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Link href="/cv/customers">
-            <Card className="hover:bg-gray-50 transition-colors cursor-pointer">
+            <Card className="hover:bg-blue-50 transition-colors cursor-pointer border-2 border-blue-200 shadow-md">
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center">
-                  <div className="bg-blue-50 p-2 rounded-full mr-3">
-                    <Users className="h-5 w-5 text-blue-500" />
+                  <div className="bg-blue-100 p-3 rounded-full mr-3">
+                    <Users className="h-6 w-6 text-blue-600" />
                   </div>
-                  <span className="font-medium">Quản lý khách hàng</span>
+                  <span className="font-medium text-blue-700 text-lg">Quản lý khách hàng</span>
                 </div>
-                <ArrowRight className="h-4 w-4 text-gray-400" />
+                <ArrowRight className="h-5 w-5 text-blue-500" />
               </CardContent>
             </Card>
           </Link>
 
           <Link href="/cv/intake-form">
-            <Card className="hover:bg-gray-50 transition-colors cursor-pointer">
+            <Card className="hover:bg-green-50 transition-colors cursor-pointer border-2 border-green-200 shadow-md">
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center">
-                  <div className="bg-green-50 p-2 rounded-full mr-3">
-                    <Plus className="h-5 w-5 text-green-500" />
+                  <div className="bg-green-100 p-3 rounded-full mr-3">
+                    <Plus className="h-6 w-6 text-green-600" />
                   </div>
-                  <span className="font-medium">Tạo phiếu tiếp nhận</span>
+                  <span className="font-medium text-green-700 text-lg">Tạo phiếu tiếp nhận</span>
                 </div>
-                <ArrowRight className="h-4 w-4 text-gray-400" />
+                <ArrowRight className="h-5 w-5 text-green-500" />
               </CardContent>
             </Card>
           </Link>
@@ -160,7 +160,7 @@ export default function CVDashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Đơn sửa chữa gần đây</h2>
             <Link href="/repair-orders">
-              <Button variant="outline" size="sm">
+              <Button variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-medium">
                 Xem tất cả
               </Button>
             </Link>
@@ -200,7 +200,11 @@ export default function CVDashboardPage() {
                           </div>
                         </div>
                         <Link href={`/work-orders/${order.id}`}>
-                          <Button variant="outline" size="sm">
+                          <Button 
+                            variant={order.status === "pending" ? "default" : "outline"} 
+                            size="sm"
+                            className={order.status === "pending" ? "bg-blue-600 hover:bg-blue-700 text-white font-medium" : "border-blue-300 text-blue-700 hover:bg-blue-50"}
+                          >
                             {getActionText(order.status)}
                           </Button>
                         </Link>
