@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ArrowLeft, User, Car, Calendar, History, Wrench, FileText, Clock, CheckCircle } from "lucide-react"
 import Link from "next/link"
-import DashboardLayout from "@/components/dashboard-layout"
+import RoleLayout from "@/components/role-layout"
 import { getCustomers, getWorkOrders, type Customer, type WorkOrder, type Car as CarType } from "@/lib/demo-data"
 import { carBrands } from "@/lib/car-data"
 
@@ -119,24 +119,24 @@ export default function CustomerDetailPage({ params }: { params: { id: string } 
 
   if (loading) {
     return (
-      <DashboardLayout role={userRole} title="Chi tiết khách hàng">
+      <RoleLayout role={userRole} title="Chi tiết khách hàng">
         <div className="text-center py-8">Đang tải...</div>
-      </DashboardLayout>
+      </RoleLayout>
     )
   }
 
   if (!customer) {
     return (
-      <DashboardLayout role={userRole} title="Chi tiết khách hàng">
+      <RoleLayout role={userRole} title="Chi tiết khách hàng">
         <Alert variant="destructive">
           <AlertDescription>Không tìm thấy thông tin khách hàng</AlertDescription>
         </Alert>
-      </DashboardLayout>
+      </RoleLayout>
     )
   }
 
   return (
-    <DashboardLayout role={userRole} title="Chi tiết khách hàng">
+    <RoleLayout role={userRole} title="Chi tiết khách hàng">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -338,6 +338,6 @@ export default function CustomerDetailPage({ params }: { params: { id: string } 
           </CardContent>
         </Card>
       </div>
-    </DashboardLayout>
+    </RoleLayout>
   )
 }

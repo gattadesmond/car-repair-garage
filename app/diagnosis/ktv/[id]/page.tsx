@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Car, User, FileText, Calendar, Save, AlertTriangle, Settings, CheckCircle, Wrench } from "lucide-react"
-import DashboardLayout from "@/components/dashboard-layout"
+import RoleLayout from "@/components/role-layout"
 import { getWorkOrders, saveWorkOrders, getTechnicians, getCurrentUser, type WorkOrder, type Technician } from "@/lib/demo-data"
 import { addDays } from "date-fns"
 
@@ -184,24 +184,24 @@ export default function KTVDiagnosisPage({ params }: { params: { id: string } })
 
   if (loading) {
     return (
-      <DashboardLayout role="ktv" title="Chẩn đoán & Kiểm tra xe">
+      <RoleLayout role="ktv" title="Chẩn đoán & Kiểm tra xe">
         <div className="text-center py-8">Đang tải...</div>
-      </DashboardLayout>
+      </RoleLayout>
     )
   }
 
   if (!workOrder) {
     return (
-      <DashboardLayout role="ktv" title="Chẩn đoán & Kiểm tra xe">
+      <RoleLayout role="ktv" title="Chẩn đoán & Kiểm tra xe">
         <Alert variant="destructive">
           <AlertDescription>Không tìm thấy phiếu tiếp nhận</AlertDescription>
         </Alert>
-      </DashboardLayout>
+      </RoleLayout>
     )
   }
 
   return (
-    <DashboardLayout role="ktv" title="Chẩn đoán & Kiểm tra xe">
+    <RoleLayout role="ktv" title="Chẩn đoán & Kiểm tra xe">
       <div className="space-y-6">
         {/* Work Order Info */}
         <Card>
@@ -529,6 +529,6 @@ export default function KTVDiagnosisPage({ params }: { params: { id: string } })
           </form>
         )}
       </div>
-    </DashboardLayout>
+    </RoleLayout>
   )
 }

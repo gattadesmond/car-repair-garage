@@ -13,7 +13,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Car, User, FileText, Save, Camera, AlertTriangle } from "lucide-react"
-import DashboardLayout from "@/components/dashboard-layout"
+import RoleLayout from "@/components/role-layout"
 import ImageUpload from "@/components/image-upload"
 import {
   getCustomers,
@@ -308,7 +308,7 @@ export default function IntakeFormPage() {
   }
 
   return (
-    <DashboardLayout role="cv" title="Tạo phiếu tiếp nhận">
+    <RoleLayout role="cv" title="Tạo phiếu tiếp nhận">
       <div 
         className="relative pb-6"
         style={{
@@ -702,6 +702,6 @@ export default function IntakeFormPage() {
         </div>
       </form>
       </div>
-    </DashboardLayout>
+    </RoleLayout>
   )
 }

@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Car, User, FileText, Calendar, Save, AlertTriangle, Settings, Wrench, CheckCircle } from "lucide-react"
-import DashboardLayout from "@/components/dashboard-layout"
+import RoleLayout from "@/components/role-layout"
 import { getWorkOrders, saveWorkOrders, getTechnicians, getCurrentUser, type WorkOrder, type Technician } from "@/lib/demo-data"
 
 export default function AdminDiagnosisPage({ params }: { params: { id: string } }) {
@@ -159,24 +159,24 @@ export default function AdminDiagnosisPage({ params }: { params: { id: string } 
 
   if (loading) {
     return (
-      <DashboardLayout role="admin" title="Duyệt chẩn đoán">
+      <RoleLayout role="admin" title="Duyệt chẩn đoán">
         <div className="text-center py-8">Đang tải...</div>
-      </DashboardLayout>
+      </RoleLayout>
     )
   }
 
   if (!workOrder) {
     return (
-      <DashboardLayout role="admin" title="Duyệt chẩn đoán">
+      <RoleLayout role="admin" title="Duyệt chẩn đoán">
         <Alert variant="destructive">
           <AlertDescription>Không tìm thấy phiếu tiếp nhận</AlertDescription>
         </Alert>
-      </DashboardLayout>
+      </RoleLayout>
     )
   }
 
   return (
-    <DashboardLayout role="admin" title="Duyệt chẩn đoán">
+    <RoleLayout role="admin" title="Duyệt chẩn đoán">
       <div className="space-y-6">
         {/* Work Order Info */}
         <Card>
@@ -413,6 +413,6 @@ export default function AdminDiagnosisPage({ params }: { params: { id: string } 
           </div>
         </form>
       </div>
-    </DashboardLayout>
+    </RoleLayout>
   )
 }
