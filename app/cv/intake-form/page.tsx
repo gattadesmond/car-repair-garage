@@ -60,9 +60,7 @@ export default function IntakeFormPage() {
     initialCondition: [] as string[],
     diagnosisSymptoms: [] as SelectedSymptom[],
     selectedServices: [] as string[],
-    notes: "",
-
-    receivedDate: new Date().toISOString().split("T")[0],
+    notes: ""
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -288,7 +286,7 @@ export default function IntakeFormPage() {
         selected_services: formData.selectedServices,
         notes: formData.notes,
         received_by: "",
-        received_date: formData.receivedDate,
+        received_date: new Date().toISOString().split("T")[0],
         assigned_technician: "",
         status: "pending",
         created_at: new Date().toISOString(),
@@ -695,16 +693,7 @@ export default function IntakeFormPage() {
               />
             </div>
 
-            <div>
-              <Label htmlFor="receivedDate">Ngày tiếp nhận *</Label>
-              <Input
-                id="receivedDate"
-                type="date"
-                value={formData.receivedDate}
-                onChange={(e) => setFormData((prev) => ({ ...prev, receivedDate: e.target.value }))}
-                required
-              />
-            </div>
+
           </CardContent>
         </Card>
 
