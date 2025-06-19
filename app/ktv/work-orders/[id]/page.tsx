@@ -396,7 +396,7 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
                             {task.service_type === "painting" && "Đồng Sơn"}
                             {task.service_type === "mechanical" && "Cơ"}
                             {task.service_type === "electrical" && "Điện"}
-                            {task.service_type === "cooling" && "Lạnh"}
+                            {task.service_type === "ac" && "Hết"}
                           </Badge>
                           <h3 className="font-medium">{task.name}</h3>
                           <Badge variant={task.status === "completed" ? "default" : "secondary"}>

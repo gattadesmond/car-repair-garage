@@ -141,7 +141,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
       case "painting":
         return { label: "Đồng sơn", color: "bg-red-100 text-red-800" }
       case "ac":
-        return { label: "Lạnh", color: "bg-cyan-100 text-cyan-800" }
+        return { label: "Hết", color: "bg-cyan-100 text-cyan-800" }
       default:
         return { label: "Khác", color: "bg-gray-100 text-gray-800" }
     }

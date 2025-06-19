@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Textarea } from "@/components/ui/textarea"
-import { Car, User, FileText, Calendar, ArrowLeft, Edit, Camera, Eye, Save } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { Car, User, FileText, Calendar, ArrowLeft, Edit, Camera, Eye, Save, Wrench, CheckCircle, Clock } from "lucide-react"
 import Link from "next/link"
 import DashboardLayout from "@/components/dashboard-layout"
-import { getWorkOrders, getTechnicians, saveWorkOrders, getCurrentUser, type WorkOrder, type Technician } from "@/lib/demo-data"
+import { getWorkOrders, getTechnicians, saveWorkOrders, getCurrentUser, type WorkOrder, type Technician, type RepairTask } from "@/lib/demo-data"
 
 interface SavedImage {
   id: string
@@ -31,6 +33,16 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
   const [adminNotes, setAdminNotes] = useState("")
   const [savingNotes, setSavingNotes] = useState(false)
   const [noteError, setNoteError] = useState("")
+  
+  // State cho phần quản lý tác vụ
+  const [selectedTask, setSelectedTask] = useState<RepairTask | null>(null)
+  const [isEditingTask, setIsEditingTask] = useState(false)
+  const [taskStatus, setTaskStatus] = useState<string>("") 
+  const [taskNotes, setTaskNotes] = useState<string>("") 
+  const [assignedTechnician, setAssignedTechnician] = useState<string>("") 
+  const [savingTask, setSavingTask] = useState(false)
+  const [taskError, setTaskError] = useState("")
+  const [taskSuccess, setTaskSuccess] = useState("")
 
   useEffect(() => {
     fetchWorkOrder()
@@ -118,6 +130,69 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
     }
   }
 
+  const handleSaveTask = () => {
+    if (!selectedTask) return
+    
+    setSavingTask(true)
+    setTaskError("")
+    setTaskSuccess("")
+
+    try {
+      if (!workOrder) {
+        setTaskError("Không tìm thấy thông tin đơn hàng")
+        setSavingTask(false)
+        return
+      }
+
+      const orders = getWorkOrders()
+      const orderIndex = orders.findIndex(o => o.id === workOrder.id)
+
+      if (orderIndex === -1) {
+        setTaskError("Không tìm thấy phiếu sửa chữa")
+        setSavingTask(false)
+        return
+      }
+
+      // Cập nhật task trong work order
+      if (orders[orderIndex].repair_tasks) {
+        orders[orderIndex].repair_tasks = orders[orderIndex].repair_tasks!.map(t => {
+          if (t.id === selectedTask.id) {
+            return {
+              ...t,
+              status: taskStatus,
+              notes: taskNotes,
+              assigned_technician: assignedTechnician,
+              updated_at: new Date().toISOString()
+            }
+          }
+          return t
+        })
+      }
+
+      // Lưu thay đổi
+      saveWorkOrders(orders)
+      setTaskSuccess("Đã cập nhật thông tin công việc")
+      setSavingTask(false)
+
+      // Cập nhật lại dữ liệu
+      fetchWorkOrder()
+      setIsEditingTask(false)
+    } catch (err) {
+      setTaskError("Đã xảy ra lỗi khi lưu thông tin")
+      setSavingTask(false)
+    }
+  }
+  
+  const selectTaskForEdit = (task: RepairTask) => {
+    setSelectedTask(task)
+    setTaskStatus(task.status || "pending")
+    setTaskNotes(task.notes || "")
+    setAssignedTechnician(task.assigned_technician || "unassigned")
+    setIsEditingTask(true)
+    setTaskError("")
+    setTaskSuccess("")
+  }
+
   const getStatusBadge = (status: string) => {
     const statusMap = {
       pending: { label: "Chờ xử lý", variant: "secondary" as const },
@@ -125,8 +200,38 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
       in_inspection: { label: "Đang kiểm tra", variant: "default" as const },
       completed: { label: "Hoàn thành", variant: "default" as const },
       delivered: { label: "Đã giao", variant: "default" as const },
+      in_progress: { label: "Đang thực hiện", variant: "outline" as const },
     }
     return statusMap[status as keyof typeof statusMap] || { label: status, variant: "secondary" as const }
+  }
+  
+  const getTaskStatusBadge = (status: string) => {
+    switch (status) {
+      case "completed":
+        return { variant: "outline", label: "Hoàn thành", color: "bg-green-100 text-green-800 hover:bg-green-100" }
+      case "in_progress":
+        return { variant: "outline", label: "Đang thực hiện", color: "bg-blue-100 text-blue-800 hover:bg-blue-100" }
+      case "pending":
+      default:
+        return { variant: "outline", label: "Chờ xử lý", color: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100" }
+    }
+  }
+
+  const getServiceTypeBadge = (type: string) => {
+    switch (type) {
+      case "cleaning":
+        return { label: "Dọn dẹp", color: "bg-blue-100 text-blue-800" }
+      case "mechanical":
+        return { label: "Cơ", color: "bg-amber-100 text-amber-800" }
+      case "electrical":
+        return { label: "Điện", color: "bg-purple-100 text-purple-800" }
+      case "painting":
+        return { label: "Đồng sơn", color: "bg-red-100 text-red-800" }
+      case "ac":
+        return { label: "Hết", color: "bg-cyan-100 text-cyan-800" }
+      default:
+        return { label: "Khác", color: "bg-gray-100 text-gray-800" }
+    }
   }
 
   const getNextAction = (order: WorkOrder) => {
@@ -448,6 +553,165 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
                 </div>
               )}
             </div>
+          </CardContent>
+        </Card>
+        
+        {/* Repair Tasks */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Wrench className="h-5 w-5" />
+              <span>Danh sách công việc</span>
+            </CardTitle>
+            <CardDescription>Các công việc sửa chữa cần thực hiện</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {taskSuccess && (
+              <Alert className="mb-4 bg-green-50 border-green-200">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <AlertDescription className="text-green-700">{taskSuccess}</AlertDescription>
+              </Alert>
+            )}
+
+            {taskError && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertDescription>{taskError}</AlertDescription>
+              </Alert>
+            )}
+
+            {!workOrder.repair_tasks || workOrder.repair_tasks.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">Chưa có công việc nào được thêm vào</div>
+            ) : isEditingTask && selectedTask ? (
+              <div className="space-y-4">
+                <div>
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Badge className={getServiceTypeBadge(selectedTask.service_type).color}>
+                      {getServiceTypeBadge(selectedTask.service_type).label}
+                    </Badge>
+                    <h3 className="text-lg font-semibold">{selectedTask.name}</h3>
+                  </div>
+                  {selectedTask.description && (
+                    <p className="text-gray-600 mb-4">{selectedTask.description}</p>
+                  )}
+                </div>
+
+                <div className="pt-4 border-t">
+                  <h4 className="font-medium mb-2">Cập nhật trạng thái</h4>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="status">Trạng thái</Label>
+                      <Select value={taskStatus} onValueChange={setTaskStatus}>
+                        <SelectTrigger id="status">
+                          <SelectValue placeholder="Chọn trạng thái" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Chờ xử lý</SelectItem>
+                          <SelectItem value="in_progress">Đang thực hiện</SelectItem>
+                          <SelectItem value="completed">Hoàn thành</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {currentUser?.role !== "ktv" && (
+                      <div>
+                        <Label htmlFor="technician">Kỹ thuật viên</Label>
+                        <Select value={assignedTechnician} onValueChange={setAssignedTechnician}>
+                          <SelectTrigger id="technician">
+                            <SelectValue placeholder="Chọn KTV" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="unassigned">Chưa phân công</SelectItem>
+                            {technicians.map((tech) => (
+                              <SelectItem key={tech.id} value={tech.id}>
+                                {tech.full_name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
+                    <div>
+                      <Label htmlFor="notes">Ghi chú</Label>
+                      <Textarea
+                        id="notes"
+                        placeholder="Nhập ghi chú về công việc"
+                        value={taskNotes}
+                        onChange={(e) => setTaskNotes(e.target.value)}
+                        rows={4}
+                      />
+                    </div>
+
+                    <div className="flex space-x-2">
+                      <Button 
+                        onClick={handleSaveTask} 
+                        disabled={savingTask} 
+                      >
+                        {savingTask ? "Đang lưu..." : "Lưu thay đổi"}
+                        <Save className="ml-2 h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => {
+                          setIsEditingTask(false);
+                          setSelectedTask(null);
+                        }}
+                      >
+                        Hủy
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {workOrder.repair_tasks.map((task) => (
+                  <div key={task.id} className="border rounded-lg p-4">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Badge className={getServiceTypeBadge(task.service_type).color}>
+                            {getServiceTypeBadge(task.service_type).label}
+                          </Badge>
+                          <h4 className="font-medium">{task.name}</h4>
+                          <Badge className={getTaskStatusBadge(task.status || "pending").color}>
+                            {getTaskStatusBadge(task.status || "pending").label}
+                          </Badge>
+                        </div>
+                        {task.description && (
+                          <p className="text-sm text-gray-600 mb-2">
+                            {task.description}
+                          </p>
+                        )}
+                        <div className="flex items-center space-x-4 text-xs text-gray-500">
+                          <span className="flex items-center">
+                            <Calendar className="h-3 w-3 mr-1" />
+                            {new Date(task.created_at).toLocaleDateString("vi-VN")}
+                          </span>
+                          {task.assigned_technician && (
+                            <span className="flex items-center">
+                              <User className="h-3 w-3 mr-1" />
+                              KTV: {technicians.find(t => t.id === task.assigned_technician)?.full_name || "Chưa xác định"}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => selectTaskForEdit(task)}
+                        >
+                          <Edit className="h-4 w-4 mr-2" />
+                          Cập nhật
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
