@@ -123,7 +123,7 @@ export default function TasksPage() {
       painting: { label: "Đồng Sơn", variant: "outline" as const, color: "bg-orange-100 text-orange-800" },
       mechanical: { label: "Cơ", variant: "outline" as const, color: "bg-green-100 text-green-800" },
       electrical: { label: "Điện", variant: "outline" as const, color: "bg-purple-100 text-purple-800" },
-      cooling: { label: "Lạnh", variant: "outline" as const, color: "bg-cyan-100 text-cyan-800" },
+      ac: { label: "Lạnh", variant: "outline" as const, color: "bg-cyan-100 text-cyan-800" },
     }
     return typeMap[serviceType as keyof typeof typeMap] || { label: serviceType, variant: "outline" as const, color: "" }
   }

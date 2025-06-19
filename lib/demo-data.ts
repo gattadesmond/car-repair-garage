@@ -154,8 +154,8 @@ export const demoWorkOrders: WorkOrder[] = [
     repair_tasks: [
       {
         id: "task-1-1",
-        name: "Thay ắc quy mới",
-        description: "Thay thế ắc quy cũ bằng ắc quy mới chính hãng",
+        name: "Sửa chữa hệ thống điện",
+        description: "Thay thế ắc quy cũ bằng ắc quy mới chính hãng, thay cảm biến oxy bị lỗi và cài đặt lại hệ thống",
         service_type: "electrical",
         status: "pending",
         assigned_technician: "tech-3",
@@ -164,16 +164,6 @@ export const demoWorkOrders: WorkOrder[] = [
       },
       {
         id: "task-1-2",
-        name: "Thay cảm biến oxy",
-        description: "Thay thế cảm biến oxy bị lỗi và cài đặt lại hệ thống",
-        service_type: "electrical",
-        status: "pending",
-        assigned_technician: "tech-3",
-        created_at: new Date(Date.now() - 86400000).toISOString(),
-        updated_at: new Date(Date.now() - 43200000).toISOString(),
-      },
-      {
-        id: "task-1-3",
         name: "Vệ sinh khoang động cơ",
         description: "Vệ sinh toàn bộ khoang động cơ, kiểm tra các kết nối điện",
         service_type: "cleaning",
@@ -204,8 +194,8 @@ export const demoWorkOrders: WorkOrder[] = [
     repair_tasks: [
       {
         id: "task-2-1",
-        name: "Thay dầu động cơ",
-        description: "Thay dầu động cơ và lọc dầu mới",
+        name: "Bảo dưỡng hệ thống cơ khí",
+        description: "Thay dầu động cơ và lọc dầu mới, thay lọc gió động cơ mới, kiểm tra hệ thống phanh và điều chỉnh nếu cần",
         service_type: "mechanical",
         status: "completed",
         assigned_technician: "tech-2",
@@ -214,26 +204,6 @@ export const demoWorkOrders: WorkOrder[] = [
       },
       {
         id: "task-2-2",
-        name: "Thay lọc gió động cơ",
-        description: "Thay thế lọc gió động cơ mới",
-        service_type: "mechanical",
-        status: "completed",
-        assigned_technician: "tech-2",
-        created_at: new Date(Date.now() - 172800000).toISOString(),
-        updated_at: new Date(Date.now() - 86400000).toISOString(),
-      },
-      {
-        id: "task-2-3",
-        name: "Kiểm tra và điều chỉnh phanh",
-        description: "Kiểm tra hệ thống phanh và điều chỉnh nếu cần",
-        service_type: "mechanical",
-        status: "completed",
-        assigned_technician: "tech-4",
-        created_at: new Date(Date.now() - 172800000).toISOString(),
-        updated_at: new Date(Date.now() - 86400000).toISOString(),
-      },
-      {
-        id: "task-2-4",
         name: "Vệ sinh nội thất",
         description: "Vệ sinh toàn bộ nội thất xe",
         service_type: "cleaning",
@@ -265,31 +235,11 @@ export const demoWorkOrders: WorkOrder[] = [
     repair_tasks: [
       {
         id: "task-3-1",
-        name: "Thay dây đai cam",
-        description: "Thay thế dây đai cam và kiểm tra căng dây",
+        name: "Sửa chữa hệ thống cơ khí",
+        description: "Thay thế dây đai cam và kiểm tra căng dây, thay thế bạc đạn bơm nước bị mòn, kiểm tra toàn bộ hệ thống làm mát, bổ sung nước làm mát nếu cần",
         service_type: "mechanical",
         status: "in_progress",
         assigned_technician: "tech-3",
-        created_at: new Date(Date.now() - 259200000).toISOString(),
-        updated_at: new Date(Date.now() - 172800000).toISOString(),
-      },
-      {
-        id: "task-3-2",
-        name: "Thay bạc đạn bơm nước",
-        description: "Thay thế bạc đạn bơm nước bị mòn",
-        service_type: "mechanical",
-        status: "pending",
-        assigned_technician: "tech-3",
-        created_at: new Date(Date.now() - 259200000).toISOString(),
-        updated_at: new Date(Date.now() - 172800000).toISOString(),
-      },
-      {
-        id: "task-3-3",
-        name: "Kiểm tra hệ thống làm mát",
-        description: "Kiểm tra toàn bộ hệ thống làm mát, bổ sung nước làm mát nếu cần",
-        service_type: "mechanical",
-        status: "pending",
-        assigned_technician: "tech-4",
         created_at: new Date(Date.now() - 259200000).toISOString(),
         updated_at: new Date(Date.now() - 172800000).toISOString(),
       }
@@ -315,8 +265,8 @@ export const demoWorkOrders: WorkOrder[] = [
     repair_tasks: [
       {
         id: "task-4-1",
-        name: "Nạp gas điều hòa",
-        description: "Kiểm tra và nạp gas điều hòa đúng tiêu chuẩn",
+        name: "Sửa chữa hệ thống điều hòa",
+        description: "Kiểm tra và nạp gas điều hòa đúng tiêu chuẩn, thay thế quạt dàn nóng bị hỏng",
         service_type: "ac",
         status: "pending",
         assigned_technician: "tech-5",
@@ -325,16 +275,6 @@ export const demoWorkOrders: WorkOrder[] = [
       },
       {
         id: "task-4-2",
-        name: "Thay quạt dàn nóng",
-        description: "Thay thế quạt dàn nóng bị hỏng",
-        service_type: "ac",
-        status: "pending",
-        assigned_technician: "tech-5",
-        created_at: new Date(Date.now() - 86400000).toISOString(),
-        updated_at: new Date(Date.now() - 43200000).toISOString(),
-      },
-      {
-        id: "task-4-3",
         name: "Vệ sinh dàn lạnh",
         description: "Vệ sinh toàn bộ dàn lạnh, lọc gió điều hòa",
         service_type: "cleaning",
@@ -365,8 +305,8 @@ export const demoWorkOrders: WorkOrder[] = [
     repair_tasks: [
       {
         id: "task-5-1",
-        name: "Gò cửa xe bên tài xế",
-        description: "Gò phần móp trên cửa xe bên tài xế",
+        name: "Đồng sơn cửa xe",
+        description: "Gò phần móp trên cửa xe bên tài xế, sơn lại cửa xe bên tài xế đúng màu xe",
         service_type: "painting",
         status: "in_progress",
         assigned_technician: "tech-2",
@@ -375,16 +315,6 @@ export const demoWorkOrders: WorkOrder[] = [
       },
       {
         id: "task-5-2",
-        name: "Sơn lại cửa xe",
-        description: "Sơn lại cửa xe bên tài xế đúng màu xe",
-        service_type: "painting",
-        status: "pending",
-        assigned_technician: "tech-2",
-        created_at: new Date(Date.now() - 345600000).toISOString(),
-        updated_at: new Date(Date.now() - 172800000).toISOString(),
-      },
-      {
-        id: "task-5-3",
         name: "Kiểm tra khung cửa",
         description: "Kiểm tra khung cửa và điều chỉnh nếu cần",
         service_type: "mechanical",
