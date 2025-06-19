@@ -75,22 +75,59 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
   }
 
   const fetchImages = () => {
-    const imageKey = `images-${params.id}`
-    const storedImages = localStorage.getItem(imageKey)
-    if (storedImages) {
-      try {
-        const parsedImages = JSON.parse(storedImages)
-        setImages(parsedImages)
-      } catch (error) {
-        console.error("Error parsing images:", error)
+    try {
+      const imageKey = `images-${params.id}`
+      const storedImages = localStorage.getItem(imageKey)
+      
+      if (storedImages && storedImages.trim() !== '') {
+        try {
+          const parsedImages = JSON.parse(storedImages)
+          
+          // Kiểm tra xem dữ liệu có phải là mảng không
+          if (Array.isArray(parsedImages)) {
+            setImages(parsedImages)
+          } else {
+            console.warn("Stored images data is not an array, resetting to empty array")
+            setImages([])
+          }
+        } catch (error) {
+          console.warn("Error parsing images, resetting to empty array:", error)
+          setImages([])
+          
+          // Xóa dữ liệu không hợp lệ khỏi localStorage
+          localStorage.removeItem(imageKey)
+        }
+      } else {
+        // Không có dữ liệu hoặc dữ liệu rỗng
+        setImages([])
       }
+    } catch (error) {
+      // Xử lý lỗi truy cập localStorage (ví dụ: trong chế độ ẩn danh)
+      console.warn("Error accessing localStorage:", error)
+      setImages([])
     }
   }
 
   const viewImage = (imageData: string) => {
     const newWindow = window.open()
     if (newWindow) {
-      newWindow.document.write(`<img src="${imageData}" style="max-width: 100%; height: auto;" />`)
+      newWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Xem hình ảnh</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+              body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f0f0f0; }
+              img { max-width: 100%; max-height: 90vh; object-fit: contain; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+            </style>
+          </head>
+          <body>
+            <img src="${imageData}" alt="Chi tiết hình ảnh" />
+          </body>
+        </html>
+      `)
+      newWindow.document.close()
     }
   }
 
