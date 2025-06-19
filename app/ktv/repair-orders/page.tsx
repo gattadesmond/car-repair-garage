@@ -90,7 +90,7 @@ export default function RepairOrdersPage() {
         initial_condition: ["Xe hoạt động bình thường", "Đèn check engine sáng"],
         diagnosis_symptoms: ["Tiếng ồn bất thường từ động cơ", "Phanh kêu khi sử dụng"],
         notes: "Khách hàng yêu cầu sử dụng nhớt chính hãng",
-        received_by: "HAISAN",
+        received_by: "",
         received_date: new Date().toISOString().split("T")[0],
         status: "in_inspection",
         assigned_technician: user.id,
