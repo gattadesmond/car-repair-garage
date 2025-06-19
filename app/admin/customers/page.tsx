@@ -11,7 +11,7 @@ import DashboardLayout from "@/components/dashboard-layout"
 import { getCustomers, type Customer } from "@/lib/demo-data"
 import { carBrands } from "@/lib/car-data"
 
-export default function CustomersPage() {
+export default function AdminCustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [loading, setLoading] = useState(true)
@@ -48,7 +48,7 @@ export default function CustomersPage() {
   }
 
   return (
-    <DashboardLayout role="cv" title="Quản lý khách hàng">
+    <DashboardLayout role="admin" title="Quản lý khách hàng">
       <div className="space-y-6">
         {/* Search and Add */}
         <div className="flex flex-col sm:flex-row gap-4">
@@ -121,7 +121,7 @@ export default function CustomersPage() {
                     </div>
 
                     <div className="flex flex-col space-y-2 ml-4">
-                      <Link href={`/customers/${customer.id}`}>
+                      <Link href={`/admin/customers/${customer.id}`}>
                         <Button variant="outline" size="sm">
                           <History className="h-4 w-4 mr-1" />
                           Lịch sử

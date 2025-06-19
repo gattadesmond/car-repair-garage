@@ -141,10 +141,12 @@ export default function CustomersPage() {
                       </div>
 
                       <div className="flex flex-col space-y-2 ml-4">
-                        <Button variant="outline" size="sm">
-                          <History className="h-4 w-4 mr-1" />
-                          Lịch sử
-                        </Button>
+                        <Link href={`/customers/${customer.id}`}>
+                          <Button variant="outline" size="sm">
+                            <History className="h-4 w-4 mr-1" />
+                            Lịch sử
+                          </Button>
+                        </Link>
                         <Link href={`/cv/intake-form?customer=${customer.id}`}>
                           <Button size="sm" className="w-full">
                             Tạo phiếu mới

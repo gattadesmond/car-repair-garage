@@ -45,7 +45,15 @@ export default function DashboardLayout({ children, role, title }: DashboardLayo
   }
 
   const getNavItems = () => {
-    const baseItems = [{ href: `/dashboard/${role}`, icon: Home, label: "Dashboard" }]
+    let dashboardLink = ""
+    
+    if (role === "cv") {
+      dashboardLink = "/cv/dashboard"
+    } else {
+      dashboardLink = `/dashboard/${role}`
+    }
+    
+    const baseItems = [{ href: dashboardLink, icon: Home, label: "Dashboard" }]
 
     if (role === "cv") {
       return [

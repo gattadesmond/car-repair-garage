@@ -64,7 +64,7 @@ export default function RoleLayout({ children, role, title }: RoleLayoutProps) {
         ]
       case "admin":
         return [
-          { href: "/dashboard/admin", label: "Tổng quan", icon: <LayoutDashboard className="h-5 w-5" /> },
+          { href: "/admin/dashboard", label: "Tổng quan", icon: <LayoutDashboard className="h-5 w-5" /> },
           { href: "/customers", label: "Khách hàng", icon: <Users className="h-5 w-5" /> },
           { href: "/repair-orders", label: "Đơn sửa chữa", icon: <FileText className="h-5 w-5" /> },
           { href: "/technicians", label: "Kỹ thuật viên", icon: <Wrench className="h-5 w-5" /> },
