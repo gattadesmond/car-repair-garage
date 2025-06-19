@@ -448,116 +448,8 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
           </Card>
         )}
 
-        {/* Notes */}
-        {workOrder.notes && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Ghi chú</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-700">{workOrder.notes}</p>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Admin Notes */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <FileText className="h-5 w-5" />
-              <span>Ghi chú của Admin</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {workOrder.admin_notes ? (
-              <div className="space-y-4">
-                <p className="text-gray-700">{workOrder.admin_notes}</p>
-                {currentUser?.role === "admin" && (
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setIsEditingAdminNotes(true)}
-                  >
-                    <Edit className="h-4 w-4 mr-2" />
-                    Chỉnh sửa ghi chú
-                  </Button>
-                )}
-              </div>
-            ) : currentUser?.role === "admin" ? (
-              <div className="space-y-4">
-                <p className="text-gray-500 italic">Chưa có ghi chú nào từ admin.</p>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setIsEditingAdminNotes(true)}
-                >
-                  <Edit className="h-4 w-4 mr-2" />
-                  Thêm ghi chú
-                </Button>
-              </div>
-            ) : (
-              <p className="text-gray-500 italic">Chưa có ghi chú nào từ admin.</p>
-            )}
-
-            {isEditingAdminNotes && currentUser?.role === "admin" && (
-              <div className="mt-4 space-y-4">
-                <Textarea
-                  placeholder="Nhập ghi chú của admin"
-                  value={adminNotes}
-                  onChange={(e) => setAdminNotes(e.target.value)}
-                  rows={4}
-                />
-                <div className="flex space-x-2">
-                  <Button onClick={handleSaveAdminNotes} disabled={savingNotes}>
-                    {savingNotes ? "Đang lưu..." : "Lưu ghi chú"}
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => {
-                      setIsEditingAdminNotes(false);
-                      setAdminNotes(workOrder.admin_notes || "");
-                    }}
-                  >
-                    Hủy
-                  </Button>
-                </div>
-                {noteError && (
-                  <Alert variant="destructive">
-                    <AlertDescription>{noteError}</AlertDescription>
-                  </Alert>
-                )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Timeline */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Lịch sử thay đổi</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                <div>
-                  <p className="font-medium">Phiếu được tạo</p>
-                  <p className="text-sm text-gray-500">{new Date(workOrder.created_at).toLocaleString("vi-VN")}</p>
-                </div>
-              </div>
-              {workOrder.updated_at !== workOrder.created_at && (
-                <div className="flex items-center space-x-4">
-                  <div className="w-2 h-2 bg-green-600 rounded-full"></div>
-                  <div>
-                    <p className="font-medium">Cập nhật gần nhất</p>
-                    <p className="text-sm text-gray-500">{new Date(workOrder.updated_at).toLocaleString("vi-VN")}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* Repair Tasks */}
-        <Card>
+           {/* Repair Tasks */}
+           <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Wrench className="h-5 w-5" />
@@ -714,6 +606,116 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
             )}
           </CardContent>
         </Card>
+
+        {/* Notes */}
+        {workOrder.notes && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Ghi chú</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-700">{workOrder.notes}</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Admin Notes */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <FileText className="h-5 w-5" />
+              <span>Ghi chú của Admin</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {workOrder.admin_notes ? (
+              <div className="space-y-4">
+                <p className="text-gray-700">{workOrder.admin_notes}</p>
+                {currentUser?.role === "admin" && (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsEditingAdminNotes(true)}
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Chỉnh sửa ghi chú
+                  </Button>
+                )}
+              </div>
+            ) : currentUser?.role === "admin" ? (
+              <div className="space-y-4">
+                <p className="text-gray-500 italic">Chưa có ghi chú nào từ admin.</p>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsEditingAdminNotes(true)}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Thêm ghi chú
+                </Button>
+              </div>
+            ) : (
+              <p className="text-gray-500 italic">Chưa có ghi chú nào từ admin.</p>
+            )}
+
+            {isEditingAdminNotes && currentUser?.role === "admin" && (
+              <div className="mt-4 space-y-4">
+                <Textarea
+                  placeholder="Nhập ghi chú của admin"
+                  value={adminNotes}
+                  onChange={(e) => setAdminNotes(e.target.value)}
+                  rows={4}
+                />
+                <div className="flex space-x-2">
+                  <Button onClick={handleSaveAdminNotes} disabled={savingNotes}>
+                    {savingNotes ? "Đang lưu..." : "Lưu ghi chú"}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      setIsEditingAdminNotes(false);
+                      setAdminNotes(workOrder.admin_notes || "");
+                    }}
+                  >
+                    Hủy
+                  </Button>
+                </div>
+                {noteError && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{noteError}</AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Timeline */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Lịch sử thay đổi</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-4">
+                <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                <div>
+                  <p className="font-medium">Phiếu được tạo</p>
+                  <p className="text-sm text-gray-500">{new Date(workOrder.created_at).toLocaleString("vi-VN")}</p>
+                </div>
+              </div>
+              {workOrder.updated_at !== workOrder.created_at && (
+                <div className="flex items-center space-x-4">
+                  <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  <div>
+                    <p className="font-medium">Cập nhật gần nhất</p>
+                    <p className="text-sm text-gray-500">{new Date(workOrder.updated_at).toLocaleString("vi-VN")}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        
+     
       </div>
     </DashboardLayout>
   )
