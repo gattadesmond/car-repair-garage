@@ -96,6 +96,35 @@ export default function IntakeFormPage() {
     { id: "electrical", name: "Điện", icon: <Zap className="h-4 w-4 text-yellow-500" /> },
     { id: "cooling", name: "Lạnh", icon: <Snowflake className="h-4 w-4 text-cyan-500" /> },
   ]
+  
+  // Các task mặc định cho từng loại dịch vụ
+  const defaultServiceTasks = {
+    cleaning: [
+      { name: "Vệ sinh nội thất", description: "Làm sạch ghế, thảm, bảng điều khiển" },
+      { name: "Vệ sinh ngoại thất", description: "Rửa xe, đánh bóng" },
+      { name: "Vệ sinh khoang máy", description: "Làm sạch khoang máy" }
+    ],
+    painting: [
+      { name: "Sơn lại phần bị trầy xước", description: "Sơn lại các vùng bị trầy xước" },
+      { name: "Đồng nắn phần bị móp méo", description: "Sửa chữa các phần bị móp méo" },
+      { name: "Thay thế phụ tùng bị hỏng", description: "Thay thế các phụ tùng bị hỏng" }
+    ],
+    mechanical: [
+      { name: "Kiểm tra và sửa chữa động cơ", description: "Kiểm tra và sửa chữa các vấn đề về động cơ" },
+      { name: "Kiểm tra và sửa chữa hệ thống phanh", description: "Kiểm tra và sửa chữa hệ thống phanh" },
+      { name: "Kiểm tra và sửa chữa hệ thống treo", description: "Kiểm tra và sửa chữa hệ thống treo" }
+    ],
+    electrical: [
+      { name: "Kiểm tra và sửa chữa hệ thống điện", description: "Kiểm tra và sửa chữa các vấn đề về hệ thống điện" },
+      { name: "Kiểm tra và sửa chữa hệ thống đèn", description: "Kiểm tra và sửa chữa hệ thống đèn" },
+      { name: "Kiểm tra và sửa chữa hệ thống âm thanh", description: "Kiểm tra và sửa chữa hệ thống âm thanh" }
+    ],
+    cooling: [
+      { name: "Kiểm tra và sửa chữa hệ thống điều hòa", description: "Kiểm tra và sửa chữa các vấn đề về hệ thống điều hòa" },
+      { name: "Nạp gas điều hòa", description: "Nạp gas cho hệ thống điều hòa" },
+      { name: "Vệ sinh hệ thống điều hòa", description: "Vệ sinh hệ thống điều hòa" }
+    ]
+  }
 
   useEffect(() => {
     if (customerId) {
@@ -271,6 +300,24 @@ export default function IntakeFormPage() {
         })),
       )
 
+      // Tạo các task nhỏ dựa trên các loại dịch vụ được chọn
+      const repairTasks = []
+      formData.selectedServices.forEach(serviceId => {
+        const serviceTasks = defaultServiceTasks[serviceId as keyof typeof defaultServiceTasks] || []
+        serviceTasks.forEach(task => {
+          repairTasks.push({
+            id: `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+            service_type: serviceId,
+            name: task.name,
+            description: task.description,
+            status: "pending",
+            assigned_technician: "",
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+        })
+      })
+
       // Create work order
       const workOrders = getWorkOrders()
       const newWorkOrder: WorkOrder = {
@@ -284,6 +331,7 @@ export default function IntakeFormPage() {
         initial_condition: formData.initialCondition,
         diagnosis_symptoms: formData.diagnosisSymptoms.map(symptom => symptom.name),
         selected_services: formData.selectedServices,
+        repair_tasks: repairTasks, // Thêm các task nhỏ vào work order
         notes: formData.notes,
         received_by: "",
         received_date: new Date().toISOString().split("T")[0],

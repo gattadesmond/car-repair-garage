@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Textarea } from "@/components/ui/textarea"
-import { Car, User, FileText, Calendar, ArrowLeft, Edit, Camera, Eye, Save } from "lucide-react"
+import { Car, User, FileText, Calendar, ArrowLeft, Edit, Camera, Eye, Save, Wrench } from "lucide-react"
 import Link from "next/link"
 import RoleLayout from "@/components/role-layout"
 import { getWorkOrders, getTechnicians, saveWorkOrders, getCurrentUser, type WorkOrder, type Technician } from "@/lib/demo-data"
@@ -370,6 +370,65 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
             </CardHeader>
             <CardContent>
               <p className="text-gray-700">{workOrder.admin_notes}</p>
+            </CardContent>
+          </Card>
+        )}
+        
+        {/* Assigned Tasks */}
+        {workOrder.repair_tasks && workOrder.repair_tasks.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Wrench className="h-5 w-5 text-blue-600" />
+                <span>Công việc được giao</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {workOrder.repair_tasks
+                  .filter(task => task.assigned_technician === currentUser?.id)
+                  .map((task, index) => (
+                    <div key={task.id} className="p-4 border rounded-md">
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="bg-blue-100 text-blue-800">
+                            {task.service_type === "cleaning" && "Dọn Dẹp"}
+                            {task.service_type === "painting" && "Đồng Sơn"}
+                            {task.service_type === "mechanical" && "Cơ"}
+                            {task.service_type === "electrical" && "Điện"}
+                            {task.service_type === "cooling" && "Lạnh"}
+                          </Badge>
+                          <h3 className="font-medium">{task.name}</h3>
+                          <Badge variant={task.status === "completed" ? "default" : "secondary"}>
+                            {task.status === "pending" && "Chờ xử lý"}
+                            {task.status === "in_progress" && "Đang thực hiện"}
+                            {task.status === "completed" && "Hoàn thành"}
+                          </Badge>
+                        </div>
+                        {task.description && (
+                          <p className="text-sm text-gray-500">{task.description}</p>
+                        )}
+                        <div className="flex justify-end mt-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="text-xs"
+                            onClick={() => router.push(`/ktv/tasks/${task.id}`)}
+                          >
+                            <Eye className="h-3 w-3 mr-1" />
+                            Chi tiết
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                {workOrder.repair_tasks.filter(task => task.assigned_technician === currentUser?.id).length === 0 && (
+                  <div className="text-center py-4 text-gray-500">
+                    Không có công việc nào được giao cho bạn
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         )}

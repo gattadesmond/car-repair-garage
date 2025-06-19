@@ -8,13 +8,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Car, User, FileText, Calendar, ClipboardList, CheckCircle, Clock } from "lucide-react"
+import { Car, User, FileText, Calendar, ClipboardList, CheckCircle, Clock, Wrench } from "lucide-react"
 import Link from "next/link"
 import DashboardLayout from "@/components/dashboard-layout"
-import { getWorkOrders, getTechnicians, saveWorkOrders, getCurrentUser, type WorkOrder, type Technician } from "@/lib/demo-data"
+import { getWorkOrders, getTechnicians, saveWorkOrders, getCurrentUser, type WorkOrder, type Technician, type RepairTask } from "@/lib/demo-data"
 
 export default function TasksPage() {
-  const [workOrders, setWorkOrders] = useState<WorkOrder[]>([])
+  const [tasks, setTasks] = useState<(RepairTask & { work_order_id: string, car_info: string, license_plate: string, customer_name: string })[]>([])
   const [technicians, setTechnicians] = useState<Technician[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -33,46 +33,67 @@ export default function TasksPage() {
 
     const orders = getWorkOrders()
     const techs = getTechnicians()
-
-    // Lọc theo vai trò người dùng và trạng thái
-    let filteredOrders = orders
+    let allTasks: (RepairTask & { work_order_id: string, car_info: string, license_plate: string, customer_name: string })[] = []
     
-    // Nếu người dùng là KTV, chỉ hiển thị các công việc được gán cho KTV đó
-    if (user?.role === "ktv") {
-      filteredOrders = orders.filter((o) => o.assigned_technician === user.id)
-    }
+    // Lấy tất cả các task từ tất cả các work order
+    orders.forEach(order => {
+      if (order.repair_tasks && Array.isArray(order.repair_tasks)) {
+        const tasksFromOrder = order.repair_tasks.map((task: RepairTask) => ({
+          ...task,
+          work_order_id: order.id,
+          car_info: order.car_info,
+          license_plate: order.license_plate,
+          customer_name: order.customer_name,
+          created_at: task.created_at || order.created_at,
+          estimated_completion: order.estimated_completion
+        }));
+        
+        allTasks = [...allTasks, ...tasksFromOrder];
+      }
+    });
     
-    // Tiếp tục lọc theo trạng thái nếu cần
+    // Lọc theo trạng thái nếu không phải "all"
     if (filter === "pending") {
-      filteredOrders = filteredOrders.filter((o) => o.status === "pending" || o.status === "diagnosis")
-    } else if (filter === "in_inspection") {
-      filteredOrders = filteredOrders.filter((o) => o.status === "in_inspection")
+      allTasks = allTasks.filter(task => task.status === "pending")
+    } else if (filter === "in_progress") {
+      allTasks = allTasks.filter(task => task.status === "in_progress")
     } else if (filter === "completed") {
-      filteredOrders = filteredOrders.filter((o) => o.status === "completed")
+      allTasks = allTasks.filter(task => task.status === "completed")
     }
 
     // Sắp xếp theo thời gian tạo, mới nhất lên đầu
-    filteredOrders.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    allTasks.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
-    setWorkOrders(filteredOrders)
+    setTasks(allTasks)
     setTechnicians(techs)
     setLoading(false)
   }
 
-  const assignTechnician = (orderId: string, technicianId: string) => {
+  const assignTechnician = (taskId: string, workOrderId: string, technicianId: string) => {
     setSaving(true)
     setError("")
     setSuccess("")
 
     try {
       const orders = getWorkOrders()
-      const orderIndex = orders.findIndex((o) => o.id === orderId)
+      const orderIndex = orders.findIndex((o) => o.id === workOrderId)
 
-      if (orderIndex !== -1) {
+      if (orderIndex !== -1 && orders[orderIndex].repair_tasks) {
+        // Cập nhật task trong work order
+        const updatedTasks = orders[orderIndex].repair_tasks!.map((task: RepairTask) => {
+          if (task.id === taskId) {
+            return {
+              ...task,
+              assigned_technician: technicianId === "unassigned" ? "" : technicianId,
+              updated_at: new Date().toISOString(),
+            }
+          }
+          return task
+        })
+
         orders[orderIndex] = {
           ...orders[orderIndex],
-          assigned_technician: technicianId === "unassigned" ? null : technicianId,
-          status: orders[orderIndex].status === "pending" ? "diagnosis" : orders[orderIndex].status,
+          repair_tasks: updatedTasks,
           updated_at: new Date().toISOString(),
         }
 
@@ -90,35 +111,21 @@ export default function TasksPage() {
   const getStatusBadge = (status: string) => {
     const statusMap = {
       pending: { label: "Chờ xử lý", variant: "secondary" as const },
-      diagnosis: { label: "Chẩn đoán", variant: "outline" as const },
-      in_inspection: { label: "Đang kiểm tra", variant: "default" as const },
+      in_progress: { label: "Đang thực hiện", variant: "outline" as const },
       completed: { label: "Hoàn thành", variant: "default" as const },
-      delivered: { label: "Đã giao", variant: "default" as const },
     }
     return statusMap[status as keyof typeof statusMap] || { label: status, variant: "secondary" as const }
   }
 
-  const getDetailLink = (order: WorkOrder) => {
-    // Điều hướng dựa trên trạng thái của phiếu
-    switch (order.status) {
-      case "pending":
-        return `/diagnosis/${order.id}`
-      case "diagnosis":
-        return `/diagnosis/${order.id}`
-      default:
-        return `/work-orders/${order.id}`
+  const getServiceTypeBadge = (serviceType: string) => {
+    const typeMap = {
+      cleaning: { label: "Dọn Dẹp", variant: "outline" as const, color: "bg-blue-100 text-blue-800" },
+      painting: { label: "Đồng Sơn", variant: "outline" as const, color: "bg-orange-100 text-orange-800" },
+      mechanical: { label: "Cơ", variant: "outline" as const, color: "bg-green-100 text-green-800" },
+      electrical: { label: "Điện", variant: "outline" as const, color: "bg-purple-100 text-purple-800" },
+      cooling: { label: "Lạnh", variant: "outline" as const, color: "bg-cyan-100 text-cyan-800" },
     }
-  }
-
-  const getActionText = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "Chẩn đoán"
-      case "diagnosis":
-        return "Tiếp tục chẩn đoán"
-      default:
-        return "Xem chi tiết"
-    }
+    return typeMap[serviceType as keyof typeof typeMap] || { label: serviceType, variant: "outline" as const, color: "" }
   }
 
   return (
@@ -128,7 +135,7 @@ export default function TasksPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <ClipboardList className="h-5 w-5" />
+              <Wrench className="h-5 w-5" />
               <span>Danh sách công việc</span>
             </CardTitle>
             <CardDescription>Quản lý và phân công công việc cho kỹ thuật viên</CardDescription>
@@ -143,8 +150,8 @@ export default function TasksPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Tất cả</SelectItem>
-                    <SelectItem value="pending">Chờ xử lý & Chẩn đoán</SelectItem>
-                    <SelectItem value="in_inspection">Đang kiểm tra</SelectItem>
+                    <SelectItem value="pending">Chờ xử lý</SelectItem>
+                    <SelectItem value="in_progress">Đang thực hiện</SelectItem>
                     <SelectItem value="completed">Hoàn thành</SelectItem>
                   </SelectContent>
                 </Select>
@@ -170,30 +177,40 @@ export default function TasksPage() {
 
             {loading ? (
               <div className="text-center py-8">Đang tải...</div>
-            ) : workOrders.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">Không có phiếu sửa chữa nào</div>
+            ) : tasks.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">Không có công việc nào</div>
             ) : (
               <div className="space-y-4">
-                {workOrders.map((order) => (
-                  <div key={order.id} className="border rounded-lg p-4">
+                {tasks.map((task) => (
+                  <div key={task.id} className="border rounded-lg p-4">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-2">
-                          <h4 className="font-medium">{order.customer_name}</h4>
-                          <Badge {...getStatusBadge(order.status)}>{getStatusBadge(order.status).label}</Badge>
+                          <Badge className={getServiceTypeBadge(task.service_type).color}>
+                            {getServiceTypeBadge(task.service_type).label}
+                          </Badge>
+                          <h4 className="font-medium">{task.name}</h4>
+                          <Badge {...getStatusBadge(task.status || "pending")}>
+                            {getStatusBadge(task.status || "pending").label}
+                          </Badge>
                         </div>
                         <p className="text-sm text-gray-600 mb-1">
-                          {order.license_plate} - {order.car_info}
+                          {task.license_plate} - {task.car_info} | Khách hàng: {task.customer_name}
                         </p>
+                        {task.description && (
+                          <p className="text-sm text-gray-600 mb-2">
+                            {task.description.length > 100 ? `${task.description.substring(0, 100)}...` : task.description}
+                          </p>
+                        )}
                         <div className="flex items-center space-x-4 text-xs text-gray-500">
                           <span className="flex items-center">
                             <Calendar className="h-3 w-3 mr-1" />
-                            {new Date(order.created_at).toLocaleDateString("vi-VN")}
+                            {new Date(task.created_at).toLocaleDateString("vi-VN")}
                           </span>
-                          {order.estimated_completion && (
+                          {task.estimated_completion && (
                             <span className="flex items-center">
                               <Clock className="h-3 w-3 mr-1" />
-                              Hạn: {new Date(order.estimated_completion).toLocaleDateString("vi-VN")}
+                              Hạn: {new Date(task.estimated_completion).toLocaleDateString("vi-VN")}
                             </span>
                           )}
                         </div>
@@ -203,8 +220,8 @@ export default function TasksPage() {
                         {currentUser?.role !== "ktv" && (
                           <div className="w-full sm:w-48">
                             <Select
-                              value={order.assigned_technician || "unassigned"}
-                              onValueChange={(value) => assignTechnician(order.id, value)}
+                              value={task.assigned_technician || "unassigned"}
+                              onValueChange={(value) => assignTechnician(task.id, task.work_order_id, value)}
                               disabled={saving}
                             >
                               <SelectTrigger>
@@ -222,9 +239,9 @@ export default function TasksPage() {
                           </div>
                         )}
 
-                        <Link href={getDetailLink(order)}>
+                        <Link href={`/tasks/${task.id}`}>
                           <Button variant="outline" size="sm">
-                            {getActionText(order.status)}
+                            Xem chi tiết
                           </Button>
                         </Link>
                       </div>

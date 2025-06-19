@@ -31,6 +31,9 @@ export default function AdminDiagnosisPage({ params }: { params: { id: string } 
     specialInstructions: "",
     estimatedCompletion: ""
   })
+  
+  // State để lưu trữ thông tin phân công KTV cho từng task
+  const [taskAssignments, setTaskAssignments] = useState<{[taskId: string]: string}>({})
 
   useEffect(() => {
     const user = getCurrentUser()
@@ -72,6 +75,17 @@ export default function AdminDiagnosisPage({ params }: { params: { id: string } 
           assignedTechnician: order.assigned_technician || "",
         }))
       }
+      
+      // Khởi tạo giá trị cho taskAssignments từ các task đã có trong workOrder
+      if (order.repair_tasks && Array.isArray(order.repair_tasks)) {
+        const initialAssignments: {[taskId: string]: string} = {}
+        order.repair_tasks.forEach(task => {
+          if (task.id && task.assigned_technician) {
+            initialAssignments[task.id] = task.assigned_technician
+          }
+        })
+        setTaskAssignments(initialAssignments)
+      }
     } else {
       setError("Không tìm thấy phiếu tiếp nhận")
     }
@@ -105,11 +119,26 @@ export default function AdminDiagnosisPage({ params }: { params: { id: string } 
         const newStatus = "diagnosed"
         const successMessage = "Đã duyệt chẩn đoán và hoàn thành phần chẩn đoán"
         
+        // Cập nhật thông tin phân công KTV cho từng task
+        const updatedRepairTasks = workOrders[orderIndex].repair_tasks && Array.isArray(workOrders[orderIndex].repair_tasks) 
+          ? workOrders[orderIndex].repair_tasks.map(task => {
+              if (task.id && taskAssignments[task.id]) {
+                return {
+                  ...task,
+                  assigned_technician: taskAssignments[task.id],
+                  status: task.status || "pending"
+                }
+              }
+              return task
+            })
+          : workOrders[orderIndex].repair_tasks
+        
         workOrders[orderIndex] = {
           ...workOrders[orderIndex],
           status: newStatus,
           estimated_completion: diagnosisData.estimatedCompletion,
           updated_at: new Date().toISOString(),
+          repair_tasks: updatedRepairTasks
         }
         saveWorkOrders(workOrders)
 
@@ -238,6 +267,67 @@ export default function AdminDiagnosisPage({ params }: { params: { id: string } 
             </CardContent>
           </Card>
           
+          {/* Repair Tasks Assignment */}
+          {workOrder.repair_tasks && workOrder.repair_tasks.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Wrench className="h-5 w-5 text-blue-600" />
+                  <span>Phân công công việc</span>
+                </CardTitle>
+                <CardDescription>Phân công kỹ thuật viên cho từng công việc sửa chữa</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {workOrder.repair_tasks.map((task, index) => (
+                    <div key={task.id} className="p-4 border rounded-md">
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="bg-blue-100 text-blue-800">
+                              {task.service_type === "cleaning" && "Dọn Dẹp"}
+                              {task.service_type === "painting" && "Đồng Sơn"}
+                              {task.service_type === "mechanical" && "Cơ"}
+                              {task.service_type === "electrical" && "Điện"}
+                              {task.service_type === "cooling" && "Lạnh"}
+                            </Badge>
+                            <h3 className="font-medium">{task.name}</h3>
+                          </div>
+                          {task.description && (
+                            <p className="text-sm text-gray-500">{task.description}</p>
+                          )}
+                        </div>
+                        <div className="w-full md:w-64">
+                          <Label htmlFor={`technician-${task.id}`}>Phân công KTV</Label>
+                          <Select
+                            value={taskAssignments[task.id] || ""}
+                            onValueChange={(value) => {
+                              setTaskAssignments(prev => ({
+                                ...prev,
+                                [task.id]: value
+                              }))
+                            }}
+                          >
+                            <SelectTrigger id={`technician-${task.id}`}>
+                              <SelectValue placeholder="Chọn kỹ thuật viên" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {technicians.map((tech) => (
+                                <SelectItem key={tech.id} value={tech.id}>
+                                  {tech.full_name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Assignment and Estimates */}
           <Card>
             <CardHeader>
