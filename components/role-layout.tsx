@@ -24,7 +24,7 @@ import { Wrench } from "lucide-react"
 
 type RoleLayoutProps = {
   children: React.ReactNode
-  role: "cv" | "admin" | "ktv"
+  role: "cv" | "admin" | "ktv" | Array<"cv" | "admin" | "ktv">
   title?: string
 }
 
@@ -40,7 +40,9 @@ export default function RoleLayout({ children, role, title }: RoleLayoutProps) {
       return
     }
 
-    if (currentUser.role !== role) {
+    // Kiểm tra nếu role là mảng hoặc giá trị đơn
+    const allowedRoles = Array.isArray(role) ? role : [role]
+    if (!allowedRoles.includes(currentUser.role)) {
       router.push(`/${currentUser.role}/dashboard`)
       return
     }
@@ -55,7 +57,7 @@ export default function RoleLayout({ children, role, title }: RoleLayoutProps) {
 
   // Định nghĩa các liên kết dựa trên vai trò
   const getNavLinks = () => {
-    switch (role) {
+    switch (user?.role) {
       case "cv":
         return [
           { href: "/cv/dashboard", label: "Tổng quan", icon: <Home className="h-5 w-5" /> },

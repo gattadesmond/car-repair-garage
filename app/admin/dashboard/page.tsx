@@ -151,28 +151,7 @@ export default function AdminDashboardPage() {
           </Card>
         </div>
 
-        {/* Detailed Statistics */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Thống kê chi tiết</CardTitle>
-            <CardDescription>Tổng quan về hoạt động của garage</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 border rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">Kỹ thuật viên</p>
-                      <p className="text-2xl font-bold">{stats.totalTechnicians}</p>
-                    </div>
-                    <Users className="h-8 w-8 text-blue-500" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+     
 
         {/* Quick Actions */}
         <Card>
@@ -240,7 +219,7 @@ export default function AdminDashboardPage() {
                             {getStatusBadge(order.status)}
                           </div>
                           <p className="text-sm text-gray-600 mb-2">
-                            {order.license_plate} - {order.car_brand} {order.car_model} ({order.car_year})
+                            {order.license_plate} - {order.car_info}
                           </p>
                           <div className="flex items-center space-x-4 text-sm">
                             <p>
@@ -270,6 +249,29 @@ export default function AdminDashboardPage() {
             )}
           </div>
         </div>
+
+           {/* Detailed Statistics */}
+           <Card>
+          <CardHeader>
+            <CardTitle className="text-xl">Thống kê chi tiết</CardTitle>
+            <CardDescription>Tổng quan về hoạt động của garage</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 border rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Kỹ thuật viên</p>
+                      <p className="text-2xl font-bold">{stats.totalTechnicians}</p>
+                    </div>
+                    <Users className="h-8 w-8 text-blue-500" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </RoleLayout>
   )

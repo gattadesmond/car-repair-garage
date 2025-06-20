@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label"
 import { Car, User, FileText, Calendar, ArrowLeft, Edit, Camera, Eye, Save, Wrench, CheckCircle, Clock } from "lucide-react"
 import Link from "next/link"
-import DashboardLayout from "@/components/dashboard-layout"
+import RoleLayout from "@/components/role-layout"
 import { getWorkOrders, getTechnicians, saveWorkOrders, getCurrentUser, type WorkOrder, type Technician, type RepairTask } from "@/lib/demo-data"
 
 interface SavedImage {
@@ -59,6 +59,17 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
   
   const fetchCurrentUser = () => {
     const user = getCurrentUser()
+    if (!user) {
+      router.push("/login")
+      return
+    }
+    
+    // Kiểm tra quyền truy cập - chỉ cho phép CV và Admin xem trang này
+    if (user.role !== "cv" && user.role !== "admin") {
+      router.push(`/${user.role}/dashboard`)
+      return
+    }
+    
     setCurrentUser(user)
   }
 
@@ -293,26 +304,40 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
 
   if (loading) {
     return (
-      <DashboardLayout role={currentUser?.role || "cv"} title="Chi tiết phiếu tiếp nhận">
-        <div className="text-center py-8">Đang tải...</div>
-      </DashboardLayout>
+      <RoleLayout role={["cv", "admin"]} title="Chi tiết phiếu tiếp nhận">
+        <div className="flex items-center justify-center h-screen">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-blue-700 font-medium">Đang tải...</p>
+          </div>
+        </div>
+      </RoleLayout>
     )
   }
 
   if (!workOrder) {
     return (
-      <DashboardLayout role={currentUser?.role || "cv"} title="Chi tiết phiếu tiếp nhận">
-        <Alert variant="destructive">
-          <AlertDescription>Không tìm thấy phiếu tiếp nhận</AlertDescription>
-        </Alert>
-      </DashboardLayout>
+      <RoleLayout role={["cv", "admin"]} title="Chi tiết phiếu tiếp nhận">
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-700">Không tìm thấy đơn sửa chữa</h2>
+            <p className="text-gray-500 mt-2">Đơn sửa chữa này không tồn tại hoặc đã bị xóa</p>
+            <Button
+              className="mt-4"
+              onClick={() => router.back()}
+            >
+              Quay lại
+            </Button>
+          </div>
+        </div>
+      </RoleLayout>
     )
   }
 
   const nextAction = getNextAction(workOrder)
 
   return (
-    <DashboardLayout role={currentUser?.role || "cv"} title="Chi tiết phiếu tiếp nhận">
+    <RoleLayout role={["cv", "admin"]} title="Chi tiết phiếu tiếp nhận">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -751,9 +776,7 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
             </div>
           </CardContent>
         </Card>
-        
-     
       </div>
-    </DashboardLayout>
+    </RoleLayout>
   )
 }

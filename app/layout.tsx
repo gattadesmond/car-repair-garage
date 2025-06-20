@@ -1,5 +1,12 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: '#ffffff'
+}
 
 export const metadata: Metadata = {
   title: 'Garage Sửa Chữa Ô Tô - Hệ thống quản lý dịch vụ chuyên nghiệp',
@@ -38,18 +45,12 @@ export const metadata: Metadata = {
     description: 'Hệ thống quản lý garage sửa chữa ô tô chuyên nghiệp',
     images: ['/images/twitter-image.jpg'], // Bạn cần tạo file ảnh này trong thư mục public/images
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-  },
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-icon.png', // Bạn cần tạo file icon này trong thư mục public
     shortcut: '/shortcut-icon.png', // Bạn cần tạo file icon này trong thư mục public
   },
-  themeColor: '#ffffff',
-  manifest: '/manifest.json', // Bạn cần tạo file manifest.json trong thư mục public
+  manifest: '/manifest.json'
 }
 
 export default function RootLayout({
