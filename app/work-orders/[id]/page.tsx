@@ -347,7 +347,7 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
           </Button>
           <div className="flex items-center space-x-2">
             <Badge {...getStatusBadge(workOrder.status)}>{getStatusBadge(workOrder.status).label}</Badge>
-            {nextAction && (
+            {nextAction && currentUser?.role !== "cv" && (
               <Link href={nextAction.href}>
                 <Button variant={nextAction.variant}>
                   <Edit className="h-4 w-4 mr-2" />

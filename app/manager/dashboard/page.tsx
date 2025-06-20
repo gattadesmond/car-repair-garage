@@ -297,11 +297,11 @@ export default function ManagerDashboardPage() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Đơn sửa chữa gần đây</h2>
-              <Link href="/manager/work-orders">
+              {/* <Link href="/manager/work-orders">
                 <Button variant="outline" size="sm">
                   Xem tất cả
                 </Button>
-              </Link>
+              </Link> */}
             </div>
 
             <div className="space-y-4">

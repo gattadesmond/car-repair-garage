@@ -76,7 +76,6 @@ export default function RoleLayout({ children, role, title }: RoleLayoutProps) {
       case "ktv":
         return [
           { href: "/ktv/dashboard", label: "Tổng quan", icon: <LayoutDashboard className="h-5 w-5" /> },
-          { href: "/ktv/repair-orders", label: "Đơn sửa chữa", icon: <FileText className="h-5 w-5" /> },
           { href: "/ktv/tasks", label: "Công việc", icon: <ClipboardList className="h-5 w-5" /> },
         ]
       default:

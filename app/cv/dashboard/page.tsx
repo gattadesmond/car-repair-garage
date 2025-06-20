@@ -159,11 +159,11 @@ export default function CVDashboardPage() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Đơn sửa chữa gần đây</h2>
-            <Link href="/repair-orders">
+            {/* <Link href="/repair-orders">
               <Button variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-medium">
                 Xem tất cả
               </Button>
-            </Link>
+            </Link> */}
           </div>
 
           <div className="space-y-4">
@@ -186,7 +186,7 @@ export default function CVDashboardPage() {
                             {getStatusBadge(order.status)}
                           </div>
                           <p className="text-sm text-gray-600 mb-2">
-                            {order.license_plate} - {order.car_brand} {order.car_model} ({order.car_year})
+                            {order.license_plate} - {order.car_info}
                           </p>
                           <div className="flex items-center space-x-4 text-sm">
                             <p>

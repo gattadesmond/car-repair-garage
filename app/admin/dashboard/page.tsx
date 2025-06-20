@@ -192,11 +192,11 @@ export default function AdminDashboardPage() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Đơn sửa chữa gần đây</h2>
-            <Link href="/repair-orders">
+            {/* <Link href="/repair-orders">
               <Button variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-medium">
                 Xem tất cả
               </Button>
-            </Link>
+            </Link> */}
           </div>
 
           <div className="space-y-4">
