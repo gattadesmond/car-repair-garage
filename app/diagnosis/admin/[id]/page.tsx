@@ -149,7 +149,7 @@ export default function AdminDiagnosisPage({ params }: { params: { id: string } 
         setSuccess(successMessage)
       }
       
-      router.push("/dashboard/admin")
+      router.push("/admin/dashboard")
     } catch (error: any) {
       setError(error.message || "Có lỗi xảy ra khi lưu chẩn đoán")
     } finally {

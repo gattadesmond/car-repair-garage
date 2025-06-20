@@ -44,7 +44,7 @@ export default function LoginPage() {
 
       // Redirect based on role
       if (account.role === "admin") {
-        router.push("/dashboard/admin")
+        router.push("/admin/dashboard")
       } else if (account.role === "ktv") {
         router.push("/ktv/dashboard")
       } else if (account.role === "cv") {

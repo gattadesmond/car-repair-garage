@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart3, Users, FileText, Settings, DollarSign, CheckCircle } from "lucide-react"
+import { BarChart3, Users, FileText, Settings, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import RoleLayout from "@/components/role-layout"
@@ -15,7 +15,6 @@ export default function AdminDashboardPage() {
   const [stats, setStats] = useState({
     totalCustomers: 0,
     totalWorkOrders: 0,
-    totalRevenue: 0,
     completedOrdersPerMonth: 0,
     totalTechnicians: 0,
   })
@@ -51,14 +50,12 @@ export default function AdminDashboardPage() {
     const totalCustomers = customers.length
     const totalWorkOrders = workOrders.length
     const completedOrders = workOrders.filter(order => order.status === "completed")
-    const totalRevenue = completedOrders.length * 2500000 // Estimated average
     const completedOrdersPerMonth = completedOrders.length // Simplified for demo
     const totalTechnicians = technicians.length
 
     setStats({
       totalCustomers,
       totalWorkOrders,
-      totalRevenue,
       completedOrdersPerMonth,
       totalTechnicians,
     })
@@ -116,7 +113,7 @@ export default function AdminDashboardPage() {
     <RoleLayout role="admin" title="Bảng điều khiển">
       <div className="space-y-6">
         {/* Overview Statistics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
@@ -136,18 +133,6 @@ export default function AdminDashboardPage() {
                 <div>
                   <p className="text-sm font-medium">Tổng đơn</p>
                   <p className="text-2xl font-bold">{stats.totalWorkOrders}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <DollarSign className="h-4 w-4 text-green-600" />
-                <div>
-                  <p className="text-sm font-medium">Doanh thu</p>
-                  <p className="text-2xl font-bold">{(stats.totalRevenue / 1000000).toFixed(1)}M</p>
                 </div>
               </div>
             </CardContent>
@@ -214,7 +199,7 @@ export default function AdminDashboardPage() {
                   <span>Quản lý người dùng</span>
                 </Button>
               </Link>
-              <Link href="/settings">
+              <Link href="/admin/settings">
                 <Button variant="outline" className="w-full h-24 flex flex-col items-center justify-center space-y-2">
                   <Settings className="h-6 w-6" />
                   <span>Cài đặt</span>
