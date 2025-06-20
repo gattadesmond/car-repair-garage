@@ -637,6 +637,14 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
                             {task.description}
                           </p>
                         )}
+                        {task.notes && (
+                          <div className="mb-2">
+                            <p className="text-sm font-medium text-gray-700">Ghi chú của KTV:</p>
+                            <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded border border-gray-100">
+                              {task.notes}
+                            </p>
+                          </div>
+                        )}
                         <div className="flex items-center space-x-4 text-xs text-gray-500">
                           <span className="flex items-center">
                             <Calendar className="h-3 w-3 mr-1" />

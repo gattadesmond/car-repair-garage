@@ -4,18 +4,27 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Car, Clock, CheckCircle, AlertCircle, ClipboardList, Wrench } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Car, Clock, CheckCircle, AlertCircle, ClipboardList, Wrench, Calendar, FileText } from "lucide-react"
 import Link from "next/link"
 import RoleLayout from "@/components/role-layout"
 import { getWorkOrders, getCurrentUser, type WorkOrder } from "@/lib/demo-data"
 
 interface Task extends WorkOrder {
+  task_id: string
+  task_status: string
   preliminary_diagnosis: string
   priority: string
+  service_type?: string
+  name?: string
+  description?: string
 }
 
 export default function KTVDashboard() {
   const [tasks, setTasks] = useState<Task[]>([])
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>([])
   const [stats, setStats] = useState({
     pending: 0,
     inInspection: 0,
@@ -23,10 +32,12 @@ export default function KTVDashboard() {
     overdue: 0,
   })
   const [loading, setLoading] = useState(true)
+  const [filter, setFilter] = useState("all")
+  const [search, setSearch] = useState("")
 
   useEffect(() => {
     fetchTasks()
-  }, [])
+  }, [filter, search])
 
   const fetchTasks = () => {
     const user = getCurrentUser()
@@ -41,25 +52,40 @@ export default function KTVDashboard() {
       }
     )
 
-    const formattedTasks = assignedOrders.map((item) => ({
-      ...item,
-      preliminary_diagnosis: "Cần kiểm tra chi tiết hệ thống và đánh giá tình trạng",
-      priority: "normal",
-    }))
+    // Tạo danh sách các task từ các repair_tasks trong work orders
+    let formattedTasks: Task[] = [];
+    
+    assignedOrders.forEach((order) => {
+      if (order.repair_tasks && order.repair_tasks.length > 0) {
+        // Lọc các task được gán cho KTV hiện tại
+        const tasksForKtv = order.repair_tasks.filter((task: any) => 
+          task.assigned_technician === user.id
+        ).map((task: any) => ({
+          ...order,
+          task_id: task.id, // Lưu ID của task
+          preliminary_diagnosis: "Cần kiểm tra chi tiết hệ thống và đánh giá tình trạng",
+          priority: "normal",
+          service_type: task.service_type || "mechanical",
+          name: task.name || "",
+          description: task.description || "",
+          task_status: task.status || "pending"
+        }));
+        
+        formattedTasks = [...formattedTasks, ...tasksForKtv];
+      }
+    });
 
     // Sắp xếp theo trạng thái và thời gian
     formattedTasks.sort((a, b) => {
-      // Ưu tiên theo trạng thái: pending > diagnosis > in_inspection > completed
+      // Ưu tiên theo trạng thái: pending > in_progress > completed
       const statusOrder: { [key: string]: number } = {
         pending: 0,
-        diagnosis: 1,
-        in_inspection: 2,
-        completed: 3,
-        delivered: 4,
+        in_progress: 1,
+        completed: 2,
       }
 
-      const statusA = statusOrder[a.status] ?? 999
-      const statusB = statusOrder[b.status] ?? 999
+      const statusA = statusOrder[a.task_status] ?? 999
+      const statusB = statusOrder[b.task_status] ?? 999
 
       if (statusA !== statusB) {
         return statusA - statusB
@@ -69,16 +95,39 @@ export default function KTVDashboard() {
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     })
 
-    setTasks(formattedTasks)
+    // Lọc theo trạng thái nếu cần
+    let filteredTasks = formattedTasks;
+    if (filter !== "all") {
+      filteredTasks = formattedTasks.filter(task => {
+        if (filter === "pending") return task.task_status === "pending";
+        if (filter === "in_progress") return task.task_status === "in_progress";
+        if (filter === "completed") return task.task_status === "completed";
+        return true;
+      });
+    }
+    
+    // Lọc theo từ khóa tìm kiếm nếu có
+    if (search.trim() !== "") {
+      const query = search.toLowerCase();
+      filteredTasks = filteredTasks.filter(task => 
+        task.customer_name?.toLowerCase().includes(query) ||
+        task.license_plate?.toLowerCase().includes(query) ||
+        task.car_info?.toLowerCase().includes(query) ||
+        task.name?.toLowerCase().includes(query) ||
+        task.description?.toLowerCase().includes(query)
+      );
+    }
+    
+    setTasks(filteredTasks)
 
     // Calculate stats
     const now = new Date()
     setStats({
-      pending: formattedTasks.filter((t) => t.status === "diagnosis" || t.status === "pending").length,
-      inInspection: formattedTasks.filter((t) => t.status === "in_inspection").length,
-      completed: formattedTasks.filter((t) => t.status === "completed").length,
+      pending: formattedTasks.filter((t) => t.task_status === "pending").length,
+      inInspection: formattedTasks.filter((t) => t.task_status === "in_progress").length,
+      completed: formattedTasks.filter((t) => t.task_status === "completed").length,
       overdue: formattedTasks.filter(
-        (t) => t.estimated_completion && new Date(t.estimated_completion) < now && t.status !== "completed",
+        (t) => t.estimated_completion && new Date(t.estimated_completion) < now && t.task_status !== "completed",
       ).length,
     })
 
@@ -102,6 +151,17 @@ export default function KTVDashboard() {
       completed: { label: "Hoàn thành", variant: "default" as const },
     }
     return statusMap[status as keyof typeof statusMap] || { label: status, variant: "secondary" as const }
+  }
+  
+  const getServiceTypeBadge = (serviceType: string) => {
+    const typeMap = {
+      cleaning: { label: "Dọn Dẹp", variant: "outline" as const, color: "bg-blue-100 text-blue-800" },
+      painting: { label: "Đồng Sơn", variant: "outline" as const, color: "bg-orange-100 text-orange-800" },
+      mechanical: { label: "Cơ", variant: "outline" as const, color: "bg-green-100 text-green-800" },
+      electrical: { label: "Điện", variant: "outline" as const, color: "bg-purple-100 text-purple-800" },
+      cooling: { label: "Lạnh", variant: "outline" as const, color: "bg-cyan-100 text-cyan-800" },
+    }
+    return typeMap[serviceType as keyof typeof typeMap] || { label: serviceType, variant: "outline" as const, color: "" }
   }
 
   return (
@@ -179,97 +239,91 @@ export default function KTVDashboard() {
       
 
         {/* Tasks List */}
-        <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0 mx-4">
-          <CardHeader className="pb-2">
-            <div className="flex items-center space-x-2">
-              <div className="p-2 bg-blue-100 rounded-full">
-                <ClipboardList className="h-5 w-5 text-blue-600" />
-              </div>
-              <div>
-                <CardTitle>Công việc được giao</CardTitle>
-                <CardDescription>Danh sách xe cần kiểm tra và sửa chữa</CardDescription>
-              </div>
-            </div>
+        <Card className="mx-4">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Wrench className="h-5 w-5" />
+              <span>Danh sách công việc</span>
+            </CardTitle>
+            <CardDescription>Quản lý công việc được giao</CardDescription>
           </CardHeader>
           <CardContent>
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <div className="flex-1">
+                <Label htmlFor="status-filter">Lọc theo trạng thái</Label>
+                <Select value={filter} onValueChange={setFilter}>
+                  <SelectTrigger id="status-filter">
+                    <SelectValue placeholder="Tất cả trạng thái" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tất cả</SelectItem>
+                    <SelectItem value="pending">Chờ xử lý</SelectItem>
+                    <SelectItem value="in_progress">Đang thực hiện</SelectItem>
+                    <SelectItem value="completed">Hoàn thành</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex-1">
+                <Label htmlFor="search">Tìm kiếm</Label>
+                <Input 
+                  id="search" 
+                  placeholder="Tìm theo tên KH, biển số..." 
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+            </div>
+            
             {loading ? (
               <div className="text-center py-8 flex justify-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
               </div>
             ) : tasks.length === 0 ? (
-              <div className="text-center py-12 px-4">
-                <div className="mx-auto w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
-                  <ClipboardList className="h-8 w-8 text-blue-300" />
-                </div>
-                <p className="text-gray-500 font-medium">Chưa có công việc nào được giao</p>
-                <p className="text-sm text-gray-400 mt-1">Các công việc mới sẽ xuất hiện ở đây</p>
-              </div>
+              <div className="text-center py-8 text-gray-500">Không có công việc nào được giao</div>
             ) : (
               <div className="space-y-4">
                 {tasks.map((task) => (
-                  <div 
-                    key={task.id} 
-                    className="border border-blue-100 rounded-lg p-4 bg-white hover:shadow-md transition-all duration-200 hover:border-blue-200"
-                  >
-                    <div className="flex items-start justify-between">
+                  <div key={task.id} className="border rounded-lg p-4">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div className="flex-1">
-                        <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <h4 className="font-medium text-blue-900">{task.customer_name}</h4>
-                          <Badge 
-                            {...getStatusBadge(task.status)} 
-                            className="shadow-sm"
-                          >
-                            {getStatusBadge(task.status).label}
-                          </Badge>
-                          <Badge 
-                            {...getPriorityBadge(task.priority)} 
-                            className="shadow-sm"
-                          >
-                            {getPriorityBadge(task.priority).label}
-                          </Badge>
-                        </div>
-
                         <div className="flex items-center space-x-2 mb-2">
-                          <Car className="h-4 w-4 text-blue-500" />
-                          <p className="text-sm text-gray-600">
-                            {task.license_plate} - {task.car_info}
-                          </p>
+                          <Badge className={getServiceTypeBadge(task.service_type || "mechanical").color}>
+                            {getServiceTypeBadge(task.service_type || "mechanical").label}
+                          </Badge>
+                          <h4 className="font-medium">{task.name || `Công việc #${task.task_id}`}</h4>
+                          <Badge {...getStatusBadge(task.task_status)}>
+                            {getStatusBadge(task.task_status).label}
+                          </Badge>
                         </div>
-
-                        {task.preliminary_diagnosis && (
-                          <div className="bg-blue-50 p-2 rounded-md mb-2">
-                            <p className="text-sm text-blue-800">
-                              <span className="font-medium">Chẩn đoán:</span> {task.preliminary_diagnosis}
-                            </p>
-                          </div>
+                        
+                        <p className="text-sm text-gray-600 mb-1">
+                          {task.license_plate} - {task.car_info} | Khách hàng: {task.customer_name}
+                        </p>
+                        
+                        {task.description && (
+                          <p className="text-sm text-gray-600 mb-2">
+                            {task.description.length > 100 ? `${task.description.substring(0, 100)}...` : task.description}
+                          </p>
                         )}
-
+                        
                         <div className="flex items-center space-x-4 text-xs text-gray-500">
-                          <div className="flex items-center space-x-1">
-                            <Clock className="h-3 w-3" />
-                            <span>Giao: {new Date(task.created_at).toLocaleDateString("vi-VN")}</span>
-                          </div>
+                          <span className="flex items-center">
+                            <Calendar className="h-3 w-3 mr-1" />
+                            {new Date(task.created_at).toLocaleDateString("vi-VN")}
+                          </span>
                           {task.estimated_completion && (
-                            <div className="flex items-center space-x-1">
-                              <AlertCircle className="h-3 w-3" />
-                              <span>Hạn: {new Date(task.estimated_completion).toLocaleDateString("vi-VN")}</span>
-                            </div>
+                            <span className="flex items-center">
+                              <Clock className="h-3 w-3 mr-1" />
+                              Hạn: {new Date(task.estimated_completion).toLocaleDateString("vi-VN")}
+                            </span>
                           )}
                         </div>
                       </div>
 
-                      <div className="ml-4">
-                        <Link href={task.status === "pending" || task.status === "diagnosis" ? `/diagnosis/ktv/${task.id}` : `/work-orders/${task.id}`}>
-                          <Button 
-                            size="sm"
-                            className={`shadow-md ${task.status === "pending" ? "bg-orange-600 hover:bg-orange-700" : 
-                                       task.status === "diagnosis" ? "bg-blue-600 hover:bg-blue-700" :
-                                       task.status === "in_inspection" ? "bg-green-600 hover:bg-green-700" :
-                                       "bg-gray-600 hover:bg-gray-700"}`}
-                          >
-                            {task.status === "pending" ? "Nhận công việc" :
-                             task.status === "diagnosis" ? "Tiếp tục kiểm tra & Chuyển CV" :
-                             "Xem chi tiết"}
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                        <Link href={`/ktv/tasks/${task.task_id}`}>
+                          <Button variant="outline" size="sm">
+                            Xem chi tiết
                           </Button>
                         </Link>
                       </div>
