@@ -243,12 +243,9 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
-      pending: { label: "Chờ xử lý", variant: "secondary" as const },
-      diagnosis: { label: "Chẩn đoán", variant: "outline" as const },
-      in_inspection: { label: "Đang kiểm tra", variant: "default" as const },
+      pending: { label: "Đang chờ", variant: "secondary" as const },
+      diagnosis: { label: "Đang chuẩn đoán", variant: "outline" as const },
       completed: { label: "Hoàn thành", variant: "default" as const },
-      delivered: { label: "Đã giao", variant: "default" as const },
-      in_progress: { label: "Đang thực hiện", variant: "outline" as const },
     }
     return statusMap[status as keyof typeof statusMap] || { label: status, variant: "secondary" as const }
   }
@@ -283,6 +280,20 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
   }
 
   const getNextAction = (order: WorkOrder) => {
+    // Nếu người dùng là admin, hiển thị nút hoàn thành cho các trạng thái phù hợp
+    if (currentUser?.role === "admin") {
+      if (order.status === "pending" || order.status === "diagnosis") {
+        return {
+          href: `#`,
+          label: "Hoàn thành",
+          variant: "default" as const,
+          onClick: () => handleCompleteWorkOrder(order.id)
+        }
+      }
+      return null
+    }
+    
+    // Đối với các vai trò khác
     switch (order.status) {
       case "pending":
         return {
@@ -334,6 +345,45 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
     )
   }
 
+  const handleCompleteWorkOrder = (orderId: string) => {
+    try {
+      // Lấy danh sách work orders hiện tại
+      const workOrders = getWorkOrders()
+      const orderIndex = workOrders.findIndex((w) => w.id === orderId)
+
+      if (orderIndex !== -1) {
+        const currentOrder = workOrders[orderIndex];
+        
+        // Cập nhật tất cả các subtask thành hoàn thành
+        if (currentOrder.repair_tasks && Array.isArray(currentOrder.repair_tasks)) {
+          currentOrder.repair_tasks = currentOrder.repair_tasks.map(task => ({
+            ...task,
+            status: "completed",
+            updated_at: new Date().toISOString()
+          }));
+        }
+        
+        // Cập nhật trạng thái work order thành hoàn thành
+        workOrders[orderIndex] = {
+          ...currentOrder,
+          status: "completed",
+          updated_at: new Date().toISOString(),
+        }
+
+        // Lưu lại danh sách work orders
+        saveWorkOrders(workOrders)
+
+        // Cập nhật state
+        setWorkOrder(workOrders[orderIndex])
+        
+        // Hiển thị thông báo thành công
+        alert("Đã hoàn thành")
+      }
+    } catch (error: any) {
+      alert("Có lỗi xảy ra khi hoàn thành công việc")
+    }
+  }
+
   const nextAction = getNextAction(workOrder)
 
   return (
@@ -348,12 +398,19 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
           <div className="flex items-center space-x-2">
             <Badge {...getStatusBadge(workOrder.status)}>{getStatusBadge(workOrder.status).label}</Badge>
             {nextAction && currentUser?.role !== "cv" && (
-              <Link href={nextAction.href}>
-                <Button variant={nextAction.variant}>
-                  <Edit className="h-4 w-4 mr-2" />
+              currentUser?.role === "admin" && nextAction.onClick ? (
+                <Button variant={nextAction.variant} onClick={nextAction.onClick}>
+                  <CheckCircle className="h-4 w-4 mr-2" />
                   {nextAction.label}
                 </Button>
-              </Link>
+              ) : (
+                <Link href={nextAction.href}>
+                  <Button variant={nextAction.variant}>
+                    <Edit className="h-4 w-4 mr-2" />
+                    {nextAction.label}
+                  </Button>
+                </Link>
+              )
             )}
           </div>
         </div>

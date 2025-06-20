@@ -64,11 +64,9 @@ export default function AdminDashboard() {
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
-      pending: { label: "Chờ xử lý", variant: "secondary" as const },
-      diagnosis: { label: "Chẩn đoán", variant: "outline" as const },
-      in_inspection: { label: "Đang kiểm tra", variant: "default" as const },
+      pending: { label: "Đang chờ", variant: "secondary" as const },
+      diagnosis: { label: "Đang chuẩn đoán", variant: "outline" as const },
       completed: { label: "Hoàn thành", variant: "default" as const },
-      delivered: { label: "Đã giao", variant: "default" as const },
     }
     return statusMap[status as keyof typeof statusMap] || { label: status, variant: "secondary" as const }
   }

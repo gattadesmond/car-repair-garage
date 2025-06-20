@@ -71,12 +71,9 @@ export default function CustomerDetailPage({ params }: { params: { id: string } 
   // Lấy badge cho trạng thái đơn hàng
   const getStatusBadge = (status: string) => {
     const statusMap = {
-      pending: { label: "Chờ xử lý", variant: "secondary" as const, color: "bg-yellow-100 text-yellow-800" },
-      diagnosis: { label: "Chẩn đoán", variant: "outline" as const, color: "bg-blue-100 text-blue-800" },
-      in_inspection: { label: "Đang kiểm tra", variant: "default" as const, color: "bg-purple-100 text-purple-800" },
-      in_progress: { label: "Đang thực hiện", variant: "outline" as const, color: "bg-indigo-100 text-indigo-800" },
+      pending: { label: "Đang chờ", variant: "secondary" as const, color: "bg-yellow-100 text-yellow-800" },
+      diagnosis: { label: "Đang chuẩn đoán", variant: "outline" as const, color: "bg-blue-100 text-blue-800" },
       completed: { label: "Hoàn thành", variant: "default" as const, color: "bg-green-100 text-green-800" },
-      delivered: { label: "Đã giao", variant: "default" as const, color: "bg-gray-100 text-gray-800" },
     }
     return statusMap[status as keyof typeof statusMap] || { label: status, variant: "secondary" as const, color: "bg-gray-100 text-gray-800" }
   }
