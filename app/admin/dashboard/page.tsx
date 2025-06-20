@@ -20,6 +20,7 @@ export default function AdminDashboardPage() {
     totalTechnicians: 0,
   })
   const [recentWorkOrders, setRecentWorkOrders] = useState<any[]>([])
+  const [technicians, setTechnicians] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
   const router = useRouter()
@@ -64,34 +65,46 @@ export default function AdminDashboardPage() {
 
     // Get recent work orders
     const recent = [...workOrders]
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-      .slice(0, 5)
-      .map(order => {
-        const customer = customers.find(c => c.id === order.customer_id)
-        return {
-          ...order,
-          customer_name: customer ? customer.full_name : "Unknown",
-        }
+      .sort((a, b) => {
+        const dateA = new Date(a.update_date || a.creation_date).getTime()
+        const dateB = new Date(b.update_date || b.creation_date).getTime()
+        return dateB - dateA
       })
+      .slice(0, 5)
 
     setRecentWorkOrders(recent)
+    setTechnicians(technicians)
     setLoading(false)
   }
 
+  // Hàm lấy badge style dựa trên trạng thái
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
-        return <Badge className="bg-yellow-500">Chờ xử lý</Badge>
+        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">Chờ xử lý</Badge>
+      case "diagnosis":
+        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Đang chẩn đoán</Badge>
       case "in_inspection":
-        return <Badge className="bg-blue-500">Đang kiểm tra</Badge>
-      case "in_progress":
-        return <Badge className="bg-purple-500">Đang sửa chữa</Badge>
+        return <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200">Đang chẩn đoán</Badge>
       case "completed":
-        return <Badge className="bg-green-500">Hoàn thành</Badge>
-      case "cancelled":
-        return <Badge className="bg-red-500">Đã hủy</Badge>
+        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Hoàn thành</Badge>
       default:
-        return <Badge className="bg-gray-500">{status}</Badge>
+        return <Badge variant="outline">{status}</Badge>
+    }
+  }
+
+  // Hàm lấy text cho nút hành động dựa trên trạng thái
+  const getActionText = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "Phân công KTV"
+      case "diagnosis":
+      case "in_inspection":
+        return "Xem tiến độ"
+      case "completed":
+        return "Xem chi tiết"
+      default:
+        return "Xem chi tiết"
     }
   }
 
@@ -211,36 +224,67 @@ export default function AdminDashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Recent Work Orders */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Đơn sửa chữa gần đây</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="text-center py-4">Đang tải...</div>
-            ) : recentWorkOrders.length === 0 ? (
-              <div className="text-center py-4">Không có đơn sửa chữa nào</div>
+        {/* Đơn sửa chữa gần đây */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Đơn sửa chữa gần đây</h2>
+            <Link href="/repair-orders">
+              <Button variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-medium">
+                Xem tất cả
+              </Button>
+            </Link>
+          </div>
+
+          <div className="space-y-4">
+            {recentWorkOrders.length === 0 ? (
+              <Card>
+                <CardContent className="p-4 text-center text-gray-500">
+                  Không có đơn hàng nào
+                </CardContent>
+              </Card>
             ) : (
-              <div className="space-y-4">
-                {recentWorkOrders.map((order) => (
-                  <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <h4 className="font-medium">{order.customer_name}</h4>
-                      <p className="text-sm text-gray-500">{order.car_make} {order.car_model} - {order.license_plate}</p>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      {getStatusBadge(order.status)}
-                      <Link href={`/work-orders/${order.id}`}>
-                        <Button variant="outline" size="sm">Xem chi tiết</Button>
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              recentWorkOrders.map((order) => {
+                const technician = technicians.find((t) => t.id === order.technician_id)
+                return (
+                  <Card key={order.id}>
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <div className="flex items-center space-x-2 mb-1">
+                            <h3 className="font-medium">{order.customer_name}</h3>
+                            {getStatusBadge(order.status)}
+                          </div>
+                          <p className="text-sm text-gray-600 mb-2">
+                            {order.license_plate} - {order.car_brand} {order.car_model} ({order.car_year})
+                          </p>
+                          <div className="flex items-center space-x-4 text-sm">
+                            <p>
+                              <span className="text-gray-500">KTV:</span>{" "}
+                              {technician ? technician.name : "Chưa phân công"}
+                            </p>
+                            <p>
+                              <span className="text-gray-500">Ngày tạo:</span>{" "}
+                              {new Date(order.creation_date).toLocaleDateString("vi-VN")}
+                            </p>
+                          </div>
+                        </div>
+                        <Link href={`/work-orders/${order.id}`}>
+                          <Button 
+                            variant={order.status === "pending" ? "default" : "outline"} 
+                            size="sm"
+                            className={order.status === "pending" ? "bg-blue-600 hover:bg-blue-700 text-white font-medium" : "border-blue-300 text-blue-700 hover:bg-blue-50"}
+                          >
+                            {getActionText(order.status)}
+                          </Button>
+                        </Link>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )
+              })
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </RoleLayout>
   )
