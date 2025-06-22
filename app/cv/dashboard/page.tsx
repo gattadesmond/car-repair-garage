@@ -9,6 +9,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { getWorkOrders, getCustomers, getTechnicians, getCurrentUser } from "@/lib/demo-data"
 import RoleLayout from "@/components/role-layout"
+import OrderItem from "@/components/order-item"
 
 export default function CVDashboardPage() {
   const [workOrders, setWorkOrders] = useState<any[]>([])
@@ -32,7 +33,7 @@ export default function CVDashboardPage() {
 
   // Tính toán các thống kê
   const pendingOrders = workOrders.filter((order) => order.status === "pending").length
-  const inInspectionOrders = workOrders.filter((order) => ["diagnosis", "in_inspection"].includes(order.status)).length
+  const inInspectionOrders = workOrders.filter((order) => ["diagnosis", "diagnosis"].includes(order.status)).length
   const completedOrders = workOrders.filter((order) => order.status === "completed").length
 
   // Lấy 5 đơn hàng gần nhất
@@ -64,7 +65,6 @@ export default function CVDashboardPage() {
       case "pending":
         return "Phân công KTV"
       case "diagnosis":
-      case "in_inspection":
         return "Xem tiến độ"
       case "completed":
         return "Xem chi tiết"
@@ -174,66 +174,13 @@ export default function CVDashboardPage() {
             ) : (
               recentWorkOrders.map((order) => {
                 const technician = technicians.find((t) => t.id === order.technician_id)
-                const currentUser = getCurrentUser()
                 return (
-                  <Card key={order.id} className="border-amber-200 shadow-sm hover:shadow-md transition-all">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <div className="flex items-center space-x-2 mb-2">
-                            <h3 className="font-medium text-base">{order.customer_name}</h3>
-                            {order.status === "pending" ? (
-                              <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 flex items-center gap-1">
-                                <Clock className="h-3 w-3" /> Đang chờ
-                              </Badge>
-                            ) : order.status === "diagnosis" ? (
-                              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 flex items-center gap-1">
-                                <AlertCircle className="h-3 w-3" /> Đang chuẩn đoán
-                              </Badge>
-                            ) : order.status === "completed" ? (
-                              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1">
-                                <CheckSquare className="h-3 w-3" /> Hoàn thành
-                              </Badge>
-                            ) : (
-                              <Badge variant="outline">{order.status}</Badge>
-                            )}
-                          </div>
-                             <div className="bg-gray-50 p-2 rounded-md mb-3">
-                            <p className="text-lg font-medium flex items-center">
-                              <FileText className="h-5 w-5 text-blue-500 mr-1" />
-                              <span className="font-semibold">{order.car_info}</span> - <span className="text-gray-700">{order.license_plate}</span>
-                            </p>
-                            {order.customer_request && (
-                              <p className="text-xs text-gray-600 mt-1">
-                                <span className="font-medium">Yêu cầu:</span> {order.customer_request}
-                              </p>
-                            )}
-                          </div>
-                          <div className="flex items-center space-x-4 text-sm">
-                            <p className="flex items-center text-gray-500">
-                              <Clock className="h-4 w-4 text-blue-500 mr-1" />
-                              <span className="mr-1">Ngày tiếp nhận:</span>
-                              {new Date(order.creation_date).toLocaleDateString("vi-VN")}
-                            </p>
-                            <p className="flex items-center text-gray-500">
-                              <Users className="h-4 w-4 text-blue-500 mr-1" />
-                              <span className="mr-1">KTV:</span>
-                              {technician ? technician.name : "Chưa phân công"}
-                            </p>
-                          </div>
-                        </div>
-                        <Link href={`/work-orders/${order.id}`}>
-                          <Button 
-                            variant={order.status === "pending" ? "default" : "outline"} 
-                            size="sm"
-                            className={order.status === "pending" ? "bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm" : "border-blue-300 text-blue-700 hover:bg-blue-50 shadow-sm"}
-                          >
-                            Chi tiết
-                          </Button>
-                        </Link>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <OrderItem 
+                    key={order.id} 
+                    order={order} 
+                    technician={technician} 
+                    detailsUrl={`/work-orders/${order.id}`} 
+                  />
                 )
               })
             )}

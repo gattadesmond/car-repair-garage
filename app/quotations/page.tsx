@@ -38,7 +38,7 @@ export default function QuotationsPage() {
     const statusMap = {
       quotation: { label: "Chờ báo giá", variant: "secondary" as const },
       approved: { label: "Đã duyệt", variant: "default" as const },
-      in_inspection: { label: "Đang kiểm tra", variant: "default" as const },
+      diagnosis: { label: "Đang kiểm tra", variant: "default" as const },
     }
     return statusMap[status as keyof typeof statusMap] || { label: status, variant: "secondary" as const }
   }

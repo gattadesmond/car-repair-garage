@@ -105,7 +105,7 @@ export default function KTVDiagnosisPage({ params }: { params: { id: string } })
     setSuccess("")
 
     try {
-      // Update work order status to in_inspection
+      // Update work order status to diagnosis
       const workOrders = getWorkOrders()
       const orderIndex = workOrders.findIndex((w) => w.id === params.id)
 
@@ -155,7 +155,7 @@ export default function KTVDiagnosisPage({ params }: { params: { id: string } })
       if (orderIndex !== -1) {
         workOrders[orderIndex] = {
           ...workOrders[orderIndex],
-          status: "in_inspection",
+          status: "diagnosis",
           estimated_completion: diagnosisData.estimatedCompletion,
           updated_at: new Date().toISOString(),
         }

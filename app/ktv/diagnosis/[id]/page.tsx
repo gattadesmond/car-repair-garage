@@ -142,7 +142,7 @@ export default function DiagnosisPage() {
         if (order.id === id) {
           return {
             ...order,
-            status: "in_inspection",
+            status: "diagnosis",
             updated_at: new Date().toISOString(),
             diagnosis_completed_at: new Date().toISOString(),
             priority: diagnosisData.priority,
@@ -264,7 +264,7 @@ export default function DiagnosisPage() {
           </Card>
         )}
 
-        {(workOrder.status === "diagnosis" || workOrder.status === "in_inspection") && (
+        {(workOrder.status === "diagnosis" || workOrder.status === "diagnosis") && (
           <form onSubmit={handleSubmitDiagnosis} className="space-y-6">
             {/* Technician Notes - Ghi chú kỹ thuật viên */}
             <Card>

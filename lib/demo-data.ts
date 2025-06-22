@@ -47,7 +47,7 @@ export interface WorkOrder {
   admin_notes?: string
   received_by: string
   received_date: string
-  status: "pending" | "diagnosis" | "in_inspection" | "completed" | "delivered"
+  status: "pending" | "diagnosis"  | "completed" 
   assigned_technician?: string
   estimated_completion?: string
   created_at: string
@@ -300,7 +300,7 @@ export const demoWorkOrders: WorkOrder[] = [
     notes: "Khách hàng yêu cầu sơn đúng màu xe",
     received_by: "",
     received_date: new Date(Date.now() - 345600000).toISOString().split("T")[0],
-    status: "in_inspection",
+    status: "diagnosis",
     assigned_technician: "tech-2",
     repair_tasks: [
       {
@@ -379,7 +379,7 @@ export const demoWorkOrders: WorkOrder[] = [
     notes: "Khách hàng yêu cầu kiểm tra toàn bộ hệ thống làm mát",
     received_by: "",
     received_date: new Date(Date.now() - 259200000).toISOString().split("T")[0],
-    status: "in_inspection",
+    status: "diagnosis",
     assigned_technician: "tech-5",
     estimated_completion: new Date(Date.now() + 86400000).toISOString().split("T")[0],
     created_at: new Date(Date.now() - 259200000).toISOString(),

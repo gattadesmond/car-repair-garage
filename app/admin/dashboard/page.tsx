@@ -10,6 +10,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import RoleLayout from "@/components/role-layout"
 import { getWorkOrders, getCustomers, getTechnicians, getCurrentUser } from "@/lib/demo-data"
+import OrderItem from "@/components/order-item"
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState({
@@ -74,19 +75,7 @@ export default function AdminDashboardPage() {
     setLoading(false)
   }
 
-  // Hàm lấy badge style dựa trên trạng thái
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "pending":
-        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 flex items-center gap-1"><Clock className="h-3 w-3" /> Đang chờ</Badge>
-      case "diagnosis":
-        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> Đang chuẩn đoán</Badge>
-      case "completed":
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1"><CheckSquare className="h-3 w-3" /> Hoàn thành</Badge>
-      default:
-        return <Badge variant="outline">{status}</Badge>
-    }
-  }
+  // Đã chuyển hàm getStatusBadge vào component OrderItem
 
   // Hàm lấy text cho nút hành động dựa trên trạng thái
   const getActionText = (status: string) => {
@@ -94,7 +83,6 @@ export default function AdminDashboardPage() {
       case "pending":
         return "Phân công KTV"
       case "diagnosis":
-      case "in_inspection":
         return "Xem tiến độ"
       case "completed":
         return "Xem chi tiết"
@@ -208,49 +196,12 @@ export default function AdminDashboardPage() {
               recentWorkOrders.map((order) => {
                 const technician = technicians.find((t) => t.id === order.technician_id)
                 return (
-                  <Card key={order.id} className="border-amber-200 shadow-sm hover:shadow transition-all">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <div className="flex items-center space-x-2 mb-2">
-                            <h3 className="text-base font-medium">{order.customer_name}</h3>
-                            {getStatusBadge(order.status)}
-                          </div>
-                          <div className="bg-gray-50 p-2 rounded-md mb-2">
-                            <div className="flex items-center gap-1.5">
-                              <FileText className="h-5 w-5 text-blue-500" />
-                              <span className="text-lg font-semibold">{order.car_info}</span>
-                              {order.license_plate && (
-                                <span className="text-sm text-gray-500 ml-1">({order.license_plate})</span>
-                              )}
-                            </div>
-                            {order.request && (
-                              <p className="text-sm text-gray-600 mt-1">{order.request}</p>
-                            )}
-                          </div>
-                          <div className="flex items-center space-x-4 text-sm text-gray-500">
-                            <div className="flex items-center gap-1">
-                              <Calendar className="h-4 w-4 text-blue-500" />
-                              <span>{new Date(order.creation_date).toLocaleDateString("vi-VN")}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <User className="h-4 w-4 text-blue-500" />
-                              <span>{technician ? technician.name : "Chưa phân công"}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <Link href={`/work-orders/${order.id}`}>
-                          <Button 
-                            variant="outline"
-                            size="sm"
-                            className="border-blue-300 text-blue-700 hover:bg-blue-50 shadow-sm"
-                          >
-                            Chi tiết
-                          </Button>
-                        </Link>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <OrderItem 
+                    key={order.id} 
+                    order={order} 
+                    technician={technician} 
+                    detailsUrl={`/work-orders/${order.id}`} 
+                  />
                 )
               })
             )}

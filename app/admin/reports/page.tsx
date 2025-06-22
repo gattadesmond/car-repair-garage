@@ -55,7 +55,7 @@ export default function AdminReportsPage() {
     const techStats = technicians.map((tech) => ({
       name: tech.full_name,
       completed: workOrders.filter((o) => o.assigned_technician === tech.id && o.status === "completed").length,
-      inInspection: workOrders.filter((o) => o.assigned_technician === tech.id && o.status === "in_inspection").length,
+      inInspection: workOrders.filter((o) => o.assigned_technician === tech.id && o.status === "diagnosis").length,
     }))
 
     setReportData({

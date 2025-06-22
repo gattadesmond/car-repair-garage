@@ -54,7 +54,7 @@ export default function AdminDashboard() {
       totalRevenue: estimatedRevenue,
       completedThisMonth,
       pendingOrders: orders.filter((o) => o.status === "pending").length,
-      inInspectionOrders: orders.filter((o) => o.status === "in_inspection").length,
+      inInspectionOrders: orders.filter((o) => o.status === "diagnosis").length,
       completedOrders: orders.filter((o) => o.status === "completed").length,
       totalTechnicians: technicians.length,
     })
