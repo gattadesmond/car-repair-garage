@@ -10,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Car, Clock, CheckCircle, AlertCircle, ClipboardList, Wrench, Calendar, FileText } from "lucide-react"
 import Link from "next/link"
 import RoleLayout from "@/components/role-layout"
-import { getWorkOrders, getCurrentUser, type WorkOrder } from "@/lib/demo-data"
+import TaskItem from "@/components/task-item"
+import { getWorkOrders, getCurrentUser, getTechnicians, type WorkOrder } from "@/lib/demo-data"
 
 interface Task extends WorkOrder {
   task_id: string
@@ -25,6 +26,7 @@ interface Task extends WorkOrder {
 export default function KTVDashboard() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([])
+  const [technicians, setTechnicians] = useState<any[]>([])
   const [stats, setStats] = useState({
     pending: 0,
     inInspection: 0,
@@ -37,6 +39,7 @@ export default function KTVDashboard() {
 
   useEffect(() => {
     fetchTasks()
+    setTechnicians(getTechnicians())
   }, [filter, search])
 
   const fetchTasks = () => {
@@ -283,51 +286,29 @@ export default function KTVDashboard() {
             ) : (
               <div className="space-y-4">
                 {tasks.map((task) => (
-                  <div key={task.id} className="border rounded-lg p-4">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <Badge className={getServiceTypeBadge(task.service_type || "mechanical").color}>
-                            {getServiceTypeBadge(task.service_type || "mechanical").label}
-                          </Badge>
-                          <h4 className="font-medium">{task.name || `Công việc #${task.task_id}`}</h4>
-                          <Badge {...getStatusBadge(task.task_status)}>
-                            {getStatusBadge(task.task_status).label}
-                          </Badge>
-                        </div>
-                        
-                        <p className="text-sm text-gray-600 mb-1">
-                          {task.license_plate} - {task.car_info} | Khách hàng: {task.customer_name}
-                        </p>
-                        
-                        {task.description && (
-                          <p className="text-sm text-gray-600 mb-2">
-                            {task.description.length > 100 ? `${task.description.substring(0, 100)}...` : task.description}
-                          </p>
-                        )}
-                        
-                        <div className="flex items-center space-x-4 text-xs text-gray-500">
-                          <span className="flex items-center">
-                            <Calendar className="h-3 w-3 mr-1" />
-                            {new Date(task.created_at).toLocaleDateString("vi-VN")}
-                          </span>
-                          {task.estimated_completion && (
-                            <span className="flex items-center">
-                              <Clock className="h-3 w-3 mr-1" />
-                              Hạn: {new Date(task.estimated_completion).toLocaleDateString("vi-VN")}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                        <Link href={`/ktv/tasks/${task.task_id}`}>
-                          <Button variant="outline" size="sm">
-                            Xem chi tiết
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
+                  <div key={task.id || task.task_id} className="mb-4">
+                    <TaskItem
+                      task={{
+                        id: task.task_id,
+                        name: task.name || `Công việc #${task.task_id}`,
+                        description: task.description,
+                        status: task.task_status,
+                        service_type: task.service_type || "mechanical",
+                        created_at: task.created_at,
+                        estimated_completion: task.estimated_completion,
+                        assigned_technician: task.assigned_technician,
+                        work_order_id: task.id
+                      }}
+                      car_info={task.car_info}
+                      license_plate={task.license_plate}
+                      customer_name={task.customer_name}
+                      technician={task.assigned_technician ? {
+                        id: task.assigned_technician,
+                        name: technicians.find(t => t.id === task.assigned_technician)?.full_name || "Không xác định",
+                        full_name: technicians.find(t => t.id === task.assigned_technician)?.full_name
+                      } : null}
+                      detailsUrl={`/ktv/tasks/${task.task_id}`}
+                    />
                   </div>
                 ))}
               </div>
