@@ -74,7 +74,7 @@ export default function DashboardLayout({ children, role, title }: DashboardLayo
         ...baseItems,
         { href: "/tasks", icon: ClipboardList, label: "Phân công KTV" },
         { href: "/reports", icon: BarChart3, label: "Báo cáo" },
-        { href: "/users", icon: Users, label: "Người dùng" },
+        { href: "/users", icon: Users, label: "Nhân viên" },
         { href: "/settings", icon: Settings, label: "Cài đặt" },
       ]
     }

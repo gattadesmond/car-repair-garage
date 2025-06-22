@@ -174,26 +174,51 @@ export default function CVDashboardPage() {
             ) : (
               recentWorkOrders.map((order) => {
                 const technician = technicians.find((t) => t.id === order.technician_id)
+                const currentUser = getCurrentUser()
                 return (
-                  <Card key={order.id}>
+                  <Card key={order.id} className="border-amber-200 shadow-sm hover:shadow-md transition-all">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between">
                         <div>
-                          <div className="flex items-center space-x-2 mb-1">
-                            <h3 className="font-medium">{order.customer_name}</h3>
-                            {getStatusBadge(order.status)}
+                          <div className="flex items-center space-x-2 mb-2">
+                            <h3 className="font-medium text-base">{order.customer_name}</h3>
+                            {order.status === "pending" ? (
+                              <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 flex items-center gap-1">
+                                <Clock className="h-3 w-3" /> Đang chờ
+                              </Badge>
+                            ) : order.status === "diagnosis" ? (
+                              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 flex items-center gap-1">
+                                <AlertCircle className="h-3 w-3" /> Đang chuẩn đoán
+                              </Badge>
+                            ) : order.status === "completed" ? (
+                              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1">
+                                <CheckSquare className="h-3 w-3" /> Hoàn thành
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline">{order.status}</Badge>
+                            )}
                           </div>
-                          <p className="text-sm text-gray-600 mb-2">
-                            {order.license_plate} - {order.car_info}
-                          </p>
-                          <div className="flex items-center space-x-4 text-sm">
-                            <p>
-                              <span className="text-gray-500">KTV:</span>{" "}
-                              {technician ? technician.name : "Chưa phân công"}
+                             <div className="bg-gray-50 p-2 rounded-md mb-3">
+                            <p className="text-lg font-medium flex items-center">
+                              <FileText className="h-5 w-5 text-blue-500 mr-1" />
+                              <span className="font-semibold">{order.car_info}</span> - <span className="text-gray-700">{order.license_plate}</span>
                             </p>
-                            <p>
-                              <span className="text-gray-500">Ngày tạo:</span>{" "}
+                            {order.customer_request && (
+                              <p className="text-xs text-gray-600 mt-1">
+                                <span className="font-medium">Yêu cầu:</span> {order.customer_request}
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex items-center space-x-4 text-sm">
+                            <p className="flex items-center text-gray-500">
+                              <Clock className="h-4 w-4 text-blue-500 mr-1" />
+                              <span className="mr-1">Ngày tiếp nhận:</span>
                               {new Date(order.creation_date).toLocaleDateString("vi-VN")}
+                            </p>
+                            <p className="flex items-center text-gray-500">
+                              <Users className="h-4 w-4 text-blue-500 mr-1" />
+                              <span className="mr-1">KTV:</span>
+                              {technician ? technician.name : "Chưa phân công"}
                             </p>
                           </div>
                         </div>
@@ -201,9 +226,9 @@ export default function CVDashboardPage() {
                           <Button 
                             variant={order.status === "pending" ? "default" : "outline"} 
                             size="sm"
-                            className={order.status === "pending" ? "bg-blue-600 hover:bg-blue-700 text-white font-medium" : "border-blue-300 text-blue-700 hover:bg-blue-50"}
+                            className={order.status === "pending" ? "bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm" : "border-blue-300 text-blue-700 hover:bg-blue-50 shadow-sm"}
                           >
-                            {getActionText(order.status)}
+                            Chi tiết
                           </Button>
                         </Link>
                       </div>

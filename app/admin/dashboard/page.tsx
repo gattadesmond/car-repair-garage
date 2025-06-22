@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart3, Users, FileText, Settings, CheckCircle } from "lucide-react"
+import { BarChart3, Users, FileText, Settings, CheckCircle, Clock, AlertCircle, CheckSquare, Calendar, User } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import RoleLayout from "@/components/role-layout"
@@ -78,11 +78,11 @@ export default function AdminDashboardPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
-        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">Đang chờ</Badge>
+        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 flex items-center gap-1"><Clock className="h-3 w-3" /> Đang chờ</Badge>
       case "diagnosis":
-        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Đang chuẩn đoán</Badge>
+        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> Đang chuẩn đoán</Badge>
       case "completed":
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Hoàn thành</Badge>
+        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1"><CheckSquare className="h-3 w-3" /> Hoàn thành</Badge>
       default:
         return <Badge variant="outline">{status}</Badge>
     }
@@ -208,35 +208,44 @@ export default function AdminDashboardPage() {
               recentWorkOrders.map((order) => {
                 const technician = technicians.find((t) => t.id === order.technician_id)
                 return (
-                  <Card key={order.id}>
+                  <Card key={order.id} className="border-amber-200 shadow-sm hover:shadow transition-all">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between">
                         <div>
-                          <div className="flex items-center space-x-2 mb-1">
-                            <h3 className="font-medium">{order.customer_name}</h3>
+                          <div className="flex items-center space-x-2 mb-2">
+                            <h3 className="text-base font-medium">{order.customer_name}</h3>
                             {getStatusBadge(order.status)}
                           </div>
-                          <p className="text-sm text-gray-600 mb-2">
-                            {order.license_plate} - {order.car_info}
-                          </p>
-                          <div className="flex items-center space-x-4 text-sm">
-                            <p>
-                              <span className="text-gray-500">KTV:</span>{" "}
-                              {technician ? technician.name : "Chưa phân công"}
-                            </p>
-                            <p>
-                              <span className="text-gray-500">Ngày tạo:</span>{" "}
-                              {new Date(order.creation_date).toLocaleDateString("vi-VN")}
-                            </p>
+                          <div className="bg-gray-50 p-2 rounded-md mb-2">
+                            <div className="flex items-center gap-1.5">
+                              <FileText className="h-5 w-5 text-blue-500" />
+                              <span className="text-lg font-semibold">{order.car_info}</span>
+                              {order.license_plate && (
+                                <span className="text-sm text-gray-500 ml-1">({order.license_plate})</span>
+                              )}
+                            </div>
+                            {order.request && (
+                              <p className="text-sm text-gray-600 mt-1">{order.request}</p>
+                            )}
+                          </div>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500">
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-4 w-4 text-blue-500" />
+                              <span>{new Date(order.creation_date).toLocaleDateString("vi-VN")}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <User className="h-4 w-4 text-blue-500" />
+                              <span>{technician ? technician.name : "Chưa phân công"}</span>
+                            </div>
                           </div>
                         </div>
                         <Link href={`/work-orders/${order.id}`}>
                           <Button 
-                            variant={order.status === "pending" ? "default" : "outline"} 
+                            variant="outline"
                             size="sm"
-                            className={order.status === "pending" ? "bg-blue-600 hover:bg-blue-700 text-white font-medium" : "border-blue-300 text-blue-700 hover:bg-blue-50"}
+                            className="border-blue-300 text-blue-700 hover:bg-blue-50 shadow-sm"
                           >
-                            {getActionText(order.status)}
+                            Chi tiết
                           </Button>
                         </Link>
                       </div>

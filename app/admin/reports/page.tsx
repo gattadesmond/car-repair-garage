@@ -110,7 +110,7 @@ export default function AdminReportsPage() {
 
         {/* Key Metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
+          {/* <Card>
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <DollarSign className="h-4 w-4 text-green-600" />
@@ -120,7 +120,7 @@ export default function AdminReportsPage() {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
 
           <Card>
             <CardContent className="p-4">
@@ -146,7 +146,7 @@ export default function AdminReportsPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          {/* <Card>
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <DollarSign className="h-4 w-4 text-orange-600" />
@@ -156,7 +156,7 @@ export default function AdminReportsPage() {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         {/* Top Technicians */}
