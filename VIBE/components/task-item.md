@@ -15,8 +15,15 @@ Mỗi task sẽ thuộc 1 trong 5 nhóm là : `Dọn Dẹp`, `Đồng sơn`, `C�
 ## 🏷 Nhóm dịch vụ
 - **Tag nhóm**: `Dọn Dẹp` (hiển thị như badge)
 
-## 🧹 Tên công việc
-- Ví dụ: `Vệ sinh khoang động cơ`, `Vệ sinh dàn lạnh`, `Vệ sinh nội thất`
+## 🚘 Thông tin xe & khách hàng
+- **Biển số xe**: VD: `51A-96695`
+- **Loại xe + năm sản xuất**: VD: `Toyota Camry (2020)`
+- **Khách hàng**: VD: `Nguyễn Văn An`, `Trần Thị Bình`
+
+
+## 🧹 Nội dung công việc
+- Ví dụ: `Vệ sinh khoang động cơ`, `Vệ sinh dàn lạnh`, `Vệ sinh nội thất`, nội dung này sẽ được `KTV` nhập vào sau, nếu chưa có thì để "Đang ghi nhận"
+
 
 ## 📄 Trạng thái công việc
 - **Trạng thái**:
@@ -24,16 +31,6 @@ Mỗi task sẽ thuộc 1 trong 5 nhóm là : `Dọn Dẹp`, `Đồng sơn`, `C�
   - `Đang chờ` (badge xám) - Khi `ADMIN` hoặc `CV` đã phân công `KTV`
   - `Hoàn thành` (badge xanh đậm) - Khi `KTV` đã hoàn thành ghi nhận
 
-## 🚘 Thông tin xe & khách hàng
-- **Biển số xe**: VD: `51A-96695`
-- **Loại xe + năm sản xuất**: VD: `Toyota Camry (2020)`
-- **Khách hàng**: VD: `Nguyễn Văn An`, `Trần Thị Bình`
-
-## 📝 Mô tả công việc
-- VD:
-  - `Vệ sinh toàn bộ khoang động cơ, kiểm tra các kết nối điện`
-  - `Vệ sinh toàn bộ dàn lạnh, lọc gió điều hòa`
-  - `Vệ sinh toàn bộ nội thất xe`
 
 ## 📆 Thời gian
 - **Giờ tạo**: VD: `21h 21/6/2025`

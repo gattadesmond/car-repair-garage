@@ -116,10 +116,14 @@ export default function TaskItem({
               </div>
               <div className="flex-1">
                 <div className="flex items-center space-x-2">
+
                   <Badge className={serviceTypeBadge.color}>
-                    {serviceTypeBadge.label}
-                  </Badge>
-                  <h4 className="font-medium">{task.name}</h4>
+                    {serviceTypeBadge.label}                  </Badge>
+                  <h4 className="font-medium">
+                    {carInfo && licensePlate ? `${carInfo} - ${licensePlate}` : 
+                     carInfo ? carInfo : 
+                     licensePlate ? licensePlate : ""}
+                  </h4>
                   <Badge className={statusBadge.color}>
                     {statusBadge.label}
                   </Badge>
@@ -127,11 +131,9 @@ export default function TaskItem({
               </div>
             </div>
             
-            {(carInfo || licensePlate || customerName) && (
+            {customerName && (
               <p className="text-sm text-gray-600 mb-1">
-                {licensePlate && <span>{licensePlate}</span>}
-                {carInfo && <span> - {carInfo}</span>}
-                {customerName && <span> | Khách hàng: {customerName}</span>}
+                <span>Khách hàng: {customerName}</span>
               </p>
             )}
             
