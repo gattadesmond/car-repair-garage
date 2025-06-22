@@ -116,7 +116,7 @@ export default function CustomerDetailPage({ params }: { params: { id: string } 
 
   if (loading) {
     return (
-      <RoleLayout role={userRole} title="Chi tiết khách hàng">
+      <RoleLayout role={['admin', 'cv']} title="Chi tiết khách hàng">
         <div className="text-center py-8">Đang tải...</div>
       </RoleLayout>
     )
@@ -124,7 +124,7 @@ export default function CustomerDetailPage({ params }: { params: { id: string } 
 
   if (!customer) {
     return (
-      <RoleLayout role={userRole} title="Chi tiết khách hàng">
+      <RoleLayout role={['admin', 'cv']} title="Chi tiết khách hàng">
         <Alert variant="destructive">
           <AlertDescription>Không tìm thấy thông tin khách hàng</AlertDescription>
         </Alert>
@@ -133,7 +133,7 @@ export default function CustomerDetailPage({ params }: { params: { id: string } 
   }
 
   return (
-    <RoleLayout role={userRole} title="Chi tiết khách hàng">
+    <RoleLayout role={['admin', 'cv']} title="Chi tiết khách hàng">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -253,7 +253,7 @@ export default function CustomerDetailPage({ params }: { params: { id: string } 
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <History className="h-5 w-5" />
-              <span>Lịch sử sửa chữa</span>
+              <span>Lịch sửa chữa</span>
             </CardTitle>
             <CardDescription>
               {filteredWorkOrders.length} phiếu sửa chữa
@@ -264,8 +264,8 @@ export default function CustomerDetailPage({ params }: { params: { id: string } 
             {filteredWorkOrders.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 {selectedCar 
-                  ? "Chưa có lịch sử sửa chữa cho xe này" 
-                  : "Khách hàng chưa có lịch sử sửa chữa"}
+                  ? "Chưa có lịch sửa chữa cho xe này" 
+                  : "Khách hàng chưa có lịch sửa chữa"}
               </div>
             ) : (
               <div className="space-y-6">
