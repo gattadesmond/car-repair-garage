@@ -9,7 +9,6 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { getWorkOrders, getCustomers, getTechnicians, getCurrentUser } from "@/lib/demo-data"
 import RoleLayout from "@/components/role-layout"
-import OrderItem from "@/components/order-item"
 
 export default function CVDashboardPage() {
   const [workOrders, setWorkOrders] = useState<any[]>([])
@@ -33,7 +32,7 @@ export default function CVDashboardPage() {
 
   // Tính toán các thống kê
   const pendingOrders = workOrders.filter((order) => order.status === "pending").length
-  const inInspectionOrders = workOrders.filter((order) => ["diagnosis", "diagnosis"].includes(order.status)).length
+  const inInspectionOrders = workOrders.filter((order) => ["diagnosis", "in_inspection"].includes(order.status)).length
   const completedOrders = workOrders.filter((order) => order.status === "completed").length
 
   // Lấy 5 đơn hàng gần nhất
@@ -65,6 +64,7 @@ export default function CVDashboardPage() {
       case "pending":
         return "Phân công KTV"
       case "diagnosis":
+      case "in_inspection":
         return "Xem tiến độ"
       case "completed":
         return "Xem chi tiết"
@@ -175,12 +175,40 @@ export default function CVDashboardPage() {
               recentWorkOrders.map((order) => {
                 const technician = technicians.find((t) => t.id === order.technician_id)
                 return (
-                  <OrderItem 
-                    key={order.id} 
-                    order={order} 
-                    technician={technician} 
-                    detailsUrl={`/work-orders/${order.id}`} 
-                  />
+                  <Card key={order.id}>
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <div className="flex items-center space-x-2 mb-1">
+                            <h3 className="font-medium">{order.customer_name}</h3>
+                            {getStatusBadge(order.status)}
+                          </div>
+                          <p className="text-sm text-gray-600 mb-2">
+                            {order.license_plate} - {order.car_info}
+                          </p>
+                          <div className="flex items-center space-x-4 text-sm">
+                            <p>
+                              <span className="text-gray-500">KTV:</span>{" "}
+                              {technician ? technician.name : "Chưa phân công"}
+                            </p>
+                            <p>
+                              <span className="text-gray-500">Ngày tạo:</span>{" "}
+                              {new Date(order.creation_date).toLocaleDateString("vi-VN")}
+                            </p>
+                          </div>
+                        </div>
+                        <Link href={`/work-orders/${order.id}`}>
+                          <Button 
+                            variant={order.status === "pending" ? "default" : "outline"} 
+                            size="sm"
+                            className={order.status === "pending" ? "bg-blue-600 hover:bg-blue-700 text-white font-medium" : "border-blue-300 text-blue-700 hover:bg-blue-50"}
+                          >
+                            {getActionText(order.status)}
+                          </Button>
+                        </Link>
+                      </div>
+                    </CardContent>
+                  </Card>
                 )
               })
             )}

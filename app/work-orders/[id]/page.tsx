@@ -293,7 +293,7 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
       }
       return null
     }
-    
+    // Đối với các vai trò khác, giữ nguyên luồng cũ
     // Đối với các vai trò khác
     switch (order.status) {
       case "pending":
@@ -353,20 +353,27 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
       const orderIndex = workOrders.findIndex((w) => w.id === orderId)
 
       if (orderIndex !== -1) {
-        const currentOrder = workOrders[orderIndex];
+        let newStatus = "completed";
+        let successMessage = "Đã hoàn thành";
         
-        // Cập nhật tất cả các subtask thành hoàn thành
-        if (currentOrder.repair_tasks && Array.isArray(currentOrder.repair_tasks)) {
-          currentOrder.repair_tasks = currentOrder.repair_tasks.map(task => ({
-            ...task,
-            status: "completed",
-            updated_at: new Date().toISOString()
-          }));
+        // Kiểm tra xem tất cả các subtask đã hoàn thành chưa
+        const allTasksCompleted = currentOrder.repair_tasks && 
+          Array.isArray(currentOrder.repair_tasks) && 
+          currentOrder.repair_tasks.every(task => task.status === "completed");
+        
+        if (!allTasksCompleted) {
+          // Cập nhật tất cả các subtask thành hoàn thành
+          if (currentOrder.repair_tasks && Array.isArray(currentOrder.repair_tasks)) {
+            currentOrder.repair_tasks = currentOrder.repair_tasks.map(task => ({
+              ...task,
+              status: "completed",
+              updated_at: new Date().toISOString()
+            }));
+          }
         }
-        
+        // Cập nhật trạng thái work order
         // Cập nhật trạng thái work order thành hoàn thành
         workOrders[orderIndex] = {
-          ...currentOrder,
           status: "completed",
           updated_at: new Date().toISOString(),
         }
@@ -377,7 +384,7 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
         // Cập nhật state
         setWorkOrder(workOrders[orderIndex])
         
-        // Hiển thị thông báo thành công
+        alert(successMessage)
         alert("Đã hoàn thành")
       }
     } catch (error: any) {

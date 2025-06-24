@@ -111,7 +111,7 @@ export default function TasksPage() {
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
-      pending: { label: "Chờ xử lý", variant: "secondary" as const },
+      pending: { label: "Đang chờ", variant: "secondary" as const },
       in_progress: { label: "Đang thực hiện", variant: "outline" as const },
       completed: { label: "Hoàn thành", variant: "default" as const },
     }

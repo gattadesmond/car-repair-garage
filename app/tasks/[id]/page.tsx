@@ -126,7 +126,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
         return { variant: "outline", label: "Đang thực hiện", color: "bg-blue-100 text-blue-800 hover:bg-blue-100" }
       case "pending":
       default:
-        return { variant: "outline", label: "Chờ xử lý", color: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100" }
+        return { variant: "outline", label: "Đang chờ", color: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100" }
     }
   }
 
