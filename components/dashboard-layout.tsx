@@ -88,28 +88,28 @@ export default function DashboardLayout({ children, role, title }: DashboardLayo
     <div className="flex flex-col h-full">
       <div className="p-4 border-b">
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-            <Wrench className="w-4 h-4 text-white" />
+          <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+            <Wrench className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="font-semibold">Gara Manager</h2>
-            <p className="text-xs text-gray-500 capitalize">
+            <h2 className="font-semibold text-lg">Gara Manager</h2>
+            <p className="text-sm text-gray-500 capitalize">
               {role === "cv" ? "Cố vấn dịch vụ" : role === "ktv" ? "Kỹ thuật viên" : "Quản lý"}
             </p>
           </div>
         </div>
       </div>
 
-      <nav className="flex-1 p-4">
-        <ul className="space-y-2">
+      <nav className="flex-1 p-4 overflow-y-auto">
+        <ul className="space-y-3">
           {navItems.map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors"
               >
-                <item.icon className="h-5 w-5" />
-                <span>{item.label}</span>
+                <item.icon className="h-5 w-5 text-blue-600" />
+                <span className="font-medium">{item.label}</span>
               </Link>
             </li>
           ))}
@@ -118,8 +118,14 @@ export default function DashboardLayout({ children, role, title }: DashboardLayo
 
       <div className="p-4 border-t">
         {user && (
-          <div className="mb-4">
-            <p className="text-sm font-medium">{user.email}</p>
+          <div className="mb-4 flex items-center space-x-2">
+            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-white text-sm font-medium">{user.name?.charAt(0) || user.email?.charAt(0)}</span>
+            </div>
+            <div className="overflow-hidden">
+              {user.name && <p className="font-medium truncate">{user.name}</p>}
+              <p className="text-sm text-gray-500 truncate">{user.email}</p>
+            </div>
           </div>
         )}
         <Button variant="outline" className="w-full" onClick={handleLogout}>
@@ -137,18 +143,27 @@ export default function DashboardLayout({ children, role, title }: DashboardLayo
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile Header */}
-      <div className="lg:hidden bg-white border-b px-4 py-3 flex items-center justify-between">
-        <h1 className="font-semibold text-lg">{title}</h1>
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Menu className="h-4 w-4" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="p-0">
-            <NavContent />
-          </SheetContent>
-        </Sheet>
+      <div className="lg:hidden bg-white border-b px-4 py-3 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+        <div className="flex items-center">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="sm" className="mr-2 -ml-2">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="p-0 w-[280px] sm:w-[320px]">
+              <NavContent />
+            </SheetContent>
+          </Sheet>
+          <h1 className="font-semibold text-lg truncate">{title}</h1>
+        </div>
+        <div className="flex items-center space-x-2">
+          {user && (
+            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+              <span className="text-white text-sm font-medium">{user.name?.charAt(0) || user.email?.charAt(0)}</span>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="lg:flex">
@@ -159,10 +174,10 @@ export default function DashboardLayout({ children, role, title }: DashboardLayo
 
         {/* Main Content */}
         <div className="flex-1">
-          <div className="hidden lg:block bg-white border-b px-6 py-4">
+          <div className="hidden lg:block bg-white border-b px-6 py-4 sticky top-0 z-10 shadow-sm">
             <h1 className="text-2xl font-semibold">{title}</h1>
           </div>
-          <main className="p-4 lg:p-6">{children}</main>
+          <main className="p-4 lg:p-6 pb-20">{children}</main>
         </div>
       </div>
     </div>

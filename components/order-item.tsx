@@ -27,77 +27,57 @@ interface OrderItemProps {
 }
 
 export default function OrderItem({ order, technician, detailsUrl }: OrderItemProps) {
-  // Hàm lấy badge style dựa trên trạng thái
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
-        return (
-          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 flex items-center gap-1">
-            <Clock className="h-3 w-3" /> Đang chờ
-          </Badge>
-        )
+        return { label: "Đang chờ", color: "bg-yellow-100 text-yellow-800" }
       case "diagnosis":
-        return (
-          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 flex items-center gap-1">
-            <AlertCircle className="h-3 w-3" /> Đang chuẩn đoán
-          </Badge>
-        )
+        return { label: "Đang chuẩn đoán", color: "bg-blue-100 text-blue-800" }
       case "completed":
-        return (
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1">
-            <CheckSquare className="h-3 w-3" /> Hoàn thành
-          </Badge>
-        )
+        return { label: "Hoàn thành", color: "bg-green-100 text-green-800" }
       default:
-        return <Badge variant="outline">{status}</Badge>
+        return { label: status, color: "bg-gray-100 text-gray-800" }
     }
   }
 
   return (
-    <Card className="border-amber-200 shadow-sm hover:shadow transition-all">
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <div className="flex items-center space-x-2 mb-2">
-              <h3 className="text-base font-medium">{order.customer_name}</h3>
-              {getStatusBadge(order.status)}
+    <Card className="overflow-hidden hover:shadow-md transition-shadow">
+      <div className="border-l-4 border-blue-500 pl-4 py-4 pr-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+          <div className="space-y-1.5">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="font-semibold text-blue-800">
+                {order.car_info} - {order.license_plate}
+              </h3>
+              <Badge className={getStatusBadge(order.status).color}>
+                {getStatusBadge(order.status).label}
+              </Badge>
             </div>
-            <div className="bg-gray-50 p-2 rounded-md mb-2">
-              <div className="flex items-center gap-1.5">
-                <FileText className="h-5 w-5 text-blue-500" />
-                <span className="text-lg font-semibold">{order.car_info}</span>
-                {order.license_plate && (
-                  <span className="text-sm text-gray-500 ml-1">({order.license_plate})</span>
-                )}
-              </div>
-              {(order.request || order.customer_request) && (
-                <p className="text-sm text-gray-600 mt-1">
-                  {order.request || order.customer_request}
-                </p>
-              )}
-            </div>
-            <div className="flex items-center space-x-4 text-sm text-gray-500">
-              <div className="flex items-center gap-1">
-                <Calendar className="h-4 w-4 text-blue-500" />
-                <span>{new Date(order.created_at || order.creation_date || "").toLocaleDateString("vi-VN")}</span>
-              </div>
-              {/* <div className="flex items-center gap-1">
-                <User className="h-4 w-4 text-blue-500" />
-                <span>{technician ? technician.name : "Chưa phân công"}</span>
-              </div> */}
+            <div className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-4 text-sm text-gray-500">
+              <span className="flex items-center">
+                <Calendar className="h-3.5 w-3.5 mr-1.5 text-blue-500" />
+                {new Date(order.created_at || order.creation_date || "").toLocaleDateString("vi-VN")}
+              </span>
+              <span className="flex items-center">
+                <User className="h-3.5 w-3.5 mr-1.5 text-blue-500" />
+                {order.customer_name}
+              </span>
             </div>
           </div>
-          <Link href={detailsUrl}>
-            <Button 
-              variant="outline"
-              size="sm"
-              className="border-blue-300 text-blue-700 hover:bg-blue-50 shadow-sm"
-            >
+          <Link href={detailsUrl} className="self-start sm:self-center">
+            <Button size="sm" variant="outline" className="whitespace-nowrap">
               Chi tiết
             </Button>
           </Link>
         </div>
-      </CardContent>
+        <div>
+          <h4 className="text-sm font-medium flex items-center">
+            <FileText className="h-4 w-4 mr-1.5 text-blue-500" />
+            Yêu cầu của khách hàng:
+          </h4>
+          <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded-md mt-1">{order.request || order.customer_request}</p>
+        </div>
+      </div>
     </Card>
   )
 }

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart3, Users, FileText, Settings, CheckCircle, Clock, AlertCircle, CheckSquare, Calendar, User } from "lucide-react"
+import { BarChart3, Users, FileText, Settings, CheckCircle, Clock, AlertCircle, CheckSquare, Calendar, User, Download, Plus } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import RoleLayout from "@/components/role-layout"
@@ -13,34 +13,22 @@ import { getWorkOrders, getCustomers, getTechnicians, getCurrentUser } from "@/l
 import OrderItem from "@/components/order-item"
 
 export default function AdminDashboardPage() {
+  const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({
     totalCustomers: 0,
     totalWorkOrders: 0,
     completedOrdersPerMonth: 0,
-    totalTechnicians: 0,
+    totalTechnicians: 0
   })
-  const [recentWorkOrders, setRecentWorkOrders] = useState<any[]>([])
-  const [technicians, setTechnicians] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState<any>(null)
-  const router = useRouter()
-
+  const [recentWorkOrders, setRecentWorkOrders] = useState<WorkOrder[]>([])
+  const [technicians, setTechnicians] = useState<Technician[]>([])
+  const [user, setUser] = useState(null)
+  
   useEffect(() => {
-    const currentUser = getCurrentUser()
-    if (!currentUser) {
-      router.push("/login")
-      return
-    }
-
-    if (currentUser.role !== "admin") {
-      router.push(`/${currentUser.role}/dashboard`)
-      return
-    }
-
-    setUser(currentUser)
     fetchData()
+    setUser(getCurrentUser())
   }, [])
-
+  
   const fetchData = async () => {
     setLoading(true)
     const workOrders = getWorkOrders()
@@ -64,8 +52,8 @@ export default function AdminDashboardPage() {
     // Get recent work orders
     const recent = [...workOrders]
       .sort((a, b) => {
-        const dateA = new Date(a.update_date || a.creation_date).getTime()
-        const dateB = new Date(b.update_date || b.creation_date).getTime()
+        const dateA = new Date(a.updated_at || a.created_at).getTime()
+        const dateB = new Date(b.updated_at || b.created_at).getTime()
         return dateB - dateA
       })
       .slice(0, 5)
@@ -74,7 +62,7 @@ export default function AdminDashboardPage() {
     setTechnicians(technicians)
     setLoading(false)
   }
-
+  
   // Đã chuyển hàm getStatusBadge vào component OrderItem
 
   // Hàm lấy text cho nút hành động dựa trên trạng thái
@@ -94,42 +82,61 @@ export default function AdminDashboardPage() {
   if (loading || !user) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Đang tải...</div>
   }
-
+  
   return (
-    <RoleLayout role="admin" title="Bảng điều khiển">
+    <RoleLayout role="admin">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold">Bảng điều khiển</h1>
+        {/* <div className="flex flex-col xs:flex-row gap-2 xs:gap-2 w-full sm:w-auto">
+          <Button variant="outline" size="sm" className="w-full xs:w-auto">
+            <Download className="h-4 w-4 mr-2" />
+            Xuất báo cáo
+          </Button>
+          <Button size="sm" className="w-full xs:w-auto">
+            <Plus className="h-4 w-4 mr-2" />
+            Tạo phiếu mới
+          </Button>
+        </div> */}
+      </div>
       <div className="space-y-6">
         {/* Overview Statistics */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <Card>
+        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-4">
+          <Card className="hover:shadow-md transition-shadow">
             <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <Users className="h-4 w-4 text-blue-600" />
+              <div className="flex items-center gap-3">
+                <div className="bg-blue-100 p-2 rounded-full">
+                  <Users className="h-5 w-5 text-blue-600" />
+                </div>
                 <div>
-                  <p className="text-sm font-medium">Khách hàng</p>
+                  <p className="text-sm font-medium text-gray-600">Khách hàng</p>
                   <p className="text-2xl font-bold">{stats.totalCustomers}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:shadow-md transition-shadow">
             <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <FileText className="h-4 w-4 text-purple-600" />
+              <div className="flex items-center gap-3">
+                <div className="bg-purple-100 p-2 rounded-full">
+                  <FileText className="h-5 w-5 text-purple-600" />
+                </div>
                 <div>
-                  <p className="text-sm font-medium">Tổng đơn</p>
+                  <p className="text-sm font-medium text-gray-600">Tổng đơn</p>
                   <p className="text-2xl font-bold">{stats.totalWorkOrders}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:shadow-md transition-shadow">
             <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-4 w-4 text-orange-600" />
+              <div className="flex items-center gap-3">
+                <div className="bg-orange-100 p-2 rounded-full">
+                  <CheckCircle className="h-5 w-5 text-orange-600" />
+                </div>
                 <div>
-                  <p className="text-sm font-medium">Hoàn thành/tháng</p>
+                  <p className="text-sm font-medium text-gray-600">Hoàn thành/tháng</p>
                   <p className="text-2xl font-bold">{stats.completedOrdersPerMonth}</p>
                 </div>
               </div>
@@ -140,34 +147,34 @@ export default function AdminDashboardPage() {
      
 
         {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Truy cập nhanh</CardTitle>
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Truy cập nhanh</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Link href="/admin/tasks">
-                <Button variant="outline" className="w-full h-24 flex flex-col items-center justify-center space-y-2">
-                  <FileText className="h-6 w-6" />
-                  <span>Quản lý công việc</span>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <Link href="/admin/tasks" className="block">
+                <Button variant="outline" className="w-full h-20 sm:h-24 flex flex-col items-center justify-center gap-2 hover:bg-blue-50 hover:border-blue-200 transition-colors">
+                  <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+                  <span className="text-xs sm:text-sm text-center">Quản lý công việc</span>
                 </Button>
               </Link>
-              <Link href="/admin/reports">
-                <Button variant="outline" className="w-full h-24 flex flex-col items-center justify-center space-y-2">
-                  <BarChart3 className="h-6 w-6" />
-                  <span>Báo cáo</span>
+              <Link href="/admin/reports" className="block">
+                <Button variant="outline" className="w-full h-20 sm:h-24 flex flex-col items-center justify-center gap-2 hover:bg-purple-50 hover:border-purple-200 transition-colors">
+                  <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" />
+                  <span className="text-xs sm:text-sm text-center">Báo cáo</span>
                 </Button>
               </Link>
-              <Link href="/admin/users">
-                <Button variant="outline" className="w-full h-24 flex flex-col items-center justify-center space-y-2">
-                  <Users className="h-6 w-6" />
-                  <span>Quản lý người dùng</span>
+              <Link href="/admin/users" className="block">
+                <Button variant="outline" className="w-full h-20 sm:h-24 flex flex-col items-center justify-center gap-2 hover:bg-green-50 hover:border-green-200 transition-colors">
+                  <Users className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
+                  <span className="text-xs sm:text-sm text-center">Quản lý người dùng</span>
                 </Button>
               </Link>
-              <Link href="/admin/settings">
-                <Button variant="outline" className="w-full h-24 flex flex-col items-center justify-center space-y-2">
-                  <Settings className="h-6 w-6" />
-                  <span>Cài đặt</span>
+              <Link href="/admin/settings" className="block">
+                <Button variant="outline" className="w-full h-20 sm:h-24 flex flex-col items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-200 transition-colors">
+                  <Settings className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" />
+                  <span className="text-xs sm:text-sm text-center">Cài đặt</span>
                 </Button>
               </Link>
             </div>
@@ -176,13 +183,16 @@ export default function AdminDashboardPage() {
 
         {/* Đơn sửa chữa gần đây */}
         <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Đơn sửa chữa gần đây</h2>
-            {/* <Link href="/repair-orders">
-              <Button variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-medium">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-4">
+            <h2 className="text-lg font-semibold flex items-center">
+              <FileText className="h-5 w-5 mr-2 text-blue-600" />
+              Đơn sửa chữa gần đây
+            </h2>
+            <Link href="/repair-orders" className="self-start md:self-auto">
+              <Button variant="outline" size="sm" className="w-full xs:w-auto border-blue-200 text-blue-700 hover:bg-blue-50">
                 Xem tất cả
               </Button>
-            </Link> */}
+            </Link>
           </div>
 
           <div className="space-y-4">
@@ -208,22 +218,24 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-           {/* Detailed Statistics */}
-           <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">Thống kê chi tiết</CardTitle>
-            <CardDescription>Tổng quan về hoạt động của garage</CardDescription>
+        {/* Detailed Statistics */}
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg sm:text-xl">Thống kê chi tiết</CardTitle>
+            <CardDescription className="text-sm text-gray-500">Tổng quan về hoạt động của garage</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 border rounded-lg">
+                <div className="p-4 border rounded-lg hover:border-blue-200 hover:bg-blue-50 transition-colors">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-500">Kỹ thuật viên</p>
-                      <p className="text-2xl font-bold">{stats.totalTechnicians}</p>
+                      <p className="text-sm font-medium text-gray-600">Kỹ thuật viên</p>
+                      <p className="text-2xl font-bold text-blue-700">{stats.totalTechnicians}</p>
                     </div>
-                    <Users className="h-8 w-8 text-blue-500" />
+                    <div className="bg-blue-100 p-2 rounded-full">
+                      <Users className="h-6 w-6 text-blue-600" />
+                    </div>
                   </div>
                 </div>
               </div>

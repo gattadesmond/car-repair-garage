@@ -136,13 +136,13 @@ export default function CustomerDetailPage({ params }: { params: { id: string } 
     <RoleLayout role={['admin', 'cv']} title="Chi tiết khách hàng">
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <Button variant="outline" onClick={() => router.back()}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <Button variant="outline" onClick={() => router.back()} className="w-full sm:w-auto">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Quay lại
           </Button>
-          <Link href={`/intake-form?customer=${customer.id}`}>
-            <Button>
+          <Link href={`/intake-form?customer=${customer.id}`} className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto">
               <FileText className="h-4 w-4 mr-2" />
               Tạo phiếu mới
             </Button>
@@ -158,26 +158,35 @@ export default function CustomerDetailPage({ params }: { params: { id: string } 
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-semibold">{customer.name}</h3>
-                  <div className="flex items-center space-x-4 text-sm text-gray-600 mt-1">
-                    <span>{customer.phone}</span>
-                    {customer.email && <span>{customer.email}</span>}
-                  </div>
-                  {customer.address && (
-                    <p className="text-sm text-gray-600 mt-1">{customer.address}</p>
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-semibold">{customer.name}</h3>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-1 sm:space-y-0 text-sm text-gray-600 mt-1">
+                  <span className="flex items-center">
+                    <Phone className="h-4 w-4 mr-1.5 text-blue-500" />
+                    {customer.phone}
+                  </span>
+                  {customer.email && (
+                    <span className="flex items-center">
+                      <Mail className="h-4 w-4 mr-1.5 text-blue-500" />
+                      {customer.email}
+                    </span>
                   )}
                 </div>
-
-                {customer.last_service && (
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <History className="h-4 w-4" />
-                    <span>Lần sửa cuối: {new Date(customer.last_service).toLocaleDateString("vi-VN")}</span>
-                  </div>
+                {customer.address && (
+                  <p className="text-sm text-gray-600 mt-1 flex items-start">
+                    <MapPin className="h-4 w-4 mr-1.5 text-blue-500 mt-0.5" />
+                    {customer.address}
+                  </p>
                 )}
               </div>
+
+              {customer.last_service && (
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <History className="h-4 w-4 text-blue-500" />
+                  <span>Lần sửa cuối: {new Date(customer.last_service).toLocaleDateString("vi-VN")}</span>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -192,11 +201,12 @@ export default function CustomerDetailPage({ params }: { params: { id: string } 
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 overflow-x-auto pb-2">
                 <Button 
                   variant={selectedCar === null ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedCar(null)}
+                  className="min-w-[80px] justify-center"
                 >
                   Tất cả xe
                 </Button>
@@ -206,38 +216,44 @@ export default function CustomerDetailPage({ params }: { params: { id: string } 
                     variant={selectedCar === car.id ? "default" : "outline"}
                     size="sm"
                     onClick={() => setSelectedCar(car.id)}
+                    className="min-w-[80px] justify-center"
                   >
                     {car.license_plate}
                   </Button>
                 ))}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {customer.cars.map((car) => (
                   <Card key={car.id} className={selectedCar && selectedCar !== car.id ? "opacity-60" : ""}>
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold">{car.license_plate}</h3>
+                        <h3 className="font-semibold text-blue-700">{car.license_plate}</h3>
                       </div>
-                      <div className="space-y-1 text-sm">
-                        <p>
-                          <span className="font-medium">Hãng xe:</span> {getBrandNameById(car.brand)}
-                        </p>
-                        <p>
-                          <span className="font-medium">Model:</span> {getModelNameById(car.brand, car.model)}
-                        </p>
-                        <p>
-                          <span className="font-medium">Năm SX:</span> {car.year}
-                        </p>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center">
+                          <span className="w-20 font-medium">Hãng xe:</span> 
+                          <span className="flex-1">{getBrandNameById(car.brand)}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <span className="w-20 font-medium">Model:</span> 
+                          <span className="flex-1">{getModelNameById(car.brand, car.model)}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <span className="w-20 font-medium">Năm SX:</span> 
+                          <span className="flex-1">{car.year}</span>
+                        </div>
                         {car.color && (
-                          <p>
-                            <span className="font-medium">Màu:</span> {car.color}
-                          </p>
+                          <div className="flex items-center">
+                            <span className="w-20 font-medium">Màu:</span> 
+                            <span className="flex-1">{car.color}</span>
+                          </div>
                         )}
                         {car.vin_number && (
-                          <p>
-                            <span className="font-medium">Số khung:</span> {car.vin_number}
-                          </p>
+                          <div className="flex items-center">
+                            <span className="w-20 font-medium">Số khung:</span> 
+                            <span className="flex-1 break-all">{car.vin_number}</span>
+                          </div>
                         )}
                       </div>
                     </CardContent>
@@ -268,64 +284,70 @@ export default function CustomerDetailPage({ params }: { params: { id: string } 
                   : "Khách hàng chưa có lịch sửa chữa"}
               </div>
             ) : (
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {filteredWorkOrders.map((order) => (
-                  <Card key={order.id} className="overflow-hidden">
+                  <Card key={order.id} className="overflow-hidden hover:shadow-md transition-shadow">
                     <div className="border-l-4 border-blue-500 pl-4 py-4 pr-4">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                        <div>
-                          <div className="flex items-center space-x-2">
-                            <h3 className="font-semibold">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+                        <div className="space-y-1.5">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h3 className="font-semibold text-blue-800">
                               {order.car_info} - {order.license_plate}
                             </h3>
                             <Badge className={getStatusBadge(order.status).color}>
                               {getStatusBadge(order.status).label}
                             </Badge>
                           </div>
-                          <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
+                          <div className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-4 text-sm text-gray-500">
                             <span className="flex items-center">
-                              <Calendar className="h-3 w-3 mr-1" />
+                              <Calendar className="h-3.5 w-3.5 mr-1.5 text-blue-500" />
                               {new Date(order.received_date).toLocaleDateString("vi-VN")}
                             </span>
                             <span className="flex items-center">
-                              <User className="h-3 w-3 mr-1" />
+                              <User className="h-3.5 w-3.5 mr-1.5 text-blue-500" />
                               Tiếp nhận: {order.received_by}
                             </span>
                           </div>
                         </div>
-                        <Link href={`/work-orders/${order.id}`}>
-                          <Button size="sm" variant="outline">
+                        <Link href={`/work-orders/${order.id}`} className="self-start sm:self-center">
+                          <Button size="sm" variant="outline" className="whitespace-nowrap">
                             Xem chi tiết
                           </Button>
                         </Link>
                       </div>
 
                       <div className="space-y-2">
-                        <div>
-                          <h4 className="text-sm font-medium">Yêu cầu của khách hàng:</h4>
-                          <p className="text-sm text-gray-600">{order.customer_request}</p>
-                        </div>
-
-                        {order.repair_tasks && order.repair_tasks.length > 0 && (
                           <div>
-                            <h4 className="text-sm font-medium mb-2">Công việc sửa chữa:</h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                              {order.repair_tasks.map((task) => (
-                                <div key={task.id} className="bg-gray-50 p-2 rounded text-sm">
-                                  <div className="flex items-center space-x-2">
-                                    <Badge className={getServiceTypeBadge(task.service_type).color}>
-                                      {getServiceTypeBadge(task.service_type).label}
-                                    </Badge>
-                                    <span className="font-medium">{task.name}</span>
-                                    {task.status === "completed" && (
-                                      <CheckCircle className="h-3 w-3 text-green-500" />
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
+                            <h4 className="text-sm font-medium flex items-center">
+                              <MessageSquare className="h-4 w-4 mr-1.5 text-blue-500" />
+                              Yêu cầu của khách hàng:
+                            </h4>
+                            <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded-md">{order.customer_request}</p>
                           </div>
-                        )}
+
+                          {order.repair_tasks && order.repair_tasks.length > 0 && (
+                            <div>
+                              <h4 className="text-sm font-medium mb-2 flex items-center">
+                                <Wrench className="h-4 w-4 mr-1.5 text-blue-500" />
+                                Công việc sửa chữa:
+                              </h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                {order.repair_tasks.map((task) => (
+                                  <div key={task.id} className="bg-gray-50 p-2 rounded text-sm">
+                                    <div className="flex items-center space-x-2">
+                                      <Badge className={`${getServiceTypeBadge(task.service_type).color} whitespace-nowrap`}>
+                                        {getServiceTypeBadge(task.service_type).label}
+                                      </Badge>
+                                      <span className="font-medium">{task.name}</span>
+                                      {task.status === "completed" && (
+                                        <CheckCircle className="h-3 w-3 text-green-500" />
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                       </div>
                     </div>
                   </Card>

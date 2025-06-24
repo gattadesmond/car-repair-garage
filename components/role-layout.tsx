@@ -99,42 +99,50 @@ export default function RoleLayout({ children, role, title }: RoleLayoutProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex flex-col">
       {/* Mobile Header */}
-      <header className="lg:hidden bg-white border-b border-blue-100 px-4 py-3 sticky top-0 z-10 shadow-sm">
+      <header className="lg:hidden bg-white border-b border-blue-100 px-4 py-3 sticky top-0 z-20 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-blue-600 hover:text-blue-800 hover:bg-blue-50">
+                <Button variant="ghost" size="icon" className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 -ml-2 mr-1">
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-72 p-0 border-r border-blue-100 bg-white">
+              <SheetContent side="left" className="w-[85vw] max-w-[300px] p-0 border-r border-blue-100 bg-white z-50">
                 <div className="p-5 border-b border-blue-100 bg-gradient-to-r from-blue-50 to-indigo-50">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white shadow-md">
-                      {role === "cv" && <Users className="h-5 w-5" />}
-                      {role === "ktv" && <Wrench className="h-5 w-5" />}
-                      {role === "admin" && <Shield className="h-5 w-5" />}
+                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white shadow-md flex-shrink-0">
+                      {Array.isArray(role) ? (
+                        role.includes("admin") ? <Shield className="h-5 w-5" /> :
+                        role.includes("cv") ? <Users className="h-5 w-5" /> :
+                        <Wrench className="h-5 w-5" />
+                      ) : (
+                        role === "cv" ? <Users className="h-5 w-5" /> :
+                        role === "ktv" ? <Wrench className="h-5 w-5" /> :
+                        <Shield className="h-5 w-5" />
+                      )}
                     </div>
-                    <div>
-                      <h2 className="font-semibold text-lg text-blue-800">{title || `${role.toUpperCase()} Dashboard`}</h2>
-                      <p className="text-sm text-blue-600">{user.email}</p>
+                    <div className="overflow-hidden">
+                      <h2 className="font-semibold text-lg text-blue-800 truncate">
+                        {title || `${Array.isArray(role) ? role[0].toUpperCase() : role.toUpperCase()} Dashboard`}
+                      </h2>
+                      <p className="text-sm text-blue-600 truncate max-w-[180px]">{user.email}</p>
                     </div>
                   </div>
                 </div>
-                <nav className="p-3">
+                <nav className="p-3 overflow-y-auto max-h-[calc(100vh-100px)]">
                   <ul className="space-y-2">
                     {navLinks.map((link) => (
                       <li key={link.href}>
                         <Link href={link.href}>
                           <Button
                             variant={pathname === link.href ? "secondary" : "ghost"}
-                            className={`w-full justify-start transition-all duration-200 ${pathname === link.href 
+                            className={`w-full justify-start transition-all duration-200 py-3 ${pathname === link.href 
                               ? "bg-blue-100 text-blue-700 hover:bg-blue-200 hover:text-blue-800 font-medium" 
                               : "text-slate-700 hover:bg-blue-50 hover:text-blue-700"}`}
                           >
                             {link.icon}
-                            <span className="ml-2">{link.label}</span>
+                            <span className="ml-3 font-medium">{link.label}</span>
                           </Button>
                         </Link>
                       </li>
@@ -142,24 +150,26 @@ export default function RoleLayout({ children, role, title }: RoleLayoutProps) {
                     <li className="pt-3 mt-3 border-t border-blue-100">
                       <Button
                         variant="ghost"
-                        className="w-full justify-start text-red-500 hover:text-red-700 hover:bg-red-50 transition-all duration-200"
+                        className="w-full justify-start text-red-500 hover:text-red-700 hover:bg-red-50 transition-all duration-200 py-3"
                         onClick={handleLogout}
                       >
                         <LogOut className="h-5 w-5" />
-                        <span className="ml-2">Đăng xuất</span>
+                        <span className="ml-3 font-medium">Đăng xuất</span>
                       </Button>
                     </li>
                   </ul>
                 </nav>
               </SheetContent>
             </Sheet>
-            <h1 className="text-lg font-semibold ml-2 text-blue-800">{title || `${role.toUpperCase()} Dashboard`}</h1>
+            <h1 className="text-lg font-semibold ml-1 text-blue-800 truncate max-w-[200px]">
+              {title || `${Array.isArray(role) ? role[0].toUpperCase() : role.toUpperCase()} Dashboard`}
+            </h1>
           </div>
           <div className="text-sm text-blue-600 flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white shadow-sm">
               {user.email.charAt(0).toUpperCase()}
             </div>
-            {user.email}
+            <span className="hidden sm:inline truncate max-w-[120px]">{user.email}</span>
           </div>
         </div>
       </header>
@@ -216,7 +226,7 @@ export default function RoleLayout({ children, role, title }: RoleLayoutProps) {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 p-4 sm:p-5 lg:p-6 pb-20">{children}</main>
       </div>
     </div>
   )

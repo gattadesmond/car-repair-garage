@@ -492,3 +492,11 @@ export const getCurrentUser = () => {
   const stored = localStorage.getItem("user")
   return stored ? JSON.parse(stored) : null
 }
+
+export const getDemoData = () => {
+  return {
+    customers: getCustomers(),
+    workOrders: getWorkOrders(),
+    technicians: getTechnicians()
+  }
+}
