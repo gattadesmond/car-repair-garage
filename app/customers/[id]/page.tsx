@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { ArrowLeft, User, Car, Calendar, History, Wrench, FileText, Clock, CheckCircle } from "lucide-react"
+import { ArrowLeft, User, Car, Calendar, History, Wrench, FileText, Clock, CheckCircle, Phone, Mail, MapPin, MessageSquare } from "lucide-react"
 import Link from "next/link"
 import RoleLayout from "@/components/role-layout"
 import { getCustomers, getWorkOrders, type Customer, type WorkOrder, type Car as CarType } from "@/lib/demo-data"

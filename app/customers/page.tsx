@@ -11,6 +11,49 @@ import RoleLayout from "@/components/role-layout"
 import { getCustomers, type Customer } from "@/lib/demo-data"
 import { carBrands } from "@/lib/car-data"
 
+export default function CustomersPage() {
+  const [customers, setCustomers] = useState<Customer[]>([])
+  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([])
+  const [searchTerm, setSearchTerm] = useState("")
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchCustomers()
+  }, [])
+
+  useEffect(() => {
+    filterCustomers()
+  }, [searchTerm, customers])
+
+  const fetchCustomers = () => {
+    setLoading(true)
+    const data = getCustomers()
+    setCustomers(data)
+    setFilteredCustomers(data)
+    setLoading(false)
+  }
+
+  const filterCustomers = () => {
+    if (!searchTerm.trim()) {
+      setFilteredCustomers(customers)
+      return
+    }
+
+    const term = searchTerm.toLowerCase().trim()
+    const filtered = customers.filter(customer => {
+      // Tìm theo tên
+      if (customer.name.toLowerCase().includes(term)) return true
+      // Tìm theo số điện thoại
+      if (customer.phone.includes(term)) return true
+      // Tìm theo email
+      if (customer.email?.toLowerCase().includes(term)) return true
+      // Tìm theo biển số xe
+      if (customer.cars.some(car => car.license_plate.toLowerCase().includes(term))) return true
+      return false
+    })
+    setFilteredCustomers(filtered)
+  }
+
   // Lấy tên hãng xe từ ID
   const getBrandNameById = (brandId: string): string => {
     const brand = carBrands.find((b) => b.id === brandId)
