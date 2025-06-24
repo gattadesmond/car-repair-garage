@@ -9,10 +9,12 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { getWorkOrders, getCustomers, getTechnicians, getCurrentUser } from "@/lib/demo-data"
 import RoleLayout from "@/components/role-layout"
+import OrderItem from "@/components/order-item"
 
 export default function CVDashboardPage() {
   const [workOrders, setWorkOrders] = useState<any[]>([])
   const [technicians, setTechnicians] = useState<any[]>([])
+  const [recentWorkOrders, setRecentWorkOrders] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
@@ -27,6 +29,17 @@ export default function CVDashboardPage() {
 
     setWorkOrders(workOrdersData)
     setTechnicians(techniciansData)
+    
+    // Lấy 5 đơn hàng gần nhất
+    const recent = [...workOrdersData]
+      .sort((a, b) => {
+        const dateA = new Date(a.updated_at || a.created_at).getTime()
+        const dateB = new Date(b.updated_at || b.created_at).getTime()
+        return dateB - dateA
+      })
+      .slice(0, 5)
+    
+    setRecentWorkOrders(recent)
     setLoading(false)
   }
 
@@ -35,43 +48,9 @@ export default function CVDashboardPage() {
   const inInspectionOrders = workOrders.filter((order) => ["diagnosis", "in_inspection"].includes(order.status)).length
   const completedOrders = workOrders.filter((order) => order.status === "completed").length
 
-  // Lấy 5 đơn hàng gần nhất
-  const recentWorkOrders = [...workOrders]
-    .sort((a, b) => {
-      const dateA = new Date(a.update_date || a.creation_date).getTime()
-      const dateB = new Date(b.update_date || b.creation_date).getTime()
-      return dateB - dateA
-    })
-    .slice(0, 5)
+  // Tính toán các thống kê từ workOrders
 
-  // Hàm lấy badge style dựa trên trạng thái
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "pending":
-        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">Đang chờ</Badge>
-      case "diagnosis":
-        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Đang chuẩn đoán</Badge>
-      case "completed":
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Hoàn thành</Badge>
-      default:
-        return <Badge variant="outline">{status}</Badge>
-    }
-  }
-
-  // Hàm lấy text cho nút hành động dựa trên trạng thái
-  const getActionText = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "Phân công KTV"
-      case "diagnosis":
-      case "in_inspection":
-        return "Xem tiến độ"
-      case "completed":
-        return "Xem chi tiết"
-      default:
-        return "Xem chi tiết"
-    }
-  }
+  // Không cần hàm getStatusBadge và getActionText nữa vì đã được xử lý trong component OrderItem
 
   if (loading) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Đang tải...</div>
@@ -155,13 +134,16 @@ export default function CVDashboardPage() {
 
         {/* Đơn hàng gần đây */}
         <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Đơn sửa chữa gần đây</h2>
-            {/* <Link href="/repair-orders">
-              <Button variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-medium">
+           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-4">
+            <h2 className="text-lg font-semibold flex items-center">
+              <FileText className="h-5 w-5 mr-2 text-blue-600" />
+              Đơn sửa chữa gần đây
+            </h2>
+            <Link href="/repair-orders" className="self-start md:self-auto">
+              <Button variant="outline" size="sm" className="w-full xs:w-auto border-blue-200 text-blue-700 hover:bg-blue-50">
                 Xem tất cả
               </Button>
-            </Link> */}
+            </Link>
           </div>
 
           <div className="space-y-4">
@@ -175,40 +157,12 @@ export default function CVDashboardPage() {
               recentWorkOrders.map((order) => {
                 const technician = technicians.find((t) => t.id === order.technician_id)
                 return (
-                  <Card key={order.id}>
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <div className="flex items-center space-x-2 mb-1">
-                            <h3 className="font-medium">{order.customer_name}</h3>
-                            {getStatusBadge(order.status)}
-                          </div>
-                          <p className="text-sm text-gray-600 mb-2">
-                            {order.license_plate} - {order.car_info}
-                          </p>
-                          <div className="flex items-center space-x-4 text-sm">
-                            <p>
-                              <span className="text-gray-500">KTV:</span>{" "}
-                              {technician ? technician.name : "Chưa phân công"}
-                            </p>
-                            <p>
-                              <span className="text-gray-500">Ngày tạo:</span>{" "}
-                              {new Date(order.creation_date).toLocaleDateString("vi-VN")}
-                            </p>
-                          </div>
-                        </div>
-                        <Link href={`/work-orders/${order.id}`}>
-                          <Button 
-                            variant={order.status === "pending" ? "default" : "outline"} 
-                            size="sm"
-                            className={order.status === "pending" ? "bg-blue-600 hover:bg-blue-700 text-white font-medium" : "border-blue-300 text-blue-700 hover:bg-blue-50"}
-                          >
-                            {getActionText(order.status)}
-                          </Button>
-                        </Link>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <OrderItem 
+                    key={order.id} 
+                    order={order} 
+                    technician={technician} 
+                    detailsUrl={`/work-orders/${order.id}`} 
+                  />
                 )
               })
             )}
