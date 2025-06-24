@@ -145,7 +145,7 @@ export default function AdminTasksPage() {
   }
 
   return (
-    <RoleLayout role="admin" title="Quản lý công việc & Phân công KTV">
+    <RoleLayout role="admin" title="Quản lý công việc">
       <div className="space-y-6">
         {/* Filter Controls */}
         <Card>

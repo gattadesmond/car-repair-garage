@@ -130,7 +130,7 @@ export default function TasksPage() {
   }
 
   return (
-    <DashboardLayout role={currentUser?.role || "admin"} title="Quản lý công việc & Phân công KTV">
+    <DashboardLayout role={currentUser?.role || "admin"} title="Quản lý công việc">
       <div className="space-y-6">
         {/* Filter Controls */}
         <Card>
