@@ -53,7 +53,7 @@ export default function CustomersPage() {
 
   return (
     <RoleLayout role="cv" title="Quản lý khách hàng">
-      <div className="p-6">
+      <div className="md:p-6">
         <div className="space-y-6">
           {/* Search and Add */}
           <div className="flex flex-col sm:flex-row gap-4">
