@@ -387,7 +387,7 @@ export default function IntakeFormPage() {
           backgroundColor: "rgba(255, 255, 255, 0.85)",
         }}
       >
-      <form onSubmit={handleSubmit} className="space-y-6 p-4">
+      <form onSubmit={handleSubmit} className="space-y-6 md:p-4">
         {/* Customer Information */}
         <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
           <CardHeader>
