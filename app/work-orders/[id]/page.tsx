@@ -471,7 +471,7 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
                       <span className="font-medium">Ngày tiếp nhận:</span>
                       <span>{new Date(workOrder.received_date).toLocaleDateString("vi-VN")}</span>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    {/* <div className="flex items-center space-x-2">
                       <span className="font-medium">Người tiếp nhận:</span>
                       <span>{workOrder.received_by}</span>
                     </div>
@@ -489,7 +489,7 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
                         <span className="font-medium">Dự kiến hoàn thành:</span>
                         <span>{new Date(workOrder.estimated_completion).toLocaleDateString("vi-VN")}</span>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 </div>
               </div>
