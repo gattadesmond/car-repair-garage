@@ -492,7 +492,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
                             <tr key={index} className="border-b">
                               <td className="p-3">
                                 <Input 
-                                  value={item.item}
+                                  placeholder={item.item}
                                   onChange={(e) => {
                                     const newItems = [...repairItems];
                                     newItems[index].item = e.target.value;
@@ -502,7 +502,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
                               </td>
                               <td className="p-3">
                                 <Input 
-                                  value={item.requirement}
+                                  placeholder={item.requirement}
                                   onChange={(e) => {
                                     const newItems = [...repairItems];
                                     newItems[index].requirement = e.target.value;
