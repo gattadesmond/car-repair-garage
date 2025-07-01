@@ -27,8 +27,17 @@ export interface RepairTask {
   service_type: string
   status?: "pending" | "in_progress" | "completed"
   assigned_technician?: string
+  task_images?: ImageFile[]
+  notes?: string
   created_at: string
   updated_at: string
+}
+
+export interface ImageFile {
+  id: string
+  file: File
+  url: string
+  type: "camera" | "upload"
 }
 
 export interface WorkOrder {

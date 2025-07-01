@@ -8,9 +8,10 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { ArrowLeft, Wrench, Save, CheckCircle, Clock, FileText } from "lucide-react"
+import { ArrowLeft, Wrench, Save, CheckCircle, Clock, FileText, Camera } from "lucide-react"
 import RoleLayout from "@/components/role-layout"
-import { getWorkOrders, saveWorkOrders, getCurrentUser } from "@/lib/demo-data"
+import ImageUpload from "@/components/image-upload"
+import { getWorkOrders, saveWorkOrders, getCurrentUser, ImageFile } from "@/lib/demo-data"
 
 export default function TaskDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter()
@@ -23,6 +24,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
   const [task, setTask] = useState<any>(null)
   const [taskStatus, setTaskStatus] = useState<string>("")
   const [taskNotes, setTaskNotes] = useState<string>("")
+  const [taskImages, setTaskImages] = useState<ImageFile[]>([])
 
   useEffect(() => {
     fetchData()
@@ -66,6 +68,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
       setTask(foundTask)
       setTaskStatus(foundTask.status || "pending")
       setTaskNotes(foundTask.notes || "")
+      setTaskImages(foundTask.task_images || [])
     } else {
       setError("Không tìm thấy công việc")
     }
@@ -82,7 +85,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
       const workOrders = getWorkOrders()
       const orderIndex = workOrders.findIndex((o) => o.id === workOrder.id)
 
-      if (orderIndex !== -1) {
+      if (orderIndex !== -1 && workOrders[orderIndex].repair_tasks) {
         // Cập nhật task trong work order
         const updatedTasks = workOrders[orderIndex].repair_tasks.map((t: any) => {
           if (t.id === task.id) {
@@ -90,6 +93,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
               ...t,
               status: taskStatus,
               notes: taskNotes,
+              task_images: taskImages,
               updated_at: new Date().toISOString()
             }
           }
@@ -110,6 +114,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
           ...task,
           status: taskStatus,
           notes: taskNotes,
+          task_images: taskImages,
           updated_at: new Date().toISOString()
         })
       }
@@ -214,6 +219,24 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
                 </div>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Upload Images */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Camera className="h-5 w-5 text-green-600" />
+              <span>Hình ảnh xe</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ImageUpload 
+              images={taskImages} 
+              onImagesChange={setTaskImages} 
+              maxImages={10} 
+              label="Hình ảnh xe"
+            />
           </CardContent>
         </Card>
 
