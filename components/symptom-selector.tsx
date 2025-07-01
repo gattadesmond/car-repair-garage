@@ -40,7 +40,20 @@ interface SymptomSelectorProps {
   onSymptomsChange: (symptoms: SelectedSymptom[]) => void
 }
 
-// Hàm đệ quy để tìm tất cả các leaf nodes (triệu chứng cuối cấp)
+// Hàm chuẩn hóa tên danh mục để đảm bảo tính nhất quán
+const normalizeCategoryName = (name: string): string => {
+  // Loại bỏ khoảng trắng thừa và chuẩn hóa tên danh mục
+  const trimmedName = name.trim();
+  
+  // Map các tên danh mục có thể bị sai khác
+  if (trimmedName.includes("Sửa chữa")) return "Sửa chữa chung";
+  if (trimmedName.includes("Đồng") || trimmedName.includes("sơn")) return "Đồng sơn";
+  if (trimmedName.includes("Dọn")) return "Dọn xe";
+  
+  return trimmedName;
+}
+
+// Hàm đệ quy để tìm tất cả các leaf nodes (triệu chứng cuối cấp) với đường dẫn đầy đủ
 const findLeafNodes = (node: SymptomNode, path: string[] = []): SelectedSymptom[] => {
   const currentPath = [...path, node.name]
   
@@ -79,16 +92,17 @@ const SymptomTree: React.FC<{
   expandedNodes: Set<number>
   onToggleExpand: (nodeId: number) => void
   level?: number
-}> = ({ nodes, selectedSymptoms, onSymptomToggle, expandedNodes, onToggleExpand, level = 0 }) => {
+  parentPath?: string[] // Thêm parentPath để theo dõi đường dẫn từ gốc
+}> = ({ nodes, selectedSymptoms, onSymptomToggle, expandedNodes, onToggleExpand, level = 0, parentPath = [] }) => {
   return (
     <div className={`space-y-2 ${level > 0 ? 'ml-4 border-l-2 border-gray-200 pl-4' : ''}`}>
       {nodes.map((node) => {
         const hasChildren = node.children && node.children.length > 0
         const isExpanded = expandedNodes.has(node.id)
-        const leafNodes = hasChildren ? [] : findLeafNodes(node)
-        const isSelected = leafNodes.some(leaf => 
-          selectedSymptoms.some(selected => selected.id === leaf.id)
-        )
+        const currentPath = [...parentPath, node.name] // Xây dựng đường dẫn hiện tại
+        
+        // Kiểm tra xem node này có được chọn không
+        const isSelected = selectedSymptoms.some(selected => selected.id === node.id)
         
         if (hasChildren) {
           return (
@@ -107,13 +121,22 @@ const SymptomTree: React.FC<{
                   expandedNodes={expandedNodes}
                   onToggleExpand={onToggleExpand}
                   level={level + 1}
+                  parentPath={currentPath} // Truyền đường dẫn hiện tại xuống các node con
                 />
               </CollapsibleContent>
             </Collapsible>
           )
         } else {
           // Đây là leaf node (triệu chứng có thể chọn)
-          const symptom = leafNodes[0]
+          // Tạo đối tượng symptom với đường dẫn đầy đủ
+          const symptom: SelectedSymptom = {
+            id: node.id,
+            name: node.name,
+            path: currentPath
+          }
+          
+          console.log("Leaf node path:", currentPath);
+          
           return (
             <div key={node.id} className="flex items-start space-x-2 p-2 hover:bg-gray-50 rounded">
               <Checkbox
@@ -132,7 +155,8 @@ const SymptomTree: React.FC<{
                 htmlFor={`symptom-${node.id}`}
                 className="text-sm leading-tight cursor-pointer flex-1"
               >
-                {node.name}
+                {node.name} 
+                {/* {currentPath.join(' > ')} */}
               </Label>
             </div>
           )
@@ -160,17 +184,15 @@ export default function SymptomSelector({ selectedSymptoms, onSymptomsChange }: 
   useEffect(() => {
     const loadSymptomData = async () => {
       try {
-        console.log('Loading symptom data...')
         const response = await fetch('/trieuchung.json')
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
         const data: SymptomNode[] = await response.json()
-        console.log('Symptom data loaded:', data.length, 'categories')
+        console.log('Category names:', data.map(cat => cat.name))
         setSymptomData(data)
         if (data.length > 0) {
           setActiveCategory(data[0].name)
-          console.log('Active category set to:', data[0].name)
         }
       } catch (error) {
         console.error('Error loading symptom data:', error)
@@ -271,21 +293,52 @@ export default function SymptomSelector({ selectedSymptoms, onSymptomsChange }: 
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {selectedSymptoms.map((symptom) => (
-                <Badge
-                  key={symptom.id}
-                  variant="secondary"
-                  className="flex items-center space-x-1 px-2 py-1"
-                >
-                  <span className="text-xs">{symptom.name}</span>
-                  <button
-                    onClick={() => handleRemoveSymptom(symptom.id)}
-                    className="ml-1 hover:bg-gray-300 rounded-full p-0.5"
+              {selectedSymptoms.map((symptom) => {
+                console.log("🚀 ~ {selectedSymptoms.map ~ symptom:", symptom)
+                // Xác định icon và màu sắc dựa vào danh mục (lấy từ path[0])
+                const originalCategory = symptom.path[0];
+                const categoryName = normalizeCategoryName(originalCategory);
+                console.log("Badge categoryName:", categoryName, "Original path[0]:", originalCategory);
+                let categoryIcon;
+                let badgeColor;
+                
+                if (categoryName === "Sửa chữa chung") {
+                  categoryIcon = <Settings className="h-3 w-3 mr-1" />;
+                  badgeColor = "bg-blue-100 text-blue-800";
+                } else if (categoryName === "Đồng sơn") {
+                  categoryIcon = <Palette className="h-3 w-3 mr-1" />;
+                  badgeColor = "bg-green-100 text-green-800";
+                } else if (categoryName === "Dọn xe") {
+                  categoryIcon = <Car className="h-3 w-3 mr-1" />;
+                  badgeColor = "bg-purple-100 text-purple-800";
+                } else {
+                  categoryIcon = <Wrench className="h-3 w-3 mr-1" />;
+                  badgeColor = "bg-gray-100 text-gray-800";
+                }
+                
+
+                
+                return (
+                  <Badge
+                    key={symptom.id}
+                    variant="outline"
+                    className={`flex items-center gap-1 px-2 py-1 ${badgeColor} border rounded-md shadow-sm`}
                   >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              ))}
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      {categoryIcon}
+                      <span className="text-xs font-medium">{symptom.path.join(' > ')}</span>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveSymptom(symptom.id)}
+                      className="ml-auto flex-shrink-0 hover:bg-gray-200 hover:text-red-500 rounded-full p-1 transition-colors"
+                      aria-label="Xóa triệu chứng"
+                      title="Xóa triệu chứng"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
@@ -295,15 +348,20 @@ export default function SymptomSelector({ selectedSymptoms, onSymptomsChange }: 
       <Tabs value={activeCategory} onValueChange={setActiveCategory}>
         <TabsList className="grid w-full grid-cols-3">
           {symptomData.map((category) => {
-            const categoryIcon = category.name === "Sửa chữa chung" ? Settings :
-                               category.name === "Đồng sơn" ? Palette :
-                               category.name === "Dọn xe" ? Car : Wrench
+            const originalName = category.name;
+            const normalizedName = normalizeCategoryName(originalName);
+            
+            console.log("TabsList category:", originalName, "Normalized:", normalizedName);
+            
+            const categoryIcon = normalizedName === "Sửa chữa chung" ? Settings :
+                               normalizedName === "Đồng sơn" ? Palette :
+                               normalizedName === "Dọn xe" ? Car : Wrench
             const IconComponent = categoryIcon
             
             return (
               <TabsTrigger key={category.id} value={category.name} className="flex items-center space-x-2">
                 <IconComponent className="h-4 w-4" />
-                <span className="hidden sm:inline">{category.name}</span>
+                <span className="hidden sm:inline">{originalName}</span>
               </TabsTrigger>
             )
           })}
@@ -315,10 +373,28 @@ export default function SymptomSelector({ selectedSymptoms, onSymptomsChange }: 
               <CardHeader>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <CardTitle className="flex items-center space-x-2">
-                    {category.name === "Sửa chữa chung" && <Settings className="h-5 w-5" />}
-                    {category.name === "Đồng sơn" && <Palette className="h-5 w-5" />}
-                    {category.name === "Dọn xe" && <Car className="h-5 w-5" />}
-                    <span>{category.name}</span>
+                    {(() => {
+                      const originalName = category.name;
+                      const normalizedName = normalizeCategoryName(originalName);
+                      
+                      console.log("CardTitle categoryName:", originalName, "Normalized:", normalizedName);
+           
+                      let icon = null;
+                      if (normalizedName === "Sửa chữa chung") {
+                        icon = <Settings className="h-5 w-5" />;
+                      } else if (normalizedName === "Đồng sơn") {
+                        icon = <Palette className="h-5 w-5" />;
+                      } else if (normalizedName === "Dọn xe") {
+                        icon = <Car className="h-5 w-5" />;
+                      }
+                        
+                      return (
+                        <>
+                          {icon}
+                          <span>{originalName}</span>
+                        </>
+                      );
+                    })()}
                   </CardTitle>
                   
                   {/* Tìm kiếm */}
@@ -345,6 +421,7 @@ export default function SymptomSelector({ selectedSymptoms, onSymptomsChange }: 
                       <div className="space-y-2">
                         {searchResults.map((symptom) => {
                           const isSelected = selectedSymptoms.some(s => s.id === symptom.id)
+                          console.log("Search result symptom:", symptom);
                           return (
                             <div key={symptom.id} className="flex items-start space-x-2 p-2 hover:bg-gray-50 rounded border">
                               <Checkbox
@@ -354,14 +431,30 @@ export default function SymptomSelector({ selectedSymptoms, onSymptomsChange }: 
                                 className="mt-0.5"
                               />
                               <div className="flex-1">
-                                <Label
-                                  htmlFor={`search-symptom-${symptom.id}`}
-                                  className="text-sm leading-tight cursor-pointer block"
-                                >
-                                  {symptom.name}
-                                </Label>
-                                <div className="text-xs text-gray-500 mt-1">
-                                  {symptom.path.join(' > ')}
+                                <div className="flex items-center">
+                                  {/* Hiển thị icon danh mục */}
+                                  {(() => {
+                                    const originalCategory = symptom.path[0];
+                                    const normalizedCategory = normalizeCategoryName(originalCategory);
+                                    
+                                    console.log("Search result category:", originalCategory, "Normalized:", normalizedCategory);
+                                    
+                                    if (normalizedCategory === "Sửa chữa chung") {
+                                      return <Settings className="h-3 w-3 mr-1 text-blue-600 flex-shrink-0" />;
+                                    } else if (normalizedCategory === "Đồng sơn") {
+                                      return <Palette className="h-3 w-3 mr-1 text-green-600 flex-shrink-0" />;
+                                    } else if (normalizedCategory === "Dọn xe") {
+                                      return <Car className="h-3 w-3 mr-1 text-purple-600 flex-shrink-0" />;
+                                    } else {
+                                      return <Wrench className="h-3 w-3 mr-1 text-gray-600 flex-shrink-0" />;
+                                    }
+                                  })()}
+                                  <Label
+                                    htmlFor={`search-symptom-${symptom.id}`}
+                                    className="text-sm leading-tight cursor-pointer block font-medium flex-shrink-0"
+                                  >
+                                    {symptom.path.join(' > ')}
+                                  </Label>
                                 </div>
                               </div>
                             </div>
