@@ -159,24 +159,24 @@ export default function AdminDashboardPage() {
                   <span className="text-xs sm:text-sm text-center">Quản lý công việc</span>
                 </Button>
               </Link>
-              <Link href="/admin/reports" className="block">
+              {/* <Link href="/admin/reports" className="block">
                 <Button variant="outline" className="w-full h-20 sm:h-24 flex flex-col items-center justify-center gap-2 hover:bg-purple-50 hover:border-purple-200 transition-colors">
                   <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" />
                   <span className="text-xs sm:text-sm text-center">Báo cáo</span>
                 </Button>
-              </Link>
+              </Link> */}
               <Link href="/admin/users" className="block">
                 <Button variant="outline" className="w-full h-20 sm:h-24 flex flex-col items-center justify-center gap-2 hover:bg-green-50 hover:border-green-200 transition-colors">
                   <Users className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
                   <span className="text-xs sm:text-sm text-center">Quản lý người dùng</span>
                 </Button>
               </Link>
-              <Link href="/admin/settings" className="block">
+              {/* <Link href="/admin/settings" className="block">
                 <Button variant="outline" className="w-full h-20 sm:h-24 flex flex-col items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-200 transition-colors">
                   <Settings className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" />
                   <span className="text-xs sm:text-sm text-center">Cài đặt</span>
                 </Button>
-              </Link>
+              </Link> */}
             </div>
           </CardContent>
         </Card>
