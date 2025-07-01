@@ -198,7 +198,7 @@ export default function DiagnosisPage() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Chẩn đoán kỹ thuật</h1>
-            <p className="text-gray-500">Mã phiếu: {workOrder.id}</p>
+            {/* <p className="text-gray-500">Mã phiếu: {workOrder.id}</p> */}
           </div>
           <Button variant="outline" onClick={() => router.back()}>Quay lại</Button>
         </div>

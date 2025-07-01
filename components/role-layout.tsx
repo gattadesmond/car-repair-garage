@@ -186,7 +186,7 @@ export default function RoleLayout({ children, role, title }: RoleLayoutProps) {
                 {role === "admin" && <Shield className="h-6 w-6" />}
               </div>
               <div>
-                <h2 className="font-semibold text-xl text-blue-800">{title || `${role.toUpperCase()} Dashboard`}</h2>
+                <h2 className="font-semibold text-xl text-blue-800">{title || `Dashboard`}</h2>
                 <p className="text-sm text-blue-600 flex items-center gap-1.5">
                   <div className="w-4 h-4 rounded-full bg-green-500"></div>
                   {user.email}

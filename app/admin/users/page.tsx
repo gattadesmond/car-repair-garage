@@ -45,8 +45,8 @@ export default function AdminUsersPage() {
     const adminUsers = [
       {
         id: "admin1",
-        full_name: "Admin User",
-        email: "admin@example.com",
+        full_name: "Manager",
+        email: "manager@example.com",
         role: "admin",
         phone: "0901234567",
         status: "active"

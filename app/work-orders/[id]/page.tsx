@@ -430,7 +430,7 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
               <FileText className="h-5 w-5" />
               <span>Thông tin phiếu tiếp nhận</span>
             </CardTitle>
-            <CardDescription>Mã phiếu: {workOrder.id}</CardDescription>
+            {/* <CardDescription>Mã phiếu: {workOrder.id}</CardDescription> */}
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

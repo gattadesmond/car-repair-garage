@@ -60,6 +60,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi">
+      <head>
+        <script src="/js/demo-images-all.js" defer></script>
+        <script src="/js/check-images.js" defer></script>
+        <script src="/js/verify-images.js" defer></script>
+      </head>
       <body>{children}</body>
     </html>
   )

@@ -26,7 +26,7 @@ export default function LoginPage() {
     const demoAccounts = {
       "cv@gara.com": { password: "123456", role: "cv" },
       "ktv@gara.com": { password: "123456", role: "ktv", id: "tech-1" },
-      "admin@gara.com": { password: "123456", role: "admin" },
+      "manager@gara.com": { password: "123456", role: "admin" },
     }
 
     const account = demoAccounts[email as keyof typeof demoAccounts]
@@ -147,7 +147,7 @@ export default function LoginPage() {
                 <span className="font-semibold text-blue-700">KTV:</span> ktv@gara.com / 123456 (Nguyễn Văn Tài)
               </div>
               <div className="p-2 bg-white rounded border border-blue-100 text-sm">
-                <span className="font-semibold text-blue-700">Admin:</span> admin@gara.com / 123456
+                <span className="font-semibold text-blue-700">Manager:</span> manager@gara.com / 123456
               </div>
             </div>
           </div>

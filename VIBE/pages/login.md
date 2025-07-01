@@ -35,4 +35,4 @@ Tạo UI màn hình đăng nhập cho một hệ thống quản lý sửa chữa
 Hiển thị ở dưới form, căn giữa, font nhỏ:
 CV: cv@gara.com / 123456
 KTV: ktv@gara.com / 123456
-Admin: admin@gara.com / 123456
+Manager: manager@gara.com / 123456

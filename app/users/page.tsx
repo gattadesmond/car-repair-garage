@@ -26,7 +26,7 @@ export default function UsersPage() {
       {
         id: "admin-1",
         full_name: "Nguyễn Văn Admin",
-        email: "admin@gara.com",
+        email: "manager@gara.com",
         role: "admin",
       },
       {
