@@ -12,6 +12,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ArrowLeft, Wrench, Save, CheckCircle, Clock, FileText, Camera, Calendar, User, Eye } from "lucide-react"
 import RoleLayout from "@/components/role-layout"
 import ImageUpload from "@/components/image-upload"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { getWorkOrders, saveWorkOrders, getCurrentUser, ImageFile } from "@/lib/demo-data"
 
 interface SavedImage {
@@ -20,6 +22,11 @@ interface SavedImage {
   type: "camera" | "upload"
   data: string // base64
   size: number
+}
+
+interface RepairItem {
+  item: string
+  requirement: string
 }
 
 export default function TaskDetailPage({ params }: { params: { id: string } }) {
@@ -35,6 +42,15 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
   const [taskNotes, setTaskNotes] = useState<string>("")
   const [taskImages, setTaskImages] = useState<ImageFile[]>([])
   const [images, setImages] = useState<SavedImage[]>([])
+  const [repairItems, setRepairItems] = useState<RepairItem[]>([
+    { item: "Thay nhớt lọc", requirement: "Thay" },
+    { item: "Thay dầu gội máy lạnh", requirement: "Thay" },
+    { item: "Cảo số cua T bên phải", requirement: "Thay" },
+    { item: "Cảo số cua T máy kéo", requirement: "Thay" },
+    { item: "Cảo số cua T chân máy", requirement: "Thay" },
+    { item: "Cảo số đòn xe (rít)", requirement: "Thay" },
+    { item: "Rô tuyn trái đứng lỏng", requirement: "Thay" }
+  ])
 
   useEffect(() => {
     fetchData()
@@ -109,8 +125,8 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
     const user = getCurrentUser()
     setCurrentUser(user)
 
-    // Kiểm tra nếu người dùng không phải là KTV, chuyển hướng về dashboard
-    if (user?.role !== "ktv") {
+    // Kiểm tra nếu người dùng không phải là KTV hoặc admin, chuyển hướng về dashboard
+    if (user?.role !== "ktv" && user?.role !== "admin") {
       router.push(`/dashboard/${user?.role || 'cv'}`)
       return
     }
@@ -132,8 +148,8 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
     }
 
     if (foundTask && foundWorkOrder) {
-      // Kiểm tra xem task có được gán cho KTV hiện tại không
-      if (foundTask.assigned_technician !== user?.id) {
+      // Kiểm tra xem task có được gán cho KTV hiện tại không (chỉ áp dụng cho KTV, không áp dụng cho admin)
+      if (user?.role === "ktv" && foundTask.assigned_technician !== user?.id) {
         setError("Bạn không được phân công cho công việc này")
         setLoading(false)
         return
@@ -144,6 +160,11 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
       setTaskStatus(foundTask.status || "pending")
       setTaskNotes(foundTask.notes || "")
       setTaskImages(foundTask.task_images || [])
+      
+      // Tải các hạng mục sửa chữa nếu có
+      if (foundTask.repair_items && Array.isArray(foundTask.repair_items) && foundTask.repair_items.length > 0) {
+        setRepairItems(foundTask.repair_items)
+      }
     } else {
       setError("Không tìm thấy công việc")
     }
@@ -169,6 +190,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
               status: taskStatus,
               notes: taskNotes,
               task_images: taskImages,
+              repair_items: repairItems,
               updated_at: new Date().toISOString()
             }
           }
@@ -190,6 +212,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
           status: taskStatus,
           notes: taskNotes,
           task_images: taskImages,
+          repair_items: repairItems,
           updated_at: new Date().toISOString()
         })
       }
@@ -211,7 +234,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
 
   if (loading) {
     return (
-      <RoleLayout role="ktv" title="Chi tiết công việc">
+      <RoleLayout role={currentUser?.role || "ktv"} title="Chi tiết công việc">
         <div className="text-center py-8">Đang tải...</div>
       </RoleLayout>
     )
@@ -219,7 +242,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
 
   if (error && !task) {
     return (
-      <RoleLayout role="ktv" title="Chi tiết công việc">
+      <RoleLayout role={currentUser?.role || "ktv"} title="Chi tiết công việc">
         <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>
         </Alert>
@@ -234,7 +257,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <RoleLayout role="ktv" title="Chi tiết công việc">
+    <RoleLayout role={currentUser?.role || "ktv"} title="Chi tiết công việc">
       <div className="container mx-auto py-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -397,81 +420,221 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ImageUpload 
-              images={taskImages} 
-              onImagesChange={setTaskImages} 
-              maxImages={10} 
-              label="Hình ảnh xe"
-            />
+            {currentUser?.role === "ktv" ? (
+              <ImageUpload 
+                images={taskImages} 
+                onImagesChange={setTaskImages} 
+                maxImages={10} 
+                label="Hình ảnh xe"
+              />
+            ) : (
+              <div className="space-y-4">
+                {taskImages && taskImages.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+                    {taskImages.map((image, index) => (
+                      <Card key={index} className="overflow-hidden">
+                        <div className="aspect-square relative">
+                          <Image 
+                            src={image.url} 
+                            alt={`Hình ảnh ${index + 1}`} 
+                            fill 
+                            className="object-cover" 
+                          />
+                        </div>
+                        <CardContent className="p-2">
+                          <div className="flex justify-end mt-1">
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-7 w-7" 
+                              onClick={() => viewImage(image.url)}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">Chưa có hình ảnh nào</div>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
 
         {/* Update Task Status */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Clock className="h-5 w-5 text-orange-600" />
-              <span>Cập nhật trạng thái</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">Trạng thái công việc</label>
-                <Select value={taskStatus} onValueChange={setTaskStatus}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Chọn trạng thái" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pending">Chờ xử lý</SelectItem>
-                    <SelectItem value="in_progress">Đang thực hiện</SelectItem>
-                    <SelectItem value="completed">Hoàn thành</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium">Ghi chú</label>
-                <Textarea
-                  placeholder="Nhập ghi chú về công việc"
-                  value={taskNotes}
-                  onChange={(e) => setTaskNotes(e.target.value)}
-                  rows={4}
-                />
-              </div>
-
-              {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-
-              {success && (
-                <Alert className="bg-green-50 border-green-200">
-                  <div className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                    <AlertDescription className="text-green-700">{success}</AlertDescription>
+        {currentUser?.role === "ktv" && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Clock className="h-5 w-5 text-orange-600" />
+                <span>Cập nhật trạng thái</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* Hạng mục sửa chữa */}
+                <div>
+                  <h3 className="text-base font-medium mb-3">Hạng mục sửa chữa</h3>
+                  <div className="border rounded-md overflow-hidden">
+                    <div className="md:block hidden"> {/* Phiên bản desktop/tablet */}
+                      <table className="w-full">
+                        <thead>
+                          <tr className="bg-gray-50 border-b">
+                            <th className="text-left p-3 font-medium text-gray-700 w-1/2">HẠNG MỤC SỬA CHỮA</th>
+                            <th className="text-left p-3 font-medium text-gray-700 w-1/2">YÊU CẦU CÔNG VIỆC</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {repairItems.map((item, index) => (
+                            <tr key={index} className="border-b">
+                              <td className="p-3">
+                                <Input 
+                                  value={item.item}
+                                  onChange={(e) => {
+                                    const newItems = [...repairItems];
+                                    newItems[index].item = e.target.value;
+                                    setRepairItems(newItems);
+                                  }}
+                                />
+                              </td>
+                              <td className="p-3">
+                                <Input 
+                                  value={item.requirement}
+                                  onChange={(e) => {
+                                    const newItems = [...repairItems];
+                                    newItems[index].requirement = e.target.value;
+                                    setRepairItems(newItems);
+                                  }}
+                                />
+                              </td>
+                            </tr>
+                          ))}
+                          <tr>
+                            <td className="p-3" colSpan={2}>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="w-full"
+                                onClick={() => {
+                                  setRepairItems([...repairItems, { item: "", requirement: "" }]);
+                                }}
+                                type="button"
+                              >
+                                + Thêm hạng mục
+                              </Button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    
+                    {/* Phiên bản mobile */}
+                    <div className="md:hidden block">
+                      {repairItems.map((item, index) => (
+                        <div key={index} className="border-b p-3">
+                          <div className="mb-2">
+                            <Label className="text-xs font-medium text-gray-700 mb-1 block">HẠNG MỤC SỬA CHỮA</Label>
+                            <Input 
+                              value={item.item}
+                              onChange={(e) => {
+                                const newItems = [...repairItems];
+                                newItems[index].item = e.target.value;
+                                setRepairItems(newItems);
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs font-medium text-gray-700 mb-1 block">YÊU CẦU CÔNG VIỆC</Label>
+                            <Input 
+                              value={item.requirement}
+                              onChange={(e) => {
+                                const newItems = [...repairItems];
+                                newItems[index].requirement = e.target.value;
+                                setRepairItems(newItems);
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                      <div className="p-3">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full"
+                          onClick={() => {
+                            setRepairItems([...repairItems, { item: "", requirement: "" }]);
+                          }}
+                          type="button"
+                        >
+                          + Thêm hạng mục
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                </Alert>
-              )}
+                </div>
 
-              <Button 
-                onClick={handleSaveTask} 
-                disabled={saving} 
-                className="w-full"
-              >
-                {saving ? (
-                  "Đang lưu..."
-                ) : (
-                  <>
-                    <Save className="h-4 w-4 mr-2" />
-                    Lưu thay đổi
-                  </>
+              
+
+                <div>
+                  <label className="text-sm font-medium">Trạng thái công việc</label>
+                  <Select value={taskStatus} onValueChange={setTaskStatus}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Chọn trạng thái" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Chờ xử lý</SelectItem>
+                      <SelectItem value="in_progress">Đang thực hiện</SelectItem>
+                      <SelectItem value="completed">Hoàn thành</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">Ghi chú</label>
+                  <Textarea
+                    placeholder="Nhập ghi chú về công việc"
+                    value={taskNotes}
+                    onChange={(e) => setTaskNotes(e.target.value)}
+                    rows={4}
+                  />
+                </div>
+
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
                 )}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+
+                {success && (
+                  <Alert className="bg-green-50 border-green-200">
+                    <div className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                      <AlertDescription className="text-green-700">{success}</AlertDescription>
+                    </div>
+                  </Alert>
+                )}
+
+                <Button 
+                  onClick={handleSaveTask} 
+                  disabled={saving} 
+                  className="w-full"
+                >
+                  {saving ? (
+                    "Đang lưu..."
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      Lưu thay đổi
+                    </>
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </RoleLayout>
   )

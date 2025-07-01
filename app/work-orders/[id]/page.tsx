@@ -38,7 +38,7 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
   // State cho phần quản lý tác vụ
   const [selectedTask, setSelectedTask] = useState<RepairTask | null>(null)
   const [isEditingTask, setIsEditingTask] = useState(false)
-  const [taskStatus, setTaskStatus] = useState<string>("") 
+  const [taskStatus, setTaskStatus] = useState<"pending" | "in_progress" | "completed" | undefined>("pending") 
   const [taskNotes, setTaskNotes] = useState<string>("") 
   const [assignedTechnician, setAssignedTechnician] = useState<string>("") 
   const [savingTask, setSavingTask] = useState(false)
@@ -353,27 +353,28 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
       const orderIndex = workOrders.findIndex((w) => w.id === orderId)
 
       if (orderIndex !== -1) {
-        let newStatus = "completed";
         let successMessage = "Đã hoàn thành";
+        const currentWorkOrder = workOrders[orderIndex];
         
         // Kiểm tra xem tất cả các subtask đã hoàn thành chưa
-        const allTasksCompleted = currentOrder.repair_tasks && 
-          Array.isArray(currentOrder.repair_tasks) && 
-          currentOrder.repair_tasks.every(task => task.status === "completed");
+        const allTasksCompleted = currentWorkOrder.repair_tasks && 
+          Array.isArray(currentWorkOrder.repair_tasks) && 
+          currentWorkOrder.repair_tasks.every((task: any) => task.status === "completed");
         
         if (!allTasksCompleted) {
           // Cập nhật tất cả các subtask thành hoàn thành
-          if (currentOrder.repair_tasks && Array.isArray(currentOrder.repair_tasks)) {
-            currentOrder.repair_tasks = currentOrder.repair_tasks.map(task => ({
+          if (currentWorkOrder.repair_tasks && Array.isArray(currentWorkOrder.repair_tasks)) {
+            currentWorkOrder.repair_tasks = currentWorkOrder.repair_tasks.map((task: any) => ({
               ...task,
-              status: "completed",
+              status: "completed" as "pending" | "in_progress" | "completed",
               updated_at: new Date().toISOString()
             }));
           }
         }
+        
         // Cập nhật trạng thái work order
-        // Cập nhật trạng thái work order thành hoàn thành
         workOrders[orderIndex] = {
+          ...currentWorkOrder,
           status: "completed",
           updated_at: new Date().toISOString(),
         }
@@ -385,7 +386,6 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
         setWorkOrder(workOrders[orderIndex])
         
         alert(successMessage)
-        alert("Đã hoàn thành")
       }
     } catch (error: any) {
       alert("Có lỗi xảy ra khi hoàn thành công việc")
@@ -694,7 +694,8 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
                         status: task.status || "pending",
                         service_type: task.service_type,
                         created_at: task.created_at,
-                        estimated_completion: task.estimated_completion,
+                        // Không có thuộc tính estimated_completion trong RepairTask
+                        // estimated_completion: task.estimated_completion,
                         assigned_technician: task.assigned_technician,
                         work_order_id: workOrder.id,
                         notes: task.notes
@@ -709,14 +710,26 @@ export default function WorkOrderDetailPage({ params }: { params: { id: string }
                       } : null}
                       showNotes={true}
                       actionElement={
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => selectTaskForEdit(task)}
-                        >
-                          <Edit className="h-4 w-4 mr-2" />
-                          Cập nhật
-                        </Button>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <Link href={`/admin/tasks/${task.id}`}>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="shadow-sm w-full sm:w-auto"
+                            >
+                              Xem chi tiết
+                            </Button>
+                          </Link>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => selectTaskForEdit(task)}
+                            className="w-full sm:w-auto"
+                          >
+                            <Edit className="h-4 w-4 mr-2" />
+                            Cập nhật
+                          </Button>
+                        </div>
                       }
                     />
                   </div>

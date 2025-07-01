@@ -31,6 +31,7 @@ export interface RepairTask {
   notes?: string
   created_at: string
   updated_at: string
+  repair_items?: { item: string; requirement: string }[]
 }
 
 export interface ImageFile {

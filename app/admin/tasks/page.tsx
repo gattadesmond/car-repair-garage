@@ -207,7 +207,8 @@ export default function AdminTasksPage() {
                         status: task.status || "pending",
                         service_type: task.service_type,
                         created_at: task.created_at,
-                        estimated_completion: task.estimated_completion,
+                        // Không có thuộc tính estimated_completion trong RepairTask
+                        // estimated_completion: task.estimated_completion,
                         assigned_technician: task.assigned_technician,
                         work_order_id: task.work_order_id,
                         notes: task.notes
@@ -222,24 +223,35 @@ export default function AdminTasksPage() {
                       } : null}
                       detailsUrl={`/work-orders/${task.work_order_id}`}
                       actionElement={
-                        <div className="mt-4 md:mt-0 w-full md:w-48">
-                          <Select
-                            value={task.assigned_technician || "unassigned"}
-                            onValueChange={(value) => assignTechnician(task.id, task.work_order_id, value)}
-                            disabled={saving}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Chọn KTV" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="unassigned">Chưa phân công</SelectItem>
-                              {technicians.map((tech) => (
-                                <SelectItem key={tech.id} value={tech.id}>
-                                  {tech.full_name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <Link href={`/admin/tasks/${task.id}`}>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="shadow-sm w-full sm:w-auto"
+                            >
+                              Xem chi tiết
+                            </Button>
+                          </Link>
+                          <div className="mt-2 sm:mt-0 w-full md:w-48">
+                            <Select
+                              value={task.assigned_technician || "unassigned"}
+                              onValueChange={(value) => assignTechnician(task.id, task.work_order_id, value)}
+                              disabled={saving}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Chọn KTV" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="unassigned">Chưa phân công</SelectItem>
+                                {technicians.map((tech) => (
+                                  <SelectItem key={tech.id} value={tech.id}>
+                                    {tech.full_name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
                         </div>
                       }
                     />
