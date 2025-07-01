@@ -12,6 +12,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ArrowLeft, Wrench, Save, CheckCircle, Clock, FileText, Camera, Calendar, User, Eye } from "lucide-react"
 import RoleLayout from "@/components/role-layout"
 import ImageUpload from "@/components/image-upload"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { getWorkOrders, saveWorkOrders, getCurrentUser, ImageFile } from "@/lib/demo-data"
 
 interface SavedImage {
@@ -20,6 +22,11 @@ interface SavedImage {
   type: "camera" | "upload"
   data: string // base64
   size: number
+}
+
+interface RepairItem {
+  item: string
+  requirement: string
 }
 
 export default function TaskDetailPage({ params }: { params: { id: string } }) {
@@ -35,6 +42,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
   const [taskNotes, setTaskNotes] = useState<string>("")
   const [taskImages, setTaskImages] = useState<ImageFile[]>([])
   const [images, setImages] = useState<SavedImage[]>([])
+  const [repairItems, setRepairItems] = useState<RepairItem[]>([])
 
   useEffect(() => {
     fetchData()
@@ -137,6 +145,11 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
       setTaskStatus(foundTask.status || "pending")
       setTaskNotes(foundTask.notes || "")
       setTaskImages(foundTask.task_images || [])
+      
+      // Tải các hạng mục sửa chữa nếu có
+      if (foundTask.repair_items && Array.isArray(foundTask.repair_items) && foundTask.repair_items.length > 0) {
+        setRepairItems(foundTask.repair_items)
+      }
     } else {
       setError("Không tìm thấy công việc")
     }
@@ -330,6 +343,51 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
                   </div>
                 )}
               </div>
+              
+              {/* Hạng mục sửa chữa */}
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <h4 className="font-medium text-sm text-gray-700 mb-2">Hạng mục sửa chữa</h4>
+                {repairItems && repairItems.length > 0 ? (
+                  <div className="border rounded-md overflow-hidden">
+                    <div className="md:block hidden"> {/* Phiên bản desktop/tablet */}
+                      <table className="w-full">
+                        <thead>
+                          <tr className="bg-gray-50 border-b">
+                            <th className="text-left p-3 font-medium text-gray-700 w-1/2">HẠNG MỤC SỬA CHỮA</th>
+                            <th className="text-left p-3 font-medium text-gray-700 w-1/2">YÊU CẦU CÔNG VIỆC</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {repairItems.map((item, index) => (
+                            <tr key={index} className="border-b">
+                              <td className="p-3">{item.item}</td>
+                              <td className="p-3">{item.requirement}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    
+                    {/* Phiên bản mobile */}
+                    <div className="md:hidden block">
+                      {repairItems.map((item, index) => (
+                        <div key={index} className="border-b p-3">
+                          <div className="mb-2">
+                            <Label className="text-xs font-medium text-gray-700 mb-1 block">HẠNG MỤC SỬA CHỮA</Label>
+                            <p className="text-gray-700">{item.item}</p>
+                          </div>
+                          <div>
+                            <Label className="text-xs font-medium text-gray-700 mb-1 block">YÊU CẦU CÔNG VIỆC</Label>
+                            <p className="text-gray-700">{item.requirement}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-gray-500 italic">Chưa có hạng mục sửa chữa nào</div>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -339,7 +397,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Camera className="h-5 w-5 text-green-600" />
-              <span>Hình ảnh xe</span>
+              <span>Hình ảnh chi tiết xe</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
