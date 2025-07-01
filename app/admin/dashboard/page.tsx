@@ -188,11 +188,11 @@ export default function AdminDashboardPage() {
               <FileText className="h-5 w-5 mr-2 text-blue-600" />
               Đơn sửa chữa gần đây
             </h2>
-            <Link href="/repair-orders" className="self-start md:self-auto">
+            {/* <Link href="/repair-orders" className="self-start md:self-auto">
               <Button variant="outline" size="sm" className="w-full xs:w-auto border-blue-200 text-blue-700 hover:bg-blue-50">
                 Xem tất cả
               </Button>
-            </Link>
+            </Link> */}
           </div>
 
           <div className="space-y-4">
