@@ -44,11 +44,6 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
   const [images, setImages] = useState<SavedImage[]>([])
   const [repairItems, setRepairItems] = useState<RepairItem[]>([
     { item: "Thay nhớt lọc", requirement: "Thay" },
-    { item: "Thay dầu gội máy lạnh", requirement: "Thay" },
-    { item: "Cảo số cua T bên phải", requirement: "Thay" },
-    { item: "Cảo số cua T máy kéo", requirement: "Thay" },
-    { item: "Cảo số cua T chân máy", requirement: "Thay" },
-    { item: "Cảo số đòn xe (rít)", requirement: "Thay" },
     { item: "Rô tuyn trái đứng lỏng", requirement: "Thay" }
   ])
 
